@@ -1,9 +1,7 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
 import pluginReactConfig from 'eslint-plugin-react/configs/recommended.js';
-import airbnbConfig from 'eslint-config-airbnb';
 import prettierConfig from 'eslint-config-prettier';
-import prettierPlugin from 'eslint-plugin-prettier';
 
 export default [
   {
