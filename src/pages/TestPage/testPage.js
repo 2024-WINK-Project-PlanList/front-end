@@ -4,10 +4,13 @@ import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 
 const TestPage = () => {
+  const showModal = () => {
+    alert('Modal is shown!');
+  };
+
   return (
     <div>
-      <Header location={'todolist'} />
-
+      <Header showModal={showModal} />
       <div className={'text-center flex justify-center'}>
         <div>
           <div className="text-5xl">Hi</div>
@@ -16,8 +19,7 @@ const TestPage = () => {
           </div>
         </div>
       </div>
-
-      <Footer location={'todolist'} />
+      <Footer />
     </div>
   );
 };
