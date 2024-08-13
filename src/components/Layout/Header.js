@@ -13,10 +13,6 @@ const Header = ({ showModal }) => {
     navigate(-1);
   };
 
-  let left = false;
-  let right = false;
-  let text = 'a';
-
   const pages = {
     '/main/notification': {
       left: true,
