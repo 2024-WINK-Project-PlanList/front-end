@@ -10,7 +10,7 @@ const TestPage = () => {
 
   return (
     <div>
-      <Header showModal={showModal} />
+      <Header modal={showModal} />
       <div className={'text-center flex justify-center'}>
         <div>
           <div className="text-5xl">Hi</div>
