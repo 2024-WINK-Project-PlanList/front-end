@@ -14,6 +14,54 @@
     /*font-family: 'Noto Sans KR', sans-serif;*/
 }
 
+@font-face {
+    font-family: "preBold";
+    src: url("./assets/fonts/Pretendard-Bold.woff2") format("woff2"),
+    url("./assets/fonts/Pretendard-Bold.woff") format("woff");
+}
+
+@font-face {
+    font-family: "preExtraBold";
+    src: url("./assets/fonts/Pretendard-ExtraBold.woff2") format("woff2"),
+    url("./assets/fonts/Pretendard-ExtraBold.woff") format("woff");
+}
+
+@font-face {
+    font-family: "preExtraLight";
+    src: url("./assets/fonts/Pretendard-ExtraLight.woff2") format("woff2"),
+    url("./assets/fonts/Pretendard-ExtraLight.woff") format("woff");
+}
+
+@font-face {
+    font-family: "preLight";
+    src: url("./assets/fonts/Pretendard-Light.woff2") format("woff2"),
+    url("./assets/fonts/Pretendard-Light.woff") format("woff");
+}
+
+@font-face {
+    font-family: "preMedium";
+    src: url("./assets/fonts/Pretendard-Medium.woff2") format("woff2"),
+    url("./assets/fonts/Pretendard-Medium.woff") format("woff");
+}
+
+@font-face {
+    font-family: "preRegular";
+    src: url("./assets/fonts/Pretendard-Regular.woff2") format("woff2"),
+    url("./assets/fonts/Pretendard-Regular.woff") format("woff");
+}
+
+@font-face {
+    font-family: "preSemiBold";
+    src: url("./assets/fonts/Pretendard-SemiBold.woff2") format("woff2"),
+    url("./assets/fonts/Pretendard-SemiBold.woff") format("woff");
+}
+
+@font-face {
+    font-family: "preThin";
+    src: url("./assets/fonts/Pretendard-Thin.woff2") format("woff2"),
+    url("./assets/fonts/Pretendard-Thin.woff") format("woff");
+}
+
 :root{
 
 }
