@@ -13,28 +13,24 @@ const Footer = () => {
     <footer className={'fixed bottom-0 bg-white w-p'}>
       <div className="border-t" />
       <div className={'flex justify-between px-10 pb-4'}>
-        <Link to={'/main'} className={'p-5'}>
           <Home
             width={'2.3rem'}
             height={'2.3rem'}
             stroke={location === 'main' ? '#000000' : '#858585'}
           />
         </Link>
-        <Link to={'/calendar'} className={'p-5'}>
           <Calendar
             width={'2.3rem'}
             height={'2.3rem'}
             fill={location === 'calendar' ? '#000000' : '#858585'}
           />
         </Link>
-        <Link to={'/todolist'} className={'p-5'}>
           <TodoList
             width={'2.3rem'}
             height={'2.3rem'}
             fill={location === 'todolist' ? '#000000' : '#858585'}
           />
         </Link>
-        <Link to={'/mypage'} className={'p-5'}>
           <MyPage
             width={'2.3rem'}
             height={'2.3rem'}
