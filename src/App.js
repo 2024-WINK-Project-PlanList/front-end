@@ -1,6 +1,7 @@
 import './App.css';
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import TestPage from './pages/TestPage/testPage';
+import MyPage from './pages/MyPage/mypage';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/test" element={<TestPage />} />
+          <Route path="/myPage" element={<MyPage />} />
         </Routes>
       </BrowserRouter>
     </div>
