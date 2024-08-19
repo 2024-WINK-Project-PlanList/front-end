@@ -1,19 +1,53 @@
-import React from 'react';
+import { React, useState } from 'react';
 import { ReactComponent as ProfilePic } from '../../assets/mypage/profile.svg';
 import { ReactComponent as FriendsIcon } from '../../assets/mypage/friends.svg';
 import { ReactComponent as SignIcon } from '../../assets/mypage/sign.svg';
 import { ReactComponent as MySentenceIcon } from '../../assets/mypage/mySentence.svg';
 import PlayList from '../../components/PlayList/playList';
+import ModifyProfile from '../../components/Modal/modifyProfile';
 
 const MyPage = () => {
+  const [profileData, setProfileData] = useState({
+    name: '왕연진',
+    email: 'jjini6530@kookmin.ac.kr',
+    bio: '야무진 개발자가 되',
+    image: null,
+  });
+  const [modalIsOpen, setModalState] = useState(false);
+
+  const handleSaveProfile = (updatedProfile) => {
+    setProfileData(updatedProfile);
+  };
+
+  function clickedModifyButton() {
+    setModalState(true);
+  }
+
+  function closeModal() {
+    setModalState(false);
+  }
+
   return (
     <div className="flex flex-col items-center">
-      <ProfilePic className="mt-[30px]"></ProfilePic>
-      <div className="text-2xl font-preSemiBold pt-[15px]">왕연진</div>
-      <div className="text-base font-preLight text-[#3F3F3F] pt-[7px]">
-        jjini6530@kookmin.ac.kr
+      {profileData.image ? (
+        <img
+          src={profileData.image}
+          alt="Profile"
+          className="mt-[30px] w-[154px] h-[154px] object-cover rounded-full"
+        />
+      ) : (
+        <ProfilePic className="mt-[30px]" />
+      )}
+      <div className="text-2xl font-preSemiBold pt-[15px]">
+        {profileData.name}
       </div>
-      <div className="flex justify-center items-center text-sm text-white font-preMedium bg-[#6AB6FF] w-[5.8125rem] h-[1.6875rem] rounded-[0.625rem] mt-4">
+      <div className="text-base font-preLight text-[#3F3F3F] pt-[7px]">
+        {profileData.email}
+      </div>
+      <div
+        className="flex justify-center items-center text-sm text-white font-preMedium bg-[#6AB6FF] w-[5.8125rem] h-[1.6875rem] rounded-[0.625rem] mt-4"
+        onClick={clickedModifyButton}
+      >
         내 정보 수정
       </div>
       <div className="flex justify-between items-center w-[22rem] h-[3.0625rem] rounded-[0.625rem] border-[0.5px] border-[#D5D5D5] mt-6 pl-[22px] pr-[16px]">
@@ -34,13 +68,21 @@ const MyPage = () => {
           <div className="font-preRegular pl-[6px]">나의 한마디</div>
         </div>
         <div className="font-preLight text-sm max-w-[160px] overflow-hidden text-ellipsis whitespace-nowrap">
-          야무지게 살자용 아자아자 화이띵
+          {profileData.bio}
         </div>
       </div>
       <div className="w-full pb-[13px] pt-[33px] pl-[33px] font-preSemiBold text-xl">
         나의 PlayList
       </div>
       <PlayList music={true} />
+
+      {modalIsOpen && (
+        <ModifyProfile
+          onClose={closeModal}
+          onSave={handleSaveProfile}
+          profileData={profileData}
+        />
+      )}
     </div>
   );
 };
