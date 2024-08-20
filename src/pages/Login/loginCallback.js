@@ -15,7 +15,7 @@ const LoginCallback = () => {
         },
         body: new URLSearchParams({
           grant_type: 'authorization_code',
-          client_id: process.env.REACT_APP_K_REST_API_KEY,
+          client_id: process.env.REACT_APP_REST_API_KEY,
           redirect_uri: process.env.REACT_APP_API_URL,
           code: code,
         }),
