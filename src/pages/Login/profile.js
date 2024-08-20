@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Planlist from '../../assets/Planlist.svg';
+import Planlist from '../../assets/login/Planlist.svg';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -59,7 +59,7 @@ const Profile = () => {
           className={`w-72 h-12 text-white font-semibold rounded-lg mt-60 
             ${
               isValid
-                ? 'bg-black cursor-pointer'
+                ? 'bg-[#1E86FF] cursor-pointer'
                 : 'bg-gray-300 text-gray-400 cursor-default'
             }`}
         >
