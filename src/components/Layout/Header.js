@@ -52,7 +52,6 @@ const Header = ({ onClick }) => {
   };
 
   const page = Object.keys(pages).find((key) => location.startsWith(key));
-  console.log(page);
 
   if (pages[page] !== undefined) {
     return (
