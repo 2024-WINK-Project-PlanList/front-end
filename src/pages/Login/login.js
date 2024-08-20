@@ -3,8 +3,8 @@ import Planlist from '../../assets/Login/Planlist.svg';
 import Kakao from '../../assets/Login/Kakao.svg';
 
 const Login = () => {
-  const REST_API_KEY = 'rest_api_key';
-  const REDIRECT_URI = 'redirect_uri';
+  const REST_API_KEY = process.env.REACT_APP_K_REST_API_KEY;
+  const REDIRECT_URI = process.env.REACT_APP_API_URL;
   const kakaoLink = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
   const handleLogin = () => {
