@@ -1,9 +1,9 @@
 import React from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { ReactComponent as Plus } from '../../assets/plus.svg';
-import { ReactComponent as Left } from '../../assets/left.svg';
-import { ReactComponent as Bell } from '../../assets/bell.svg';
-import Logo from '../../assets/logo.png';
+import { ReactComponent as Plus } from '../../assets/header/plus.svg';
+import { ReactComponent as Left } from '../../assets/header/left.svg';
+import { ReactComponent as Bell } from '../../assets/header/bell.svg';
+import Logo from '../../assets/header/logo.png';
 
 const Header = ({ showModal }) => {
   const navigate = useNavigate();

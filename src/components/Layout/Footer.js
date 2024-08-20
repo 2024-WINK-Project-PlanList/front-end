@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-import { ReactComponent as Home } from '../../assets/footer_icon/home.svg';
-import { ReactComponent as Calendar } from '../../assets/footer_icon/calendar.svg';
-import { ReactComponent as TodoList } from '../../assets/footer_icon/todolist.svg';
-import { ReactComponent as MyPage } from '../../assets/footer_icon/mypage.svg';
+import { ReactComponent as Home } from '../../assets/footer/home.svg';
+import { ReactComponent as Calendar } from '../../assets/footer/calendar.svg';
+import { ReactComponent as TodoList } from '../../assets/footer/todolist.svg';
+import { ReactComponent as MyPage } from '../../assets/footer/mypage.svg';
 
 const Footer = () => {
   const location = useLocation().pathname.split('/')[1];
