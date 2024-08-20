@@ -13,6 +13,10 @@ module.exports = {
         preSemiBold: ['preSemiBold'],
         preThin: ['preThin'],
       },
+      spacing: {
+        17: '4.25rem',
+        p: '480px',
+      },
     },
   },
   plugins: [],
