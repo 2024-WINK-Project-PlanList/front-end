@@ -15,8 +15,8 @@ const LoginCallback = () => {
         },
         body: new URLSearchParams({
           grant_type: 'authorization_code',
-          client_id: 'REST API KEY',
-          redirect_uri: 'REACT_APP_API_URL',
+          client_id: process.env.REACT_APP_REST_API_KEY,
+          redirect_uri: process.env.REACT_APP_REDIRECT_URI,
           code: code,
         }),
       })
@@ -25,7 +25,7 @@ const LoginCallback = () => {
           const accessToken = tokenData.access_token;
 
           // accessToken을 사용하여 로그인 요청
-          return fetch(`${'backendurl'}/auth/kakao`, {
+          return fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/kakao`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
