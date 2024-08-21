@@ -1,4 +1,4 @@
-import { React, useEffect } from 'react';
+import { React, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LoginCallback = () => {
@@ -15,9 +15,10 @@ const LoginCallback = () => {
         },
         body: new URLSearchParams({
           grant_type: 'authorization_code',
-          client_id: process.env.REACT_APP_REST_API_KEY,
-          redirect_uri: process.env.REACT_APP_API_URL,
+          client_id: `${process.env.REACT_APP_REST_API_KEY}`,
+          redirect_uri: `${process.env.REACT_APP_API_URL}`,
           code: code,
+          client_secret: `${process.env.REACT_APP_API_SECRET_KEY}`,
         }),
       })
         .then((res) => res.json())
@@ -30,14 +31,17 @@ const LoginCallback = () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ accessToken }),
+            body: JSON.stringify({
+              accessToken: accessToken,
+            }),
           });
         })
         .then((res) => res.json())
         .then((data) => {
-          if (data.type === 'exist') {
+          console.log(data);
+          if (data.type === 'EXIST') {
             navigate('/main');
-          } else if (data.type === 'register') {
+          } else if (data.type === 'REGISTER') {
             sessionStorage.setItem('token', data.token);
             navigate('/profile');
           } else {
@@ -51,7 +55,7 @@ const LoginCallback = () => {
           navigate('/login');
         });
     }
-  }, [code, navigate]);
+  }, [code]);
 
   return (
     <>

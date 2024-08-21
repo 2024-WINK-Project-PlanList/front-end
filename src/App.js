@@ -4,6 +4,7 @@ import TestPage from './pages/TestPage/testPage';
 import Login from './pages/Login/login';
 import Profile from './pages/Login/profile';
 import MyPage from './pages/MyPage/mypage';
+import LoginCallback from './pages/Login/loginCallback';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/test" element={<TestPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/oauth" element={<LoginCallback />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/myPage" element={<MyPage />} />
         </Routes>
