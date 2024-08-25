@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import BottomSheet from './BottomSheet';
 
-const calendarPlan = ({ isOpen, onClose, title, children }) => {
+const CalendarPlan = ({ isOpen, onClose, title, children }) => {
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+
   if (!isOpen) return null;
 
   const handleOverlayClick = (e) => {
@@ -9,35 +12,50 @@ const calendarPlan = ({ isOpen, onClose, title, children }) => {
     }
   };
 
+  const handleOpenBottomSheet = () => {
+    setIsBottomSheetOpen(true);
+  };
+
+  const handleCloseBottomSheet = () => {
+    setIsBottomSheetOpen(false);
+  };
+
   return (
-    <div
-      className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-      onClick={handleOverlayClick}
-    >
+    <>
       <div
-        className="modal-container bg-white rounded-2xl shadow-lg w-full max-w-xs h-[80vh] mx-4 flex flex-col"
-        style={{ width: '80%', maxWidth: '365px', height: '75vh' }}
+        className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+        onClick={handleOverlayClick}
       >
-        <div className="modal-header flex flex-col justify-between items-start p-4">
-          <h2 className="text-xl font-preRegular">{title}</h2>
-          {children && (
-            <div className="mt-0 leading-none text-sm text-gray-500">
-              {children}
-            </div>
-          )}
-        </div>
-        <div className="modal-content p-4 flex-1 overflow-y-auto"></div>
-        <div className="modal-footer flex justify-end p-4">
-          <button
-            className="w-full px-4 py-2 bg-[#73B7FF] text-white rounded-lg hover:bg-[#58A9FF]"
-            onClick={onClose}
-          >
-            일정 추가하기
-          </button>
+        <div
+          className="modal-container bg-white rounded-2xl shadow-lg w-full max-w-xs h-[80vh] mx-4 flex flex-col"
+          style={{ width: '80%', maxWidth: '365px', height: '75vh' }}
+        >
+          <div className="modal-header flex flex-col justify-between items-start p-4">
+            <h2 className="text-xl font-preRegular">{title}</h2>
+            {children && (
+              <div className="mt-0 leading-none text-sm text-gray-500">
+                {children}
+              </div>
+            )}
+          </div>
+          <div className="modal-content p-4 flex-1 overflow-y-auto"></div>
+          <div className="modal-footer flex justify-end p-4">
+            <button
+              className="w-full px-4 py-2 bg-[#73B7FF] text-white rounded-lg hover:bg-[#58A9FF]"
+              onClick={handleOpenBottomSheet}
+            >
+              일정 추가하기
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <BottomSheet
+        isOpen={isBottomSheetOpen}
+        onClose={handleCloseBottomSheet}
+      ></BottomSheet>
+    </>
   );
 };
 
-export default calendarPlan;
+export default CalendarPlan;

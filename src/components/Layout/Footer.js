@@ -13,11 +13,11 @@ const Footer = () => {
     <footer className={'fixed bottom-0 bg-white w-[480px]'}>
       <div className="border-t" />
       <div className={'flex justify-between px-10 pb-4'}>
-        <Link to={'/main'} className={'p-5'}>
+        <Link to={'/mainPage'} className={'p-5'}>
           <Home
             width={'2.3rem'}
             height={'2.3rem'}
-            stroke={location === 'main' ? '#000000' : '#858585'}
+            stroke={location === 'mainPage' ? '#000000' : '#858585'}
           />
         </Link>
         <Link to={'/calendar'} className={'p-5'}>
