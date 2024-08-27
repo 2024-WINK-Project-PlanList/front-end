@@ -34,17 +34,17 @@ const Header = ({ onClick }) => {
       right: true,
       text: '투두리스트',
     },
-    '/mypage': {
+    '/myPage': {
       left: false,
       right: false,
       text: '마이페이지',
     },
-    '/mypage/friends': {
+    '/friends': {
       left: true,
       right: true,
       text: '내 친구',
     },
-    '/mypage/playlist': {
+    '/playlist': {
       left: true,
       right: false,
       text: '플레이리스트',
