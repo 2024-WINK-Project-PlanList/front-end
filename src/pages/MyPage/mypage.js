@@ -1,4 +1,5 @@
 import { React, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ReactComponent as ProfilePic } from '../../assets/mypage/profile.svg';
 import { ReactComponent as FriendsIcon } from '../../assets/mypage/friends.svg';
 import { ReactComponent as SignIcon } from '../../assets/mypage/sign.svg';
@@ -16,6 +17,7 @@ const MyPage = () => {
     image: null,
   });
   const [modalIsOpen, setModalState] = useState(false);
+  const navigate = useNavigate();
 
   const handleSaveProfile = (updatedProfile) => {
     setProfileData(updatedProfile);
@@ -27,6 +29,10 @@ const MyPage = () => {
 
   function closeModal() {
     setModalState(false);
+  }
+
+  function clickFriends() {
+    navigate('/friends');
   }
 
   return (
@@ -54,7 +60,10 @@ const MyPage = () => {
         >
           내 정보 수정
         </div>
-        <div className="flex justify-between items-center w-[22rem] h-[3.0625rem] rounded-[0.625rem] border-[0.5px] border-[#D5D5D5] mt-6 pl-[22px] pr-[16px]">
+        <div
+          onClick={clickFriends}
+          className="flex justify-between items-center w-[22rem] h-[3.0625rem] rounded-[0.625rem] border-[0.5px] border-[#D5D5D5] mt-6 pl-[22px] pr-[16px]"
+        >
           <div className="flex items-center">
             <FriendsIcon />
             <div className="font-preRegular pl-[6px]">내 친구</div>
