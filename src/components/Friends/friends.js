@@ -20,7 +20,7 @@ const Friends = ({ profile, name, email, song }) => {
 
       <div className="overflow-hidden flex items-center w-[150px] h-[27px] border border-[#E8E8E8] rounded-lg px-[9px] py-[7px] mr-[7px]">
         <Music />
-        <div className="font-preRegular text-xs pl-[7px] whitespace-nowrap">
+        <div className="font-preRegular text-xs pl-[7px] w-[111px] overflow-hidden text-ellipsis whitespace-nowrap">
           {song}
         </div>
       </div>
