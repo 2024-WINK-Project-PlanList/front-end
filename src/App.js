@@ -15,6 +15,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/oauth" element={<LoginCallback />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="*" element={<TestPage />} />
           <Route path="/myPage" element={<MyPage />} />
         </Routes>
       </BrowserRouter>
