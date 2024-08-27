@@ -4,7 +4,6 @@ import Friend from '../../components/Friends/friends';
 import { ReactComponent as ProfilePic } from '../../assets/friendsList/profilePic.svg';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
-import Friends from '../../components/Friends/friends';
 
 const FriendsList = () => {
   const [friends, setFriends] = useState([
