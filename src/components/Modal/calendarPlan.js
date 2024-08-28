@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import BottomSheet from './BottomSheet';
+import CalendarBottomSheet from './CalendarBottomSheet';
 
-const CalendarPlan = ({ isOpen, onClose, title, children }) => {
+const CalendarPlan = ({ isOpen, onClose, title, selectedDate, children }) => {
+  // selectedDate 추가
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   if (!isOpen) return null;
@@ -50,10 +51,12 @@ const CalendarPlan = ({ isOpen, onClose, title, children }) => {
         </div>
       </div>
 
-      <BottomSheet
+      <CalendarBottomSheet
         isOpen={isBottomSheetOpen}
         onClose={handleCloseBottomSheet}
-      ></BottomSheet>
+        onAdd={onClose}
+        selectedDate={selectedDate}
+      />
     </>
   );
 };

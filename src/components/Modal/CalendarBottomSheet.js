@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import MemberSelectModal from './MemberSelectModal';
 import ColorSelectModal from './ColorSelectModal';
 
-const BottomSheet = ({ isOpen, onClose, onAdd }) => {
+const CalendarBottomSheet = ({ isOpen, onClose, onAdd, selectedDate }) => {
+  // selectedDate 추가
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState('');
   const [isPublic, setIsPublic] = useState(false);
+  const [title, setTitle] = useState('');
+  const [details, setDetails] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -64,6 +67,18 @@ const BottomSheet = ({ isOpen, onClose, onAdd }) => {
     setIsPublic(!isPublic);
   };
 
+  const handleAddClick = () => {
+    const plan = {
+      title,
+      details,
+      color: selectedColor,
+      isPublic,
+      date: selectedDate, // 전달된 selectedDate 사용
+    };
+    onAdd(plan);
+    handleClose(); // 일정 추가 후 바텀시트 닫기
+  };
+
   if (!isMounted) return null;
 
   return (
@@ -87,7 +102,7 @@ const BottomSheet = ({ isOpen, onClose, onAdd }) => {
             </button>
             <button
               className="text-blue-500 text-lg font-medium mr-2"
-              onClick={onAdd}
+              onClick={handleAddClick}
             >
               추가
             </button>
@@ -98,6 +113,8 @@ const BottomSheet = ({ isOpen, onClose, onAdd }) => {
                 type="text"
                 placeholder="일정 이름"
                 className="w-full max-w-md px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#92C7FA]"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
 
@@ -106,6 +123,8 @@ const BottomSheet = ({ isOpen, onClose, onAdd }) => {
                 type="text"
                 placeholder="상세"
                 className="w-full max-w-md px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#92C7FA]"
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
               />
             </div>
 
@@ -176,4 +195,4 @@ const BottomSheet = ({ isOpen, onClose, onAdd }) => {
   );
 };
 
-export default BottomSheet;
+export default CalendarBottomSheet;
