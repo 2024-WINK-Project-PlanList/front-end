@@ -1,11 +1,18 @@
 import React from 'react';
-import Calendar from '../../components/Calendar/Calendar'; // 경로에 따라 조정
+import Calendar from '../../components/Calendar/Calendar';
+import Header from '../../components/Layout/Header';
+import Footer from '../../components/Layout/Footer';
+import MainMemo from '../../components/mainMemo/MainMemo';
 
 const MainPage = () => {
   return (
-    <div className="mypage">
-      <h1 className="text-center text-2xl font-bold mb-4"></h1>
-      <Calendar />
+    <div className="relative pt-[4%]">
+      <Header />
+      <MainMemo />
+      <div className="mt-[-13%]">
+        <Calendar />
+      </div>
+      <Footer />
     </div>
   );
 };
