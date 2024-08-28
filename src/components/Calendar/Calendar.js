@@ -8,15 +8,17 @@ const Calendar = () => {
   const [year, setYear] = useState(2024);
   const [month, setMonth] = useState(7);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [dateDifference, setDateDifference] = useState(null); // 날짜 차이 저장
+  const [dateDifference, setDateDifference] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [plans, setPlans] = useState([]);
 
   const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const prevMonthDays = new Date(year, month, 0).getDate();
 
-  const today = new Date(); // 오늘 날짜
+  const today = new Date();
   const isToday = (day) =>
     day === today.getDate() &&
     month === today.getMonth() &&
@@ -35,9 +37,8 @@ const Calendar = () => {
         selectedFullDate.getMonth() + 1
       }월 ${selectedFullDate.getDate()}일 (${daysOfWeek[selectedFullDate.getDay()]})`;
 
-      // 오늘 날짜와의 차이 계산
       const diffTime = selectedFullDate - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 차이를 일수로 변환
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       const formattedDifference =
         diffDays > 0
@@ -50,6 +51,11 @@ const Calendar = () => {
       setDateDifference(formattedDifference);
       setIsModalOpen(true);
     }
+  };
+
+  const addPlan = (plan) => {
+    setPlans([...plans, plan]);
+    setIsModalOpen(false);
   };
 
   const closeModal = () => {
@@ -94,7 +100,6 @@ const Calendar = () => {
     </div>
   );
 
-  // 이전 달의 마지막 날짜들 추가
   for (let i = 0; i < firstDayOfMonth; i++) {
     const day = prevMonthDays - firstDayOfMonth + i + 1;
     const prevMonth = month - 1;
@@ -103,31 +108,30 @@ const Calendar = () => {
     days.push(
       <button
         key={`prev-${i}`}
-        className="calendar-day prev-next-month text-gray-400 pt-2 pb-20 flex flex-col items-center rounded-md"
+        className="calendar-day prev-next-month text-gray-400 pt-2 pb-[15%] flex flex-col items-center rounded-md"
         onClick={() =>
           handleDateClick(day, prevYear, prevMonth < 0 ? 11 : prevMonth)
         }
-        style={{ flex: '0 0 14.28%' }} // 가로 길이 고정
+        style={{ flex: '0 0 14.28%' }}
       >
         <span className="mb-auto">{day}</span>
       </button>,
     );
   }
 
-  // 현재 달의 날짜들 추가
   for (let day = 1; day <= daysInMonth; day++) {
     const todayClass = isToday(day)
-      ? 'bg-[#90C8FF] text-white rounded-full w-8 h-8 flex items-center justify-center'
+      ? 'bg-[#90C8FF] text-white rounded-full w-[50%] h-[50%] flex items-center justify-center'
       : '';
 
     days.push(
       <button
         key={day}
-        className={`calendar-day pt-2 pb-20 text-center flex flex-col items-center rounded-md ${
+        className={`calendar-day pt-2 pb-[15%] text-center flex flex-col items-center rounded-md ${
           (firstDayOfMonth + day - 1) % 7 === 0 ? 'text-red-500' : ''
         } ${(firstDayOfMonth + day - 1) % 7 === 6 ? 'text-blue-500' : ''} hover:bg-gray-100`}
         onClick={() => handleDateClick(day, year, month)}
-        style={{ flex: '0 0 14.28%' }} // 가로 길이 고정
+        style={{ flex: '0 0 14.28%' }}
       >
         <span className={`mb-auto ${todayClass}`}>{day}</span>
       </button>,
@@ -146,7 +150,6 @@ const Calendar = () => {
     }
   }
 
-  // 마지막 주가 채워지지 않은 경우, 다음 달의 날짜들 추가
   const nextMonth = month + 1;
   const nextYear = nextMonth > 11 ? year + 1 : year;
   if (days.length > 0) {
@@ -154,11 +157,11 @@ const Calendar = () => {
       days.push(
         <button
           key={`next-${i}`}
-          className="calendar-day prev-next-month text-gray-400 pt-2 pb-20 flex flex-col items-center rounded-md"
+          className="calendar-day prev-next-month text-gray-400 pt-2 pb-[15%] flex flex-col items-center rounded-md"
           onClick={() =>
             handleDateClick(i, nextYear, nextMonth > 11 ? 0 : nextMonth)
           }
-          style={{ flex: '0 0 14.28%' }} // 가로 길이 고정
+          style={{ flex: '0 0 14.28%' }}
         >
           <span className="mb-auto">{i}</span>
         </button>,
@@ -176,15 +179,16 @@ const Calendar = () => {
       <Header />
       <div
         {...handlers}
-        className="calendar p-4 bg-white shadow-md rounded-3xl border mx-auto"
+        className="calendar p-[3%] bg-white shadow-md rounded-3xl border mx-auto"
         style={{
           borderColor: '#DCDCDC',
-          borderWidth: '1px',
-          maxWidth: '400px',
+          borderWidth: '1%',
+          maxWidth: '95%',
+          maxHeight: '90%', // 캘린더의 최대 높이를 90%로 설정하여 세로로 길게 만듦
         }}
       >
-        <div className="calendar-header text-left mb-1">
-          <span className="text-lg font-semibold ml-4">
+        <div className="calendar-header text-left mb-[1%]">
+          <span className="text-lg font-semibold ml-[4%]">
             {year}년 {month + 1}월
           </span>
         </div>
@@ -197,6 +201,15 @@ const Calendar = () => {
           title={selectedDate}
         >
           <p className="text-sm text-gray-500">{dateDifference}</p>
+          <ul>
+            {plans
+              .filter((plan) => plan.date === selectedDate)
+              .map((plan, index) => (
+                <li key={index} className="text-sm">
+                  {plan.title}
+                </li>
+              ))}
+          </ul>
         </CalendarPlan>
       </div>
       <Footer />
