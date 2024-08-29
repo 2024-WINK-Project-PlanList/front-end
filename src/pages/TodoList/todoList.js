@@ -11,7 +11,6 @@ const TodoList = () => {
   const [todoItems, setTodoItems] = useState([]);
   const nextId = useRef(1);
   const date = useParams().date;
-  const [startDate, setStartDate] = useState(new Date());
 
   const showModal = () => {
     setShow(true);
@@ -54,7 +53,7 @@ const TodoList = () => {
           </div>
         )}
         <div>
-          {todoItems.map((todo, index) => (
+          {todoItems.map((todo) => (
             <TodoItem
               key={todo.id}
               id={todo.id}

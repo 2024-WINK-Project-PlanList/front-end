@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ReactComponent as Uncheck } from '../../assets/todolist/uncheck.svg';
 import { ReactComponent as Check } from '../../assets/todolist/check.svg';
 import { ReactComponent as Trash } from '../../assets/todolist/trash.svg';
-import dayjs from 'dayjs';
 
 const TodoItem = ({ id, text, removeTodo }) => {
   const [isChecked, setIsChecked] = useState(false);
