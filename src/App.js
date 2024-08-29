@@ -4,6 +4,7 @@ import TestPage from './pages/TestPage/testPage';
 import Login from './pages/Login/login';
 import Profile from './pages/Login/profile';
 import MyPage from './pages/MyPage/mypage';
+import TodoList from './pages/TodoList/todoList';
 import SplashScreen from './pages/SplashScreen/splashScreen';
 import LoginCallback from './pages/Login/loginCallback';
 
@@ -18,6 +19,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<TestPage />} />
           <Route path="/myPage" element={<MyPage />} />
+          <Route path="/todoList/:date" element={<TodoList />} />
           <Route path="/" element={<SplashScreen />} />
         </Routes>
       </BrowserRouter>

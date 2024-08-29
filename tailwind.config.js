@@ -35,6 +35,14 @@ module.exports = {
           '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-4px)' },
           '20%, 40%, 60%, 80%': { transform: 'translateX(4px)' },
         },
+        'bottom-sheet-up': {
+          '0%': { transform: 'translateY(420px)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+        'bottom-sheet-down': {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(420px)' },
+        },
       },
     },
   },
