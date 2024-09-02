@@ -34,7 +34,7 @@ const Header = ({ onClick }) => {
       right: true,
       text: '투두리스트',
     },
-    '/myPage': {
+    '/mypage': {
       left: false,
       right: false,
       text: '마이페이지',

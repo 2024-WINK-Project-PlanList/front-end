@@ -18,7 +18,7 @@ function App() {
           <Route path="/oauth" element={<LoginCallback />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<TestPage />} />
-          <Route path="/myPage" element={<MyPage />} />
+          <Route path="/mypage" element={<MyPage />} />
           <Route path="/friends" element={<FriendsList />} />
           <Route path="/" element={<SplashScreen />} />
         </Routes>
