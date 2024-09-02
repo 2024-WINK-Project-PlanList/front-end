@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import dayjs from 'dayjs';
+import { Link, useLocation } from 'react-router-dom';
 import { ReactComponent as Home } from '../../assets/footer/home.svg';
 import { ReactComponent as Calendar } from '../../assets/footer/calendar.svg';
 import { ReactComponent as TodoList } from '../../assets/footer/todolist.svg';
@@ -13,11 +13,11 @@ const Footer = () => {
     <footer className={'fixed bottom-0 bg-white w-[480px]'}>
       <div className="border-t" />
       <div className={'flex justify-between px-10 pb-4'}>
-        <Link to={'/main'} className={'p-5'}>
+        <Link to={'/mainPage'} className={'p-5'}>
           <Home
             width={'2.3rem'}
             height={'2.3rem'}
-            stroke={location === 'main' ? '#000000' : '#858585'}
+            stroke={location === 'mainPage' ? '#000000' : '#858585'}
           />
         </Link>
         <Link to={'/calendar'} className={'p-5'}>
@@ -27,7 +27,7 @@ const Footer = () => {
             fill={location === 'calendar' ? '#000000' : '#858585'}
           />
         </Link>
-        <Link to={'/todolist'} className={'p-5'}>
+        <Link to={`/todolist/${dayjs().format('YYMMDD')}`} className={'p-5'}>
           <TodoList
             width={'2.3rem'}
             height={'2.3rem'}
