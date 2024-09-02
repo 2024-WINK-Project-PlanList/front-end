@@ -10,37 +10,39 @@ const Footer = () => {
   const location = useLocation().pathname.split('/')[1];
 
   return (
-    <footer className={'fixed bottom-0 bg-white w-[480px]'}>
-      <div className="border-t" />
-      <div className={'flex justify-between px-10 pb-4'}>
-        <Link to={'/mainPage'} className={'p-5'}>
-          <Home
-            width={'2.3rem'}
-            height={'2.3rem'}
-            stroke={location === 'mainPage' ? '#000000' : '#858585'}
-          />
-        </Link>
-        <Link to={'/calendar'} className={'p-5'}>
-          <Calendar
-            width={'2.3rem'}
-            height={'2.3rem'}
-            fill={location === 'calendar' ? '#000000' : '#858585'}
-          />
-        </Link>
-        <Link to={`/todolist/${dayjs().format('YYMMDD')}`} className={'p-5'}>
-          <TodoList
-            width={'2.3rem'}
-            height={'2.3rem'}
-            fill={location === 'todolist' ? '#000000' : '#858585'}
-          />
-        </Link>
-        <Link to={'/mypage'} className={'p-5'}>
-          <MyPage
-            width={'2.3rem'}
-            height={'2.3rem'}
-            fill={location === 'mypage' ? '#000000' : '#858585'}
-          />
-        </Link>
+    <footer>
+      <div className={'fixed bottom-0 bg-white max-w-[480px] w-full'}>
+        <div className="border-t" />
+        <div className={'flex justify-between px-10 pb-4'}>
+          <Link to={`/mainPage`} className={'p-5'}>
+            <Home
+              width={'2.3rem'}
+              height={'2.3rem'}
+              stroke={location === 'mainPage' ? '#000000' : '#858585'}
+            />
+          </Link>
+          <Link to={`/calendar`} className={'p-5'}>
+            <Calendar
+              width={'2.3rem'}
+              height={'2.3rem'}
+              fill={location === 'calendar' ? '#000000' : '#858585'}
+            />
+          </Link>
+          <Link to={`/todolist/${dayjs().format('YYMMDD')}`} className={'p-5'}>
+            <TodoList
+              width={'2.3rem'}
+              height={'2.3rem'}
+              fill={location === 'todolist' ? '#000000' : '#858585'}
+            />
+          </Link>
+          <Link to={`/mypage`} className={'p-5'}>
+            <MyPage
+              width={'2.3rem'}
+              height={'2.3rem'}
+              fill={location === 'mypage' ? '#000000' : '#858585'}
+            />
+          </Link>
+        </div>
       </div>
     </footer>
   );

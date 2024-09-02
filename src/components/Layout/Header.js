@@ -39,12 +39,12 @@ const Header = ({ onClick }) => {
       right: false,
       text: '마이페이지',
     },
-    '/mypage/friends': {
+    '/friends': {
       left: true,
       right: true,
       text: '내 친구',
     },
-    '/mypage/playlist': {
+    '/playlist': {
       left: true,
       right: false,
       text: '플레이리스트',
@@ -56,10 +56,8 @@ const Header = ({ onClick }) => {
   if (pages[page] !== undefined) {
     return (
       <header className={'pt-17'}>
-        <div className={'fixed top-0 bg-white w-[480px]'}>
-          <div
-            className={'flex justify-between items-center py-5 w-[480px] px-5'}
-          >
+        <div className={'fixed top-0 bg-white max-w-[480px] w-full'}>
+          <div className={'flex justify-between items-center py-5 px-5'}>
             <div className={'w-10'}>
               {pages[page].left ? (
                 <Left stroke={'#000000'} onClick={back} />
@@ -81,12 +79,10 @@ const Header = ({ onClick }) => {
   } else {
     return (
       <header className={'pt-17'}>
-        <div className={'fixed top-0 bg-white w-[480px]'}>
-          <div
-            className={'flex justify-between items-center py-5 w-[480px] px-5'}
-          >
+        <div className={'absolute top-0 bg-white w-full'}>
+          <div className={'flex justify-between items-center py-5 px-5'}>
             <img src={Logo} alt={'logo'} />
-            <Link to={'/main/notification'}>
+            <Link to={`/main/notification`}>
               <Bell />
             </Link>
           </div>
