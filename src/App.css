@@ -7,7 +7,8 @@
     margin: 0 auto;
     min-height: 100vh;
     max-height: 100vh;
-    overflow-y: hidden;
+    overflow-y: scroll;
+    scrollbar-width: none;
     width: auto;
     position: relative;
     word-break: keep-all;

@@ -1,0 +1,21 @@
+<svg width="63" height="63" viewBox="0 0 63 63" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame 55">
+<g clip-path="url(#clip0_758_4939)">
+<rect width="63" height="63" rx="31.5" fill="white"/>
+<ellipse id="Ellipse 23" cx="32.0135" cy="31.4993" rx="39.598" ry="31.5" fill="#E8E8E8"/>
+<g id="Group 519">
+<g id="Group">
+<path id="Vector" d="M31.1222 34.8177C37.1346 34.8177 42.0086 29.8443 42.0086 23.7092C42.0086 17.5741 37.1346 12.6006 31.1222 12.6006C25.1098 12.6006 20.2358 17.5741 20.2358 23.7092C20.2358 29.8443 25.1098 34.8177 31.1222 34.8177Z" stroke="white" stroke-width="3.80141" stroke-linecap="round"/>
+<path id="Vector_2" d="M47.7547 60.2223V54.0509C47.7547 44.4914 40.2098 35.5366 31.1227 35.5366C22.0326 35.5366 14.4907 44.4914 14.4907 54.0509V60.2223" stroke="white" stroke-width="3.80141" stroke-linecap="round"/>
+</g>
+<ellipse id="Ellipse 24" cx="30.6714" cy="24.4633" rx="12.6714" ry="13.4633" fill="white"/>
+<ellipse id="Ellipse 25" cx="31.3829" cy="63.1347" rx="21.3829" ry="26.1347" fill="white"/>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_758_4939">
+<rect width="63" height="63" rx="31.5" fill="white"/>
+</clipPath>
+</defs>
+</svg>
