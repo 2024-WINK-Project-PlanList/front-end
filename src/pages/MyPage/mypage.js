@@ -89,8 +89,6 @@ const MyPage = () => {
         </div>
         <PlayList music={true} />
 
-        {!modalIsOpen && <Footer />}
-
         {modalIsOpen && (
           <ModifyProfile
             onClose={closeModal}
@@ -99,6 +97,7 @@ const MyPage = () => {
           />
         )}
       </div>
+      {!modalIsOpen && <Footer />}
     </>
   );
 };
