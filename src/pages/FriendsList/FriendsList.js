@@ -27,13 +27,22 @@ const FriendsList = () => {
       profile: ProfilePic,
       name: '왕연진',
       email: 'jjini6530@kookmin.ac.kr',
-      song: '졸려요ㅜㅜ- 히히',
+      song: '졸려요ㅜㅜ - 히히',
     },
   ]);
 
   const isEmpty = friends.length === 0;
   const [userInput, setUserInput] = useState('');
   const [findUser, setFindUser] = useState(friends);
+  const [isShow, setShow] = useState(false);
+
+  const showModal = () => {
+    setShow(true);
+  };
+
+  const hideModal = () => {
+    setShow(false);
+  };
 
   useEffect(() => {
     const searched = friends.filter((item) =>
@@ -53,7 +62,7 @@ const FriendsList = () => {
 
   return (
     <>
-      <Header />
+      <Header onClick={showModal} />
       <div className="flex flex-col items-center font-preRegular pt-[26px]">
         <div className="relative w-full px-[24px]">
           <input
@@ -89,7 +98,7 @@ const FriendsList = () => {
           )}
         </div>
       </div>
-      <RequestModal />
+      {isShow && <RequestModal hideModal={hideModal} />}
       <Footer />
     </>
   );
