@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
+import { useParams, useNavigate } from 'react-router-dom';
 import setting from '../../assets/sharedCalendar/setting.svg';
 import wink from '../../assets/sharedCalendar/wink.svg';
 import clerker from '../../assets/sharedCalendar/clerker.svg';

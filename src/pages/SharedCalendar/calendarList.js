@@ -73,7 +73,7 @@ const CalendarList = () => {
         ),
       );
     } else {
-      const newId = Math.max(...calendars.map((cal) => cal.id), 0) + 1; // 최대 ID + 1
+      const newId = Math.max(...calendars.map((cal) => cal.id), 0) + 1;
       setCalendars([...calendars, { ...newCalendar, id: newId }]);
     }
     setIsSheetOpen(false);

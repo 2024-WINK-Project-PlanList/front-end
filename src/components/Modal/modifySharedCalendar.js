@@ -19,7 +19,7 @@ const CalendarBottomSheet = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달 상태 추가
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [calendarName, setCalendarName] = useState('');
   const [calendarDescription, setCalendarDescription] = useState('');
   const [calendarMembers, setCalendarMembers] = useState(0);
@@ -76,15 +76,15 @@ const CalendarBottomSheet = ({
   };
 
   const handleImageModalOpen = () => {
-    setIsImageModalOpen(true); // 이미지 모달 열기
+    setIsImageModalOpen(true);
   };
 
   const handleImageModalClose = () => {
-    setIsImageModalOpen(false); // 이미지 모달 닫기
+    setIsImageModalOpen(false);
   };
 
   const handleImageSelect = (image) => {
-    setCalendarImage(image); // 선택된 이미지 설정
+    setCalendarImage(image);
   };
 
   const handleExit = () => {
@@ -147,7 +147,7 @@ const CalendarBottomSheet = ({
           <div className="p-4 flex flex-col items-center">
             <div className="mb-4 flex justify-center w-full">
               <label
-                onClick={handleImageModalOpen} // 이미지 모달 열기 이벤트 추가
+                onClick={handleImageModalOpen}
                 className="flex items-center justify-center w-32 h-32 border border-gray-300 rounded-lg bg-white cursor-pointer"
               >
                 {calendarImage ? (
