@@ -35,6 +35,10 @@ const MyPage = () => {
     navigate('/friends');
   }
 
+  function clickPlayList() {
+    navigate('/playList');
+  }
+
   return (
     <>
       <Header />
@@ -87,7 +91,7 @@ const MyPage = () => {
         <div className="w-full pb-[13px] pt-[33px] pl-[33px] font-preSemiBold text-xl">
           나의 PlayList
         </div>
-        <PlayList music={true} />
+        <PlayList onClick={clickPlayList} music={true} />
 
         {modalIsOpen && (
           <ModifyProfile

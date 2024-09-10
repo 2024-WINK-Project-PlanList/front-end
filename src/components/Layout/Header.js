@@ -44,7 +44,7 @@ const Header = ({ onClick }) => {
       right: true,
       text: '내 친구',
     },
-    '/playlist': {
+    '/playList': {
       left: true,
       right: false,
       text: '플레이리스트',

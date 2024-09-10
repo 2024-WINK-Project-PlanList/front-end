@@ -11,6 +11,7 @@ import LoginCallback from './pages/Login/loginCallback';
 import MainPage from './pages/MainPage/mainPage';
 import SharedCalendar from './pages/SharedCalendar/calendarList';
 import CalendarDetail from './pages/SharedCalendar/calendarDetail';
+import PlayList from './pages/PlayList/playList';
 
 function App() {
   return (
@@ -27,9 +28,9 @@ function App() {
           <Route path="/friends" element={<FriendsList />} />
           <Route path="/todoList/:date" element={<TodoList />} />
           <Route path="/" element={<SplashScreen />} />
-          <Route path="/mainPage" element={<MainPage />} />
           <Route path="/calendar" element={<SharedCalendar />} />
           <Route path="/calendar/:id" element={<CalendarDetail />} />
+          <Route path="/playList" element={<PlayList />} />
         </Routes>
       </BrowserRouter>
     </div>
