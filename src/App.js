@@ -9,6 +9,8 @@ import TodoList from './pages/TodoList/todoList';
 import SplashScreen from './pages/SplashScreen/splashScreen';
 import LoginCallback from './pages/Login/loginCallback';
 import MainPage from './pages/MainPage/mainPage';
+import SharedCalendar from './pages/SharedCalendar/calendarList';
+import CalendarDetail from './pages/SharedCalendar/calendarDetail';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
           <Route path="/todoList/:date" element={<TodoList />} />
           <Route path="/" element={<SplashScreen />} />
           <Route path="/mainPage" element={<MainPage />} />
+          <Route path="/calendar" element={<SharedCalendar />} />
+          <Route path="/calendar/:id" element={<CalendarDetail />} />
         </Routes>
       </BrowserRouter>
     </div>
