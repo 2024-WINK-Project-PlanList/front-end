@@ -14,7 +14,7 @@ const Footer = () => {
       <div className={'fixed bottom-0 bg-white max-w-[480px] w-full'}>
         <div className="border-t" />
         <div className={'flex justify-between px-10 pb-4'}>
-          <Link to={`/mainPage`} className={'p-5'}>
+          <Link to={`/main`} className={'p-5'}>
             <Home
               width={'2.3rem'}
               height={'2.3rem'}
