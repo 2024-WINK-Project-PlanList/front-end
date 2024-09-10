@@ -9,6 +9,7 @@ import TodoList from './pages/TodoList/todoList';
 import SplashScreen from './pages/SplashScreen/splashScreen';
 import LoginCallback from './pages/Login/loginCallback';
 import MainPage from './pages/MainPage/mainPage';
+import PlayList from './pages/PlayList/playList';
 
 function App() {
   return (
@@ -25,7 +26,7 @@ function App() {
           <Route path="/friends" element={<FriendsList />} />
           <Route path="/todoList/:date" element={<TodoList />} />
           <Route path="/" element={<SplashScreen />} />
-          <Route path="/mainPage" element={<MainPage />} />
+          <Route path="/playList" element={<PlayList />} />
         </Routes>
       </BrowserRouter>
     </div>

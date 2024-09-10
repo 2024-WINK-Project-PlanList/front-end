@@ -5,9 +5,9 @@ import { ReactComponent as Pause } from '../../assets/mypage/pause.svg';
 import { ReactComponent as PlayBack } from '../../assets/mypage/play-back.svg';
 import { ReactComponent as PlayForward } from '../../assets/mypage/play-forward.svg';
 
-const PlayList = ({ music }) => {
+const PlayList = ({ onClick, music }) => {
   return (
-    <div className="px-[39px] w-full">
+    <div onClick={onClick} className="px-[39px] w-full">
       {music === false ? (
         <div className="flex justify-center items-center h-[183px] rounded-[0.625rem] font-preRegular border-[0.5px] border-[#D5D5D5]">
           나만의 PlayList를 설정해주세요
@@ -48,6 +48,7 @@ const PlayList = ({ music }) => {
 
 PlayList.propTypes = {
   music: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default PlayList;
