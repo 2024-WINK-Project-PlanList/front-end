@@ -5,8 +5,9 @@ import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 
 const Calendar = () => {
-  const [year, setYear] = useState(2024);
-  const [month, setMonth] = useState(7);
+  const today = new Date();
+  const [year, setYear] = useState(today.getFullYear());
+  const [month, setMonth] = useState(today.getMonth());
   const [selectedDate, setSelectedDate] = useState(null);
   const [dateDifference, setDateDifference] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,44 +19,47 @@ const Calendar = () => {
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const prevMonthDays = new Date(year, month, 0).getDate();
 
-  const today = new Date();
   const isToday = (day) =>
     day === today.getDate() &&
     month === today.getMonth() &&
     year === today.getFullYear();
 
+  // 6주인지 5주인지 계산
+  const totalDays = firstDayOfMonth + daysInMonth;
+  const totalWeeks = Math.ceil(totalDays / 7); // 총 주 계산
+
+  // 주차 수에 따른 패딩 설정
+  let buttonPadding;
+  if (totalWeeks === 4) {
+    buttonPadding = 'pb-[23.3%]'; // 4주차일 때 패딩
+  } else if (totalWeeks === 5) {
+    buttonPadding = 'pb-[17.5%]'; // 5주차일 때 패딩
+  } else if (totalWeeks === 6) {
+    buttonPadding = 'pb-[13.63%]'; // 6주차일 때 패딩
+  }
+
   const weeks = [];
   let days = [];
 
   const handleDateClick = (day, selectedYear, selectedMonth) => {
-    if (selectedYear !== year || selectedMonth !== month) {
-      setYear(selectedYear);
-      setMonth(selectedMonth);
-    } else {
-      const selectedFullDate = new Date(selectedYear, selectedMonth, day);
-      const formattedDate = `${selectedFullDate.getFullYear()}년 ${
-        selectedFullDate.getMonth() + 1
-      }월 ${selectedFullDate.getDate()}일 (${daysOfWeek[selectedFullDate.getDay()]})`;
+    const selectedFullDate = new Date(selectedYear, selectedMonth, day);
+    const formattedDate = `${selectedFullDate.getFullYear()}년 ${
+      selectedFullDate.getMonth() + 1
+    }월 ${selectedFullDate.getDate()}일 (${daysOfWeek[selectedFullDate.getDay()]})`;
 
-      const diffTime = selectedFullDate - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffTime = selectedFullDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      const formattedDifference =
-        diffDays > 0
-          ? `D - ${diffDays}`
-          : diffDays < 0
-            ? `D + ${Math.abs(diffDays)}`
-            : 'D-day';
+    const formattedDifference =
+      diffDays > 0
+        ? `D - ${diffDays}`
+        : diffDays < 0
+          ? `D + ${Math.abs(diffDays)}`
+          : 'D-day';
 
-      setSelectedDate(formattedDate);
-      setDateDifference(formattedDifference);
-      setIsModalOpen(true);
-    }
-  };
-
-  const addPlan = (plan) => {
-    setPlans([...plans, plan]);
-    setIsModalOpen(false);
+    setSelectedDate(formattedDate);
+    setDateDifference(formattedDifference);
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
@@ -100,6 +104,7 @@ const Calendar = () => {
     </div>
   );
 
+  // 이전 달의 빈 칸을 채움
   for (let i = 0; i < firstDayOfMonth; i++) {
     const day = prevMonthDays - firstDayOfMonth + i + 1;
     const prevMonth = month - 1;
@@ -108,7 +113,7 @@ const Calendar = () => {
     days.push(
       <button
         key={`prev-${i}`}
-        className="calendar-day prev-next-month text-gray-400 pt-2 pb-[15%] flex flex-col items-center rounded-md"
+        className={`calendar-day prev-next-month text-gray-400 ${buttonPadding} flex flex-col items-center rounded-md`}
         onClick={() =>
           handleDateClick(day, prevYear, prevMonth < 0 ? 11 : prevMonth)
         }
@@ -119,6 +124,7 @@ const Calendar = () => {
     );
   }
 
+  // 현재 달의 날짜 채우기
   for (let day = 1; day <= daysInMonth; day++) {
     const todayClass = isToday(day)
       ? 'bg-[#90C8FF] text-white rounded-full w-[50%] h-[50%] flex items-center justify-center'
@@ -127,7 +133,7 @@ const Calendar = () => {
     days.push(
       <button
         key={day}
-        className={`calendar-day pt-2 pb-[15%] text-center flex flex-col items-center rounded-md ${
+        className={`calendar-day ${buttonPadding} text-center flex flex-col items-center rounded-md ${
           (firstDayOfMonth + day - 1) % 7 === 0 ? 'text-red-500' : ''
         } ${(firstDayOfMonth + day - 1) % 7 === 6 ? 'text-blue-500' : ''} hover:bg-gray-100`}
         onClick={() => handleDateClick(day, year, month)}
@@ -146,18 +152,22 @@ const Calendar = () => {
           {days}
         </div>,
       );
-      days = [];
+      if (day !== daysInMonth) {
+        days = [];
+      }
     }
   }
 
   const nextMonth = month + 1;
   const nextYear = nextMonth > 11 ? year + 1 : year;
+
+  // 마지막 주의 빈칸을 채움
   if (days.length > 0) {
     for (let i = 1; days.length < 7; i++) {
       days.push(
         <button
           key={`next-${i}`}
-          className="calendar-day prev-next-month text-gray-400 pt-2 pb-[15%] flex flex-col items-center rounded-md"
+          className={`calendar-day prev-next-month text-gray-400 ${buttonPadding} flex flex-col items-center rounded-md`}
           onClick={() =>
             handleDateClick(i, nextYear, nextMonth > 11 ? 0 : nextMonth)
           }
@@ -167,11 +177,6 @@ const Calendar = () => {
         </button>,
       );
     }
-    weeks.push(
-      <div key={`week-next`} className="calendar-week flex justify-start">
-        {days}
-      </div>,
-    );
   }
 
   return (
@@ -184,7 +189,7 @@ const Calendar = () => {
           borderColor: '#DCDCDC',
           borderWidth: '1%',
           maxWidth: '95%',
-          maxHeight: '90%', // 캘린더의 최대 높이를 90%로 설정하여 세로로 길게 만듦
+          maxHeight: '90%',
         }}
       >
         <div className="calendar-header text-left mb-[1%]">
@@ -193,7 +198,11 @@ const Calendar = () => {
           </span>
         </div>
         {weekHeader}
-        {weeks}
+        {weeks.map((week, index) => (
+          <div key={index} className="calendar-week flex justify-start">
+            {week.props.children}
+          </div>
+        ))}
 
         <CalendarPlan
           isOpen={isModalOpen}

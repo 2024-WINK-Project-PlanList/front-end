@@ -3,7 +3,6 @@ import MemberSelectModal from './MemberSelectModal';
 import ColorSelectModal from './ColorSelectModal';
 
 const CalendarBottomSheet = ({ isOpen, onClose, onAdd, selectedDate }) => {
-  // selectedDate 추가
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
@@ -73,10 +72,16 @@ const CalendarBottomSheet = ({ isOpen, onClose, onAdd, selectedDate }) => {
       details,
       color: selectedColor,
       isPublic,
-      date: selectedDate, // 전달된 selectedDate 사용
+      date: selectedDate,
     };
-    onAdd(plan);
-    handleClose(); // 일정 추가 후 바텀시트 닫기
+
+    // 애니메이션 적용 후에 추가 기능 호출
+    setIsAnimating(false);
+    setTimeout(() => {
+      onAdd(plan);
+      setIsMounted(false);
+      onClose();
+    }, 300);
   };
 
   if (!isMounted) return null;
@@ -165,13 +170,15 @@ const CalendarBottomSheet = ({ isOpen, onClose, onAdd, selectedDate }) => {
                     className="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 appearance-none cursor-pointer"
                     style={{
                       top: 0,
-                      left: isPublic ? 28 : 0,
+                      left: isPublic ? 32 : 0,
                       transition: 'left 0.2s',
                     }}
                   />
                   <label
                     htmlFor="toggle"
-                    className={`block overflow-hidden h-8 rounded-full cursor-pointer ${isPublic ? 'bg-[#98CCFF]' : 'bg-gray-300'}`}
+                    className={`block overflow-hidden h-8 rounded-full cursor-pointer ${
+                      isPublic ? 'bg-[#98CCFF]' : 'bg-gray-300'
+                    }`}
                   ></label>
                 </div>
               </div>

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import CalendarBottomSheet from './CalendarBottomSheet';
 
 const CalendarPlan = ({ isOpen, onClose, title, selectedDate, children }) => {
-  // selectedDate 추가
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   if (!isOpen) return null;
@@ -51,10 +50,11 @@ const CalendarPlan = ({ isOpen, onClose, title, selectedDate, children }) => {
         </div>
       </div>
 
+      {/* CalendarBottomSheet 모달 */}
       <CalendarBottomSheet
         isOpen={isBottomSheetOpen}
         onClose={handleCloseBottomSheet}
-        onAdd={onClose}
+        onAdd={onClose} // 추가 후 모달 닫기
         selectedDate={selectedDate}
       />
     </>

@@ -18,7 +18,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/main" element={<MainPage />} />
+          <Route path="/" element={<MainPage />} />
           <Route path="/test" element={<TestPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/oauth" element={<LoginCallback />} />
@@ -27,7 +27,7 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/friends" element={<FriendsList />} />
           <Route path="/todoList/:date" element={<TodoList />} />
-          <Route path="/" element={<SplashScreen />} />
+          <Route path="/splash" element={<SplashScreen />} />
           <Route path="/calendar" element={<SharedCalendar />} />
           <Route path="/calendar/:id" element={<CalendarDetail />} />
           <Route path="/playList" element={<PlayList />} />

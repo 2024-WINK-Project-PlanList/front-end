@@ -1,6 +1,47 @@
 import React, { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { ReactComponent as ColorMoveIcon } from '../../assets/mainpage/colormove.svg';
+
+// SortableItem 컴포넌트를 생성하여 각 항목을 드래그할 수 있게 설정
+const SortableItem = ({ id, color, onClick, selectedColor }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className="flex items-center mb-[2%]"
+    >
+      <div
+        className={`w-[87%] h-6 rounded-2xl cursor-pointer ml-2 ${
+          color === selectedColor ? 'ring-2 ring-blue-500' : ''
+        }`}
+        style={{
+          backgroundColor: color,
+        }}
+        // 클릭 이벤트를 분리하여 설정
+        onClick={() => onClick(color)}
+      />
+      <div className="ml-2" {...listeners}>
+        <ColorMoveIcon />
+      </div>
+    </div>
+  );
+};
 
 const ColorSelectModal = ({ isOpen, onClose, onSelectColor }) => {
   const [colors, setColors] = useState(['#98CCFF', '#FF9898', '#D2FF98']);
@@ -8,19 +49,19 @@ const ColorSelectModal = ({ isOpen, onClose, onSelectColor }) => {
 
   if (!isOpen) return null;
 
-  const handleOnDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const items = Array.from(colors);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    setColors(items);
+  const handleOnDragEnd = ({ active, over }) => {
+    if (active.id !== over.id) {
+      setColors((prevColors) => {
+        const oldIndex = prevColors.indexOf(active.id);
+        const newIndex = prevColors.indexOf(over.id);
+        return arrayMove(prevColors, oldIndex, newIndex);
+      });
+    }
   };
 
   const handleColorSelect = (color) => {
-    setSelectedColor(color);
-    onSelectColor(color);
+    setSelectedColor(color); // 선택한 색상을 상태로 업데이트
+    onSelectColor(color); // 부모 컴포넌트에 선택한 색상 전달
   };
 
   return (
@@ -40,44 +81,27 @@ const ColorSelectModal = ({ isOpen, onClose, onSelectColor }) => {
             style={{ backgroundColor: selectedColor }}
           />
           <div className="text-sm text-gray-500 mb-2 ml-2">색상 목록</div>
-          <DragDropContext onDragEnd={handleOnDragEnd}>
-            <Droppable droppableId="colors">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className="space-y-2"
-                >
-                  {colors
-                    .filter((color) => color !== selectedColor)
-                    .map((color, index) => (
-                      <Draggable key={color} draggableId={color} index={index}>
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            className="flex items-center"
-                          >
-                            <div
-                              className="w-[87%] h-6 rounded-2xl cursor-pointer ml-2"
-                              style={{
-                                backgroundColor: color,
-                                ...provided.draggableProps.style,
-                              }}
-                              onClick={() => handleColorSelect(color)}
-                            />
-                            <div className="ml-2" {...provided.dragHandleProps}>
-                              <ColorMoveIcon />
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleOnDragEnd}
+          >
+            <SortableContext
+              items={colors}
+              strategy={verticalListSortingStrategy}
+            >
+              {colors
+                .filter((color) => color !== selectedColor) // 선택된 색상 제외
+                .map((color) => (
+                  <SortableItem
+                    key={color}
+                    id={color}
+                    color={color}
+                    onClick={handleColorSelect} // 한 번 클릭으로 색상 선택
+                    selectedColor={selectedColor} // 선택된 색상 반영
+                  />
+                ))}
+            </SortableContext>
+          </DndContext>
         </div>
         <div className="flex justify-between p-4">
           <button
@@ -90,7 +114,7 @@ const ColorSelectModal = ({ isOpen, onClose, onSelectColor }) => {
             className="text-blue-500 hover:text-blue-700 mr-2"
             onClick={onClose}
           >
-            추가
+            완료
           </button>
         </div>
       </div>
