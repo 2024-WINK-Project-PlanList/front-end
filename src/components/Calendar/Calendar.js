@@ -211,7 +211,6 @@ const Calendar = () => {
 
   return (
     <div>
-      <Header />
       <div
         {...handlers}
         className="calendar p-[3%] bg-white shadow-md rounded-3xl border mx-auto"
@@ -244,7 +243,6 @@ const Calendar = () => {
           setPlans={setPlans}
         />
       </div>
-      <Footer />
     </div>
   );
 };

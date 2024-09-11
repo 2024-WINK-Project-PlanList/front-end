@@ -9,7 +9,7 @@ const MainPage = () => {
     <div className="relative pt-[4%]">
       <Header />
       <MainMemo />
-      <div className="mt-[-13%]">
+      <div className="mt-2">
         <Calendar />
       </div>
       <Footer />
