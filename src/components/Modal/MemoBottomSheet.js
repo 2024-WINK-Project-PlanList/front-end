@@ -38,33 +38,31 @@ const MemoBottomSheet = ({ isOpen, onClose }) => {
   if (!isMounted) return null;
 
   return (
-    <>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-end z-50"
+      onClick={handleOverlayClick}
+    >
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-end z-50"
-        onClick={handleOverlayClick}
+        ref={sheetRef}
+        className={`bg-white rounded-t-2xl shadow-lg w-[480px] mx-auto transform transition-transform duration-300 ease-out ${
+          isAnimating ? 'translate-y-0' : 'translate-y-full'
+        }`}
+        style={{ height: 'calc(100vh - 4.25rem)', overflowY: 'auto' }}
       >
+        {/* 드래그 영역 */}
         <div
-          ref={sheetRef}
-          className={`bg-white rounded-t-2xl shadow-lg w-[480px] mx-auto transform transition-transform duration-300 ease-out ${
-            isAnimating ? 'translate-y-0' : 'translate-y-full'
-          }`}
-          style={{ height: 'calc(100vh - 4.25rem)', overflowY: 'auto' }}
+          className="p-4 flex justify-center items-center cursor-pointer"
+          onClick={handleClose}
         >
-          {/* 드래그 영역 */}
-          <div
-            className="p-4 flex justify-center items-center cursor-pointer"
-            onClick={handleClose}
-          >
-            <div className="w-24 h-1.5 bg-gray-400 rounded-full"></div>
-          </div>
+          <div className="w-24 h-1.5 bg-gray-400 rounded-full"></div>
+        </div>
 
-          {/* 모달 안에 캘린더만 표시 */}
-          <div className="p-4">
-            <Calendar isReadOnly={true} /> {/* isReadOnly prop 전달 */}
-          </div>
+        {/* 모달 안에 읽기 전용 캘린더 */}
+        <div className="p-4">
+          <Calendar readOnly={true} /> {/* readOnly 모드로 표시 */}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import CalendarPlan from '../../components/Modal/calendarPlan';
-import Header from '../../components/Layout/Header';
-import Footer from '../../components/Layout/Footer';
 
-const Calendar = () => {
+const Calendar = ({ readOnly = false }) => {
+  // readOnly 옵션 추가
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
@@ -41,6 +40,8 @@ const Calendar = () => {
   let days = [];
 
   const handleDateClick = (day, selectedYear, selectedMonth) => {
+    if (readOnly) return; // readOnly 모드에서는 클릭 금지
+
     const selectedFullDate = `${selectedYear}-${selectedMonth + 1}-${day}`;
     const formattedDate = `${selectedYear}년 ${selectedMonth + 1}월 ${day}일 (${daysOfWeek[new Date(selectedFullDate).getDay()]})`;
 
@@ -64,6 +65,7 @@ const Calendar = () => {
   };
 
   const handleAddPlan = (newPlan) => {
+    if (readOnly) return; // readOnly 모드에서는 일정 추가 금지
     setPlans((prevPlans) => [...prevPlans, newPlan]);
   };
 
@@ -234,14 +236,16 @@ const Calendar = () => {
         ))}
 
         {/* CalendarPlan 모달 */}
-        <CalendarPlan
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          title={selectedDate}
-          selectedDate={selectedDate}
-          plans={plans}
-          setPlans={setPlans}
-        />
+        {!readOnly && (
+          <CalendarPlan
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            title={selectedDate}
+            selectedDate={selectedDate}
+            plans={plans}
+            setPlans={setPlans}
+          />
+        )}
       </div>
     </div>
   );
