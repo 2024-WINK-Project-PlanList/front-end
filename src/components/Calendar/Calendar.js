@@ -11,8 +11,7 @@ const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [dateDifference, setDateDifference] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [plans, setPlans] = useState([]);
+  const [plans, setPlans] = useState([]); // 일정 저장 상태
 
   const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -42,12 +41,10 @@ const Calendar = () => {
   let days = [];
 
   const handleDateClick = (day, selectedYear, selectedMonth) => {
-    const selectedFullDate = new Date(selectedYear, selectedMonth, day);
-    const formattedDate = `${selectedFullDate.getFullYear()}년 ${
-      selectedFullDate.getMonth() + 1
-    }월 ${selectedFullDate.getDate()}일 (${daysOfWeek[selectedFullDate.getDay()]})`;
+    const selectedFullDate = `${selectedYear}-${selectedMonth + 1}-${day}`;
+    const formattedDate = `${selectedYear}년 ${selectedMonth + 1}월 ${day}일 (${daysOfWeek[new Date(selectedFullDate).getDay()]})`;
 
-    const diffTime = selectedFullDate - today;
+    const diffTime = new Date(selectedFullDate) - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     const formattedDifference =
@@ -57,13 +54,17 @@ const Calendar = () => {
           ? `D + ${Math.abs(diffDays)}`
           : 'D-day';
 
-    setSelectedDate(formattedDate);
+    setSelectedDate(selectedFullDate);
     setDateDifference(formattedDifference);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleAddPlan = (newPlan) => {
+    setPlans((prevPlans) => [...prevPlans, newPlan]);
   };
 
   const handlePrevMonth = () => {
@@ -127,19 +128,48 @@ const Calendar = () => {
   // 현재 달의 날짜 채우기
   for (let day = 1; day <= daysInMonth; day++) {
     const todayClass = isToday(day)
-      ? 'bg-[#90C8FF] text-white rounded-full w-[50%] h-[50%] flex items-center justify-center'
+      ? 'bg-[#90C8FF] text-white rounded-full w-6 h-6 flex items-center justify-center'
       : '';
+
+    const plansForDay = plans.filter(
+      (plan) => plan.date === `${year}-${month + 1}-${day}`,
+    );
+
+    // 각 일정의 margin-bottom을 동적으로 설정
+    const marginBottoms = ['mb-[80%]', 'mb-[42%]', 'mb-[4%]'];
 
     days.push(
       <button
         key={day}
-        className={`calendar-day ${buttonPadding} text-center flex flex-col items-center rounded-md ${
+        className={`calendar-day ${buttonPadding} text-center relative flex flex-col items-center rounded-md ${
           (firstDayOfMonth + day - 1) % 7 === 0 ? 'text-red-500' : ''
         } ${(firstDayOfMonth + day - 1) % 7 === 6 ? 'text-blue-500' : ''} hover:bg-gray-100`}
         onClick={() => handleDateClick(day, year, month)}
         style={{ flex: '0 0 14.28%' }}
       >
         <span className={`mb-auto ${todayClass}`}>{day}</span>
+        {plansForDay.slice(0, 3).map((plan, index) => {
+          return (
+            <div
+              key={index}
+              className={`absolute bottom-0 w-[90%] text-xs text-gray-600 flex justify-center ${marginBottoms[index]}`}
+              style={{
+                backgroundColor: plan.color || '#92C7FA',
+                borderRadius: '4px',
+                padding: '2px 4px',
+                color: '#fff', // 일정 제목 글자 색
+                whiteSpace: 'nowrap', // 글자 한 줄로
+                overflow: 'hidden', // 넘친 부분 숨기기
+                textOverflow: 'ellipsis', // 넘치면 "..." 표시
+                maxWidth: '100%', // 최대 너비 설정
+              }}
+            >
+              {plan.title.length > 3
+                ? `${plan.title.slice(0, 3)}...`
+                : plan.title}
+            </div>
+          );
+        })}
       </button>,
     );
 
@@ -204,22 +234,15 @@ const Calendar = () => {
           </div>
         ))}
 
+        {/* CalendarPlan 모달 */}
         <CalendarPlan
           isOpen={isModalOpen}
           onClose={closeModal}
           title={selectedDate}
-        >
-          <p className="text-sm text-gray-500">{dateDifference}</p>
-          <ul>
-            {plans
-              .filter((plan) => plan.date === selectedDate)
-              .map((plan, index) => (
-                <li key={index} className="text-sm">
-                  {plan.title}
-                </li>
-              ))}
-          </ul>
-        </CalendarPlan>
+          selectedDate={selectedDate}
+          plans={plans}
+          setPlans={setPlans}
+        />
       </div>
       <Footer />
     </div>

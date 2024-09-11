@@ -2,15 +2,21 @@ import React, { useState, useEffect } from 'react';
 import MemberSelectModal from './MemberSelectModal';
 import ColorSelectModal from './ColorSelectModal';
 
-const CalendarBottomSheet = ({ isOpen, onClose, onAdd, selectedDate }) => {
+const CalendarBottomSheet = ({
+  isOpen,
+  onClose,
+  onAdd,
+  selectedDate,
+  plan,
+}) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
-  const [selectedColor, setSelectedColor] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
-  const [title, setTitle] = useState('');
-  const [details, setDetails] = useState('');
+  const [selectedColor, setSelectedColor] = useState(plan ? plan.color : ''); // 기존 데이터 바인딩
+  const [isPublic, setIsPublic] = useState(plan ? plan.isPublic : false); // 기존 데이터 바인딩
+  const [title, setTitle] = useState(plan ? plan.title : ''); // 기존 데이터 바인딩
+  const [details, setDetails] = useState(plan ? plan.details : ''); // 기존 데이터 바인딩
 
   useEffect(() => {
     if (isOpen) {
@@ -26,6 +32,15 @@ const CalendarBottomSheet = ({ isOpen, onClose, onAdd, selectedDate }) => {
       }, 300);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (plan) {
+      setSelectedColor(plan.color || '');
+      setIsPublic(plan.isPublic || false);
+      setTitle(plan.title || '');
+      setDetails(plan.details || '');
+    }
+  }, [plan]);
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -67,7 +82,7 @@ const CalendarBottomSheet = ({ isOpen, onClose, onAdd, selectedDate }) => {
   };
 
   const handleAddClick = () => {
-    const plan = {
+    const newPlan = {
       title,
       details,
       color: selectedColor,
@@ -75,11 +90,9 @@ const CalendarBottomSheet = ({ isOpen, onClose, onAdd, selectedDate }) => {
       date: selectedDate,
     };
 
-    // 애니메이션 적용 후에 추가 기능 호출
     setIsAnimating(false);
     setTimeout(() => {
-      onAdd(plan);
-      setIsMounted(false);
+      onAdd(newPlan);
       onClose();
     }, 300);
   };
@@ -109,7 +122,8 @@ const CalendarBottomSheet = ({ isOpen, onClose, onAdd, selectedDate }) => {
               className="text-blue-500 text-lg font-medium mr-2"
               onClick={handleAddClick}
             >
-              추가
+              {plan ? '수정' : '추가'}{' '}
+              {/* plan이 있을 때는 '수정', 없을 때는 '추가' */}
             </button>
           </div>
           <div className="p-4">
