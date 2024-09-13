@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { ReactComponent as Music } from '../../assets/friendsList/music.svg';
 import { ReactComponent as Trash } from '../../assets/friendsList/trash.svg';
+import FriendsMusic from './friendsMusic';
 
 const Friends = ({ profile, name, email, song, onDelete }) => {
   const [isSlide, setIsSlide] = useState(false);
@@ -46,13 +46,7 @@ const Friends = ({ profile, name, email, song, onDelete }) => {
             <div className="font-preLight text-xs text-[#3F3F3F]">{email}</div>
           </div>
         </div>
-
-        <div className="overflow-hidden flex items-center w-[150px] h-[27px] border border-[#E8E8E8] rounded-lg px-[9px] py-[7px] mr-[7px]">
-          <Music />
-          <div className="font-preRegular text-xs pl-[7px] w-[111px] overflow-hidden text-ellipsis whitespace-nowrap">
-            {song}
-          </div>
-        </div>
+        <FriendsMusic song={song} />
       </div>
 
       {isSlide && (
