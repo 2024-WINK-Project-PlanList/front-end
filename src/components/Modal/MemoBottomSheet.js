@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Calendar from '../../components/Calendar/Calendar'; // Calendar 컴포넌트 임포트
+import FriendsProfile from '../../components/FriendsProfile/friendsProfile'; // 새로 만든 FriendsProfile 컴포넌트 가져오기
 
-const MemoBottomSheet = ({ isOpen, onClose }) => {
+const MemoBottomSheet = ({
+  isOpen,
+  onClose,
+  profileImage,
+  profileName,
+  profileEmail,
+}) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const sheetRef = useRef(null);
@@ -9,6 +16,7 @@ const MemoBottomSheet = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       setIsMounted(true);
+
       setTimeout(() => {
         setIsAnimating(true);
       }, 30);
@@ -47,8 +55,20 @@ const MemoBottomSheet = ({ isOpen, onClose }) => {
         className={`bg-white rounded-t-2xl shadow-lg w-[480px] mx-auto transform transition-transform duration-300 ease-out ${
           isAnimating ? 'translate-y-0' : 'translate-y-full'
         }`}
-        style={{ height: 'calc(100vh - 4.25rem)', overflowY: 'auto' }}
+        style={{
+          height: 'calc(100vh - 4.25rem)',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+        }}
       >
+        {/* FriendsProfile 컴포넌트를 추가 */}
+        <FriendsProfile
+          profileImage={profileImage}
+          profileName={profileName} // 이름을 전달 (없으면 기본값 사용)
+          profileEmail={profileEmail} // 이메일을 전달 (없으면 기본값 사용)
+        />
+
         {/* 드래그 영역 */}
         <div
           className="p-4 flex justify-center items-center cursor-pointer"
@@ -57,8 +77,8 @@ const MemoBottomSheet = ({ isOpen, onClose }) => {
           <div className="w-24 h-1.5 bg-gray-400 rounded-full"></div>
         </div>
 
-        {/* 모달 안에 읽기 전용 캘린더 */}
-        <div className="p-4">
+        {/* 캘린더를 바닥에 붙이기 */}
+        <div className="flex-grow p-4 flex flex-col justify-end mb-[10%]">
           <Calendar readOnly={true} /> {/* readOnly 모드로 표시 */}
         </div>
       </div>
