@@ -12,6 +12,7 @@ import MainPage from './pages/MainPage/mainPage';
 import SharedCalendar from './pages/SharedCalendar/calendarList';
 import CalendarDetail from './pages/SharedCalendar/calendarDetail';
 import PlayList from './pages/PlayList/playList';
+import Notification from './pages/Notification/notification';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/calendar" element={<SharedCalendar />} />
           <Route path="/calendar/:id" element={<CalendarDetail />} />
           <Route path="/playList" element={<PlayList />} />
+          <Route path="main/notification" element={<Notification />} />
         </Routes>
       </BrowserRouter>
     </div>
