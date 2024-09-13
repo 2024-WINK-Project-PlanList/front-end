@@ -60,21 +60,9 @@ const MemoBottomSheet = ({
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
-<<<<<<< HEAD
-        }}
-      >
-        {/* FriendsProfile 컴포넌트를 추가 */}
-        <FriendsProfile
-          profileImage={profileImage}
-          profileName={profileName} // 이름을 전달 (없으면 기본값 사용)
-          profileEmail={profileEmail} // 이메일을 전달 (없으면 기본값 사용)
-        />
-
-=======
           overflowY: 'auto', // 스크롤 추가
         }}
       >
->>>>>>> develop
         {/* 드래그 영역 */}
         <div
           className="p-4 flex justify-center items-center cursor-pointer"
@@ -83,10 +71,6 @@ const MemoBottomSheet = ({
           <div className="w-24 h-1.5 bg-gray-400 rounded-full"></div>
         </div>
 
-<<<<<<< HEAD
-        {/* 캘린더를 바닥에 붙이기 */}
-        <div className="flex-grow p-4 flex flex-col justify-end mb-[10%]">
-=======
         {/* FriendsProfile을 상단에 위치시키고 아래로 내리기 위해 margin-top 추가 */}
         <div className="mt-8">
           <FriendsProfile
@@ -98,7 +82,6 @@ const MemoBottomSheet = ({
 
         {/* 캘린더는 FriendsProfile 아래에 위치 */}
         <div className="flex-grow mt-[25%]">
->>>>>>> develop
           <Calendar readOnly={true} /> {/* readOnly 모드로 표시 */}
         </div>
       </div>
