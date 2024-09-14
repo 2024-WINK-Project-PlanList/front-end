@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import CalendarBottomSheet from './CalendarBottomSheet';
 
-const CalendarPlan = ({ isOpen, onClose, selectedDate, plans, setPlans }) => {
+const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
 
@@ -33,53 +33,68 @@ const CalendarPlan = ({ isOpen, onClose, selectedDate, plans, setPlans }) => {
     if (selectedPlan) {
       // 수정일 경우, 기존 계획을 수정
       setPlans((prevPlans) =>
-        prevPlans.map((plan) => (plan === selectedPlan ? newPlan : plan)),
+        prevPlans.map((plan) =>
+          plan === selectedPlan
+            ? { ...newPlan, date: selectedPlan.date }
+            : plan,
+        ),
       );
     } else {
-      // 새 계획 추가
-      setPlans((prevPlans) => [...prevPlans, newPlan]);
+      // 새 계획 추가는 Calendar 컴포넌트에서 처리
+      // selectedDates에 대해 일정을 추가하도록 Calendar 컴포넌트에 위임
+      setPlans((prevPlans) => {
+        const updatedPlans = [...prevPlans];
+        selectedDates.forEach((date) => {
+          updatedPlans.push({ ...newPlan, date });
+        });
+        return updatedPlans;
+      });
     }
     setIsBottomSheetOpen(false);
     onClose(); // 바텀시트 닫기 후 캘린더 플랜 모달도 닫기
   };
 
-  // 날짜 포맷팅 함수 (YYYY년 M월 D일 (요일) 형식으로 변환 및 D-day 계산)
-  const formatDate = (dateString) => {
-    const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
-    const date = new Date(dateString);
-    const today = new Date();
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const dayOfWeek = daysOfWeek[date.getDay()];
-
-    // D-day 계산
-    const diffTime = date - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    const dDayText =
-      diffDays > 0
-        ? `D-${diffDays}`
-        : diffDays < 0
-          ? `D+${Math.abs(diffDays)}`
-          : 'D-day';
-
-    return `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+  // 날짜 포맷팅 함수 (YYYY년 M월 D일 ~ YYYY년 M월 D일 형식으로 변환)
+  const formatDateRange = (dates) => {
+    if (!Array.isArray(dates) || dates.length === 0) return '';
+    if (dates.length === 1) {
+      const [year, month, day] = dates[0].split('-');
+      return `${year}년 ${month}월 ${day}일`;
+    } else {
+      const [startYear, startMonth, startDay] = dates[0].split('-');
+      const [endYear, endMonth, endDay] = dates[dates.length - 1].split('-');
+      return `${startYear}년 ${startMonth}월 ${startDay}일 ~ ${endYear}년 ${endMonth}월 ${endDay}일`;
+    }
   };
 
-  // D-day 텍스트 계산
-  const getDDayText = (dateString) => {
+  // D-day 텍스트 계산 함수
+  const getDDayText = (dates) => {
+    if (!Array.isArray(dates) || dates.length === 0) return '';
     const today = new Date();
-    const date = new Date(dateString);
+    const startDate = new Date(dates[0]);
+    const endDate = new Date(dates[dates.length - 1]);
 
-    const diffTime = date - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffTimeStart = startDate - today;
+    const diffDaysStart = Math.ceil(diffTimeStart / (1000 * 60 * 60 * 24));
 
-    return diffDays > 0
-      ? `D-${diffDays}`
-      : diffDays < 0
-        ? `D+${Math.abs(diffDays)}`
-        : 'D-day';
+    const diffTimeEnd = endDate - today;
+    const diffDaysEnd = Math.ceil(diffTimeEnd / (1000 * 60 * 60 * 24));
+
+    const dDayStart =
+      diffDaysStart > 0
+        ? `D-${diffDaysStart}`
+        : diffDaysStart < 0
+          ? `D+${Math.abs(diffDaysStart)}`
+          : 'D-day';
+
+    const dDayEnd =
+      diffDaysEnd > 0
+        ? `D-${diffDaysEnd}`
+        : diffDaysEnd < 0
+          ? `D+${Math.abs(diffDaysEnd)}`
+          : 'D-day';
+
+    return dates.length === 1 ? dDayStart : `${dDayStart} ~ ${dDayEnd}`;
   };
 
   return (
@@ -94,15 +109,15 @@ const CalendarPlan = ({ isOpen, onClose, selectedDate, plans, setPlans }) => {
         >
           <div className="modal-header flex flex-col justify-between items-start p-4">
             <h2 className="text-xl font-preRegular">
-              {formatDate(selectedDate)}
+              {formatDateRange(selectedDates)}
             </h2>
             {/* D-day 표시 추가 */}
             <p className="text-sm text-gray-500 mt-1">
-              {getDDayText(selectedDate)}
+              {getDDayText(selectedDates)}
             </p>
             <div className="flex flex-col mt-4 space-y-2 w-full">
               {plans
-                .filter((plan) => plan.date === selectedDate)
+                .filter((plan) => selectedDates.includes(plan.date))
                 .map((plan, index) => (
                   <div
                     key={index}
@@ -143,7 +158,7 @@ const CalendarPlan = ({ isOpen, onClose, selectedDate, plans, setPlans }) => {
         isOpen={isBottomSheetOpen}
         onClose={handleCloseBottomSheet}
         onAdd={handleAddPlan}
-        selectedDate={selectedDate}
+        selectedDates={selectedDates} // Prop 이름 변경
         plan={selectedPlan} // 선택된 일정 전달 (null이면 새 일정 추가)
       />
     </>

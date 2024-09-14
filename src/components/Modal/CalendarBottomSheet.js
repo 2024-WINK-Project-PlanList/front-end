@@ -6,7 +6,7 @@ const CalendarBottomSheet = ({
   isOpen,
   onClose,
   onAdd,
-  selectedDate,
+  selectedDates, // 다중 날짜 선택을 위한 배열
   plan,
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -87,13 +87,13 @@ const CalendarBottomSheet = ({
       details,
       color: selectedColor,
       isPublic,
-      date: selectedDate,
+      // date 필드는 Calendar 컴포넌트에서 추가하므로 제거
     };
 
     setIsAnimating(false);
     setTimeout(() => {
       onAdd(newPlan);
-      onClose();
+      handleClose();
     }, 300);
   };
 

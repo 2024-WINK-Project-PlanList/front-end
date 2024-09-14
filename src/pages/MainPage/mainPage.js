@@ -6,12 +6,10 @@ import MainMemo from '../../components/mainMemo/MainMemo';
 
 const MainPage = () => {
   return (
-    <div className="relative pt-[4%]">
+    <div className="relative">
       <Header />
       <MainMemo />
-      <div className="mt-[-13%]">
-        <Calendar />
-      </div>
+      <Calendar />
       <Footer />
     </div>
   );
