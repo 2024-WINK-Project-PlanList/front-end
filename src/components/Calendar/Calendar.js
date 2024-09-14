@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import CalendarPlan from '../../components/Modal/calendarPlan';
 
-const Calendar = ({ readOnly = false }) => {
+const Calendar = ({ calendarData, readOnly = false }) => {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
-  const [selectedDates, setSelectedDates] = useState([]); // 여러 날짜 선택
+  const [selectedDates, setSelectedDates] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [plans, setPlans] = useState([]); // 일정 저장 상태
+  const [plans, setPlans] = useState(calendarData); // 받아온 데이터를 상태로 관리
 
   // 드래그 선택 상태
   const [isDragging, setIsDragging] = useState(false);
@@ -103,7 +103,6 @@ const Calendar = ({ readOnly = false }) => {
       if (selectedDates.length > 0) {
         setIsModalOpen(true);
       }
-      // 선택된 날짜 초기화는 모달이 닫힐 때 처리
     }
   };
 
@@ -238,11 +237,11 @@ const Calendar = ({ readOnly = false }) => {
               backgroundColor: plan.color || '#92C7FA',
               borderRadius: '4px',
               padding: '2px 4px',
-              color: '#fff', // 일정 제목 글자 색
-              whiteSpace: 'nowrap', // 글자 한 줄로
-              overflow: 'hidden', // 넘친 부분 숨기기
-              textOverflow: 'ellipsis', // 넘치면 "..." 표시
-              maxWidth: '100%', // 최대 너비 설정
+              color: '#fff',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: '100%',
             }}
           >
             {plan.title.length > 3
