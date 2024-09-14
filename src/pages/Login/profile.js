@@ -16,7 +16,7 @@ const Profile = () => {
 
   const completeHandler = () => {
     if (isValid) {
-      navigate('');
+      navigate('/main');
     }
   };
 
