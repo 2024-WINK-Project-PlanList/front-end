@@ -82,7 +82,7 @@ const CalendarDetail = () => {
           </div>
         </div>
       </div>
-      <div className="-mt-16 w-full">
+      <div className="w-full">
         <Calendar />
       </div>
       <BottomSheet
