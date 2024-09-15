@@ -18,16 +18,17 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
             keyword: searchTerm,
             onlyFriends: onlyFriends,
           },
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`, // Bearer 토큰을 헤더에 추가
+          },
         });
 
-        // SearchUserResponse 형식에 맞춰 데이터를 처리
         const searchResults = response.data.map((result) => ({
           user: result.user,
           isFriend: result.isFriend,
         }));
 
         setFilteredMembers(searchResults); // 검색 결과를 상태에 저장
-        console.log('친구 검색 결과:', searchResults); // 검색 결과 콘솔에 기록
       } catch (error) {
         console.error('친구 검색 중 오류 발생:', error);
       }
@@ -40,7 +41,7 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
     }
   }, [searchTerm, onlyFriends, isOpen, members]);
 
-  if (!isOpen) return null; // 조건문에 의해 컴포넌트 렌더링 방지
+  if (!isOpen) return null; // 모달이 열려있지 않으면 렌더링하지 않음
 
   const toggleMemberSelection = (member) => {
     if (selectedMembers.includes(member)) {
@@ -85,13 +86,7 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
           <div className="text-sm text-gray-500 mb-2 ml-2">친구 목록</div>
           <div className="space-y-2">
             {filteredMembers.map((result, index) => {
-              // 방어 코드: user와 user.profilePicture가 undefined가 아닌지 확인
-              if (!result.user) {
-                console.error('user 객체가 undefined입니다.', result);
-                return null; // user가 없으면 렌더링하지 않음
-              }
-
-              console.log(result); // 각각의 검색 결과를 콘솔에 출력하여 데이터 확인
+              if (!result.user) return null; // user 객체가 없을 경우 렌더링하지 않음
 
               return (
                 <div
@@ -104,7 +99,7 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
                   onClick={() => toggleMemberSelection(result.user)}
                 >
                   <img
-                    src={result.user.profilePicture || '/default-profile.png'} // 프로필 사진이 없으면 기본 이미지 사용
+                    src={result.user.profilePicture || '/default-profile.png'}
                     alt={result.user.name || 'No Name'}
                     className="w-10 h-10 rounded-full mr-3"
                   />

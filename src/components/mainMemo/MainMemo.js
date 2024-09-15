@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import axios from 'axios'; // axios 가져오기
+import axios from 'axios';
 import MemoBottomSheet from '../Modal/MemoBottomSheet';
 import myProfileImage from '../../assets/mainpage/profile.svg';
 import friendProfileImage from '../../assets/mainpage/profile.svg';
@@ -12,6 +12,7 @@ const MainMemo = ({ memoData }) => {
   const [selectedProfileMessage, setSelectedProfileMessage] = useState('');
   const [selectedProfileName, setSelectedProfileName] = useState('');
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedCalendarData, setSelectedCalendarData] = useState([]); // 캘린더 데이터 상태 추가
   const sliderRef = useRef(null);
   const myProfileName = '나의 하루';
 
@@ -41,26 +42,32 @@ const MainMemo = ({ memoData }) => {
     isDragging = false;
   };
 
-  // 프로필 클릭 핸들러 (백엔드에 요청 보냄)
-  const handleClick = (profileType, index, name, userId) => {
-    // 'My Profile'인 경우 모달을 열지 않음
+  // 친구 프로필 클릭 시 서버에서 캘린더 데이터 가져오기
+  const handleClick = async (profileType, index, nickname, userId) => {
     if (profileType === 'My Profile') {
       return;
     }
 
-    axios
-      .get(`/calendar/${userId}`)
-      .then((response) => {
-        const { individualSchedule } = response.data.user;
-        setSelectedProfileImage(friendProfileImage); // 받아온 데이터를 이미지에 반영
-        setSelectedProfileMessage(individualSchedule); // 스케줄 메시지 업데이트
-        setSelectedProfileName(name); // 선택된 친구 이름 업데이트
-        setSelectedUserId(userId); // 선택된 사용자 ID 저장
-        setIsBottomSheetOpen(true); // 바텀시트 열기
-      })
-      .catch((error) => {
-        console.error('프로필 정보 가져오기 오류:', error);
+    try {
+      // 캘린더 데이터 요청
+      const response = await axios.get(`/calendar/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+        },
       });
+
+      const { individualSchedule } = response.data.user; // 서버에서 받아온 스케줄 리스트
+      setSelectedCalendarData(individualSchedule); // 캘린더 데이터 업데이트
+
+      // 친구의 정보를 바텀시트에 보여줌
+      setSelectedProfileImage(friendProfileImage);
+      setSelectedProfileMessage(memoData[index].comment); // 친구의 comment를 바텀시트에 표시
+      setSelectedProfileName(nickname);
+      setSelectedUserId(userId);
+      setIsBottomSheetOpen(true);
+    } catch (error) {
+      console.error('캘린더 데이터를 가져오는 중 오류 발생:', error);
+    }
   };
 
   const handleCloseBottomSheet = () => {
@@ -127,10 +134,12 @@ const MainMemo = ({ memoData }) => {
             key={index}
             className="relative flex-shrink-0 focus:outline-none"
             style={{ width: '90px', height: '130px' }}
-            onClick={() => handleClick('Friend', index, friend.name, friend.id)} // 친구 클릭 시 userId 전달
+            onClick={() =>
+              handleClick('Friend', index, friend.nickname, friend.id)
+            } // 친구 클릭 시 userId 전달
           >
             <img
-              src={friend.image}
+              src={friend.profileImagePath} // profileImagePath 사용
               alt={`Friend ${index + 1}`}
               className="w-full h-full rounded-full"
               style={{ marginBottom: '20px' }}
@@ -149,13 +158,13 @@ const MainMemo = ({ memoData }) => {
                 maxWidth: '80px',
               }}
             >
-              {friend.name}
+              {friend.nickname}
             </p>
           </button>
         ))}
       </div>
 
-      {/* 바텀시트 모달에 메시지 및 이름 전달 */}
+      {/* 바텀시트 모달에 메시지 및 캘린더 데이터 전달 */}
       <MemoBottomSheet
         isOpen={isBottomSheetOpen}
         onClose={handleCloseBottomSheet}
@@ -163,6 +172,7 @@ const MainMemo = ({ memoData }) => {
         profileMessage={selectedProfileMessage}
         profileName={selectedProfileName}
         userId={selectedUserId}
+        calendarData={selectedCalendarData} // 받아온 캘린더 데이터 전달
       />
     </>
   );

@@ -7,7 +7,8 @@ const MemoBottomSheet = ({
   onClose,
   profileImage,
   profileName,
-  profileEmail,
+  profileMessage,
+  calendarData, // 캘린더 데이터를 props로 전달받음
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -16,7 +17,6 @@ const MemoBottomSheet = ({
   useEffect(() => {
     if (isOpen) {
       setIsMounted(true);
-
       setTimeout(() => {
         setIsAnimating(true);
       }, 30);
@@ -63,7 +63,6 @@ const MemoBottomSheet = ({
           overflowY: 'auto', // 스크롤 추가
         }}
       >
-        {/* 드래그 영역 */}
         <div
           className="p-4 flex justify-center items-center cursor-pointer"
           onClick={handleClose}
@@ -71,18 +70,18 @@ const MemoBottomSheet = ({
           <div className="w-24 h-1.5 bg-gray-400 rounded-full"></div>
         </div>
 
-        {/* FriendsProfile을 상단에 위치시키고 아래로 내리기 위해 margin-top 추가 */}
+        {/* 친구 프로필 정보 표시 */}
         <div className="mt-8">
           <FriendsProfile
             profileImage={profileImage}
             profileName={profileName} // 이름을 전달 (없으면 기본값 사용)
-            profileEmail={profileEmail} // 이메일을 전달 (없으면 기본값 사용)
+            profileMessage={profileMessage} // 친구의 코멘트를 전달
           />
         </div>
 
-        {/* 캘린더는 FriendsProfile 아래에 위치 */}
+        {/* 캘린더 컴포넌트에 calendarData 전달하여 렌더링 */}
         <div className="flex-grow mt-[25%]">
-          <Calendar readOnly={true} /> {/* readOnly 모드로 표시 */}
+          <Calendar readOnly={true} calendarData={calendarData} />
         </div>
       </div>
     </div>

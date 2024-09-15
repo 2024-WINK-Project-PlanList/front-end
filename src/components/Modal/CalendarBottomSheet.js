@@ -98,8 +98,14 @@ const CalendarBottomSheet = ({
       calendarId: 1,
     };
 
+    const token = 'YOUR_JWT_TOKEN'; // 토큰을 여기에 추가
+
     try {
-      const response = await axios.post('/schedule', newPlan);
+      const response = await axios.post('/schedule', newPlan, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
+        },
+      });
       console.log('응답:', response.data);
       setIsAnimating(false);
       setTimeout(() => {

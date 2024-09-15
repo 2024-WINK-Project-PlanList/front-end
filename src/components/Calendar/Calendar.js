@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSwipeable } from 'react-swipeable';
+import axios from 'axios'; // axios import
 import CalendarPlan from '../../components/Modal/calendarPlan';
+import { useSwipeable } from 'react-swipeable';
 
-const Calendar = ({ calendarData, readOnly = false }) => {
+const Calendar = ({ calendarId, readOnly = false }) => {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [selectedDates, setSelectedDates] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [plans, setPlans] = useState(calendarData); // 받아온 데이터를 상태로 관리
+  const [plans, setPlans] = useState([]); // 받아온 데이터를 상태로 관리
 
   // 드래그 선택 상태
   const [isDragging, setIsDragging] = useState(false);
@@ -130,6 +131,27 @@ const Calendar = ({ calendarData, readOnly = false }) => {
     setIsModalOpen(false);
     setSelectedDates([]); // 모달 닫힐 때 선택된 날짜 초기화
   };
+
+  // 백엔드에서 캘린더 데이터 받아오기
+  useEffect(() => {
+    const fetchCalendarData = async () => {
+      try {
+        const token =
+          'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0bmFsczY1NUBrb29rbWluLmFjLmtyIiwiaWF0IjoxNzI2NDEwNjE0LCJleHAiOjE3MjcwMTU0MTQsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWQiOjF9.TQ-HNQnEWVfbhXeQJw6AKB2REhqbyJjRvQ-Oj-OY8BI';
+
+        const response = await axios.get(`/calendar`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // 고정된 토큰을 Authorization 헤더에 추가
+          },
+        });
+        setPlans(response.data.user.individualSchedule); // 받아온 스케줄 데이터 설정
+      } catch (error) {
+        console.error('캘린더 데이터 가져오기 오류:', error);
+      }
+    };
+
+    fetchCalendarData();
+  }, [calendarId]);
 
   const handleAddPlan = (newPlan) => {
     if (readOnly) return;
