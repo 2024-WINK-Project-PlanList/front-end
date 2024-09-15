@@ -4,6 +4,7 @@ import PL from '../../assets/splashscreen/PL.svg';
 import A from '../../assets/splashscreen/A.svg';
 import NLIS from '../../assets/splashscreen/NLIS.svg';
 import T from '../../assets/splashscreen/T.svg';
+import axios from 'axios';
 
 const SplashScreen = () => {
   const [showA, setShowA] = useState(true);
@@ -12,6 +13,22 @@ const SplashScreen = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const checkAutoLogin = async () => {
+      const accessToken = localStorage.getItem('accessToken'); // accessToken을 로컬 스토리지에서 가져옴
+      if (accessToken) {
+        try {
+          await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, {
+            accessToken,
+          });
+          navigate('/main');
+        } catch (error) {
+          alert('자동 로그인 실패');
+          navigate('/login');
+        }
+      } else {
+        navigate('/login'); // accessToken X
+      }
+    };
     const aTimer = setTimeout(() => {
       setShowA(false);
       setShowRest(true);
@@ -19,7 +36,7 @@ const SplashScreen = () => {
     }, 1000);
 
     const logoTimer = setTimeout(() => {
-      navigate('/login');
+      checkAutoLogin();
     }, 4000);
 
     return () => {
