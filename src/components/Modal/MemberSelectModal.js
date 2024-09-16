@@ -1,10 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filteredMembers, setFilteredMembers] = useState([]); // 검색된 멤버 저장
+  const [onlyFriends, setOnlyFriends] = useState(true); // 친구만 검색 여부
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // 친구 검색 API 호출
+    const searchFriends = async () => {
+      try {
+        const response = await axios.get('/friend/search', {
+          params: {
+            keyword: searchTerm,
+            onlyFriends: onlyFriends,
+          },
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`, // Bearer 토큰을 헤더에 추가
+          },
+        });
+
+        const searchResults = response.data.map((result) => ({
+          user: result.user,
+          isFriend: result.isFriend,
+        }));
+
+        setFilteredMembers(searchResults); // 검색 결과를 상태에 저장
+      } catch (error) {
+        console.error('친구 검색 중 오류 발생:', error);
+      }
+    };
+
+    if (searchTerm) {
+      searchFriends(); // 검색어가 입력되면 검색 실행
+    } else {
+      setFilteredMembers(members); // 검색어가 없을 경우 원래 멤버 목록 표시
+    }
+  }, [searchTerm, onlyFriends, isOpen, members]);
+
+  if (!isOpen) return null; // 모달이 열려있지 않으면 렌더링하지 않음
 
   const toggleMemberSelection = (member) => {
     if (selectedMembers.includes(member)) {
@@ -13,14 +50,6 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
       setSelectedMembers([...selectedMembers, member]);
     }
   };
-
-  const filteredMembers = members.filter(
-    (member) =>
-      (member.name &&
-        member.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (member.email &&
-        member.email.toLowerCase().includes(searchTerm.toLowerCase())),
-  );
 
   return (
     <div
@@ -42,43 +71,54 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
           />
         </div>
 
-        {selectedMembers.length > 0 && (
-          <div className="px-4 pb-2 overflow-x-auto whitespace-nowrap">
-            {selectedMembers.map((member, index) => (
-              <div
-                key={index}
-                className="inline-block px-3 py-2 bg-blue-100 rounded-lg mr-2"
-              >
-                {member.name}
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="px-4 pb-2 overflow-x-auto whitespace-nowrap">
+          {selectedMembers.map((member, index) => (
+            <div
+              key={index}
+              className="inline-block px-3 py-2 bg-blue-100 rounded-lg mr-2"
+            >
+              {member.name}
+            </div>
+          ))}
+        </div>
 
         <div className="p-4 flex-1 overflow-y-auto">
           <div className="text-sm text-gray-500 mb-2 ml-2">친구 목록</div>
           <div className="space-y-2">
-            {filteredMembers.map((member, index) => (
-              <div
-                key={index}
-                className={`flex items-center p-2 border rounded-lg cursor-pointer ${
-                  selectedMembers.includes(member)
-                    ? 'bg-blue-100'
-                    : 'bg-gray-100 hover:bg-gray-200'
-                }`}
-                onClick={() => toggleMemberSelection(member)}
-              >
-                <img
-                  src={member.profilePicture}
-                  alt={member.name}
-                  className="w-10 h-10 rounded-full mr-3"
-                />
-                <div>
-                  <div className="text-sm font-medium">{member.name}</div>
-                  <div className="text-xs text-gray-500">{member.email}</div>
+            {filteredMembers.map((result, index) => {
+              if (!result.user) return null; // user 객체가 없을 경우 렌더링하지 않음
+
+              return (
+                <div
+                  key={index}
+                  className={`flex items-center p-2 border rounded-lg cursor-pointer ${
+                    selectedMembers.includes(result.user)
+                      ? 'bg-blue-100'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                  }`}
+                  onClick={() => toggleMemberSelection(result.user)}
+                >
+                  <img
+                    src={result.user.profilePicture || '/default-profile.png'}
+                    alt={result.user.name || 'No Name'}
+                    className="w-10 h-10 rounded-full mr-3"
+                  />
+                  <div>
+                    <div className="text-sm font-medium">
+                      {result.user.name || '이름 없음'}
+                      {result.isFriend && (
+                        <span className="text-xs text-green-500 ml-2">
+                          (친구)
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {result.user.email || '이메일 없음'}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import MemberSelectModal from './MemberSelectModal';
 import ColorSelectModal from './ColorSelectModal';
 
@@ -6,17 +7,18 @@ const CalendarBottomSheet = ({
   isOpen,
   onClose,
   onAdd,
-  selectedDates, // 다중 날짜 선택을 위한 배열
+  selectedDates = [], // 기본값으로 빈 배열 설정
   plan,
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
-  const [selectedColor, setSelectedColor] = useState(plan ? plan.color : ''); // 기존 데이터 바인딩
-  const [isPublic, setIsPublic] = useState(plan ? plan.isPublic : false); // 기존 데이터 바인딩
-  const [title, setTitle] = useState(plan ? plan.title : ''); // 기존 데이터 바인딩
-  const [details, setDetails] = useState(plan ? plan.details : ''); // 기존 데이터 바인딩
+  const [selectedColor, setSelectedColor] = useState(plan?.color || '');
+  const [isPublic, setIsPublic] = useState(plan?.isPublic || false);
+  const [title, setTitle] = useState(plan?.title || '');
+  const [details, setDetails] = useState(plan?.details || '');
+  const [members, setMembers] = useState([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -35,10 +37,10 @@ const CalendarBottomSheet = ({
 
   useEffect(() => {
     if (plan) {
-      setSelectedColor(plan.color || '');
-      setIsPublic(plan.isPublic || false);
-      setTitle(plan.title || '');
-      setDetails(plan.details || '');
+      setSelectedColor(plan?.color || '');
+      setIsPublic(plan?.isPublic || false);
+      setTitle(plan?.title || '');
+      setDetails(plan?.details || '');
     }
   }, [plan]);
 
@@ -81,20 +83,38 @@ const CalendarBottomSheet = ({
     setIsPublic(!isPublic);
   };
 
-  const handleAddClick = () => {
+  const handleAddClick = async () => {
+    // 배열의 값이 있는지 확인하여 방어적인 코드 추가
+    const startDate = selectedDates?.[0] || new Date();
+    const endDate = selectedDates?.[selectedDates.length - 1] || new Date();
+
     const newPlan = {
-      title,
-      details,
-      color: selectedColor,
-      isPublic,
-      // date 필드는 Calendar 컴포넌트에서 추가하므로 제거
+      content: title,
+      startDate: startDate,
+      endDate: endDate,
+      openStatus: isPublic ? 'public' : 'private',
+      colorId: selectedColor,
+      scheduleMembers: members,
+      calendarId: 1,
     };
 
-    setIsAnimating(false);
-    setTimeout(() => {
-      onAdd(newPlan);
-      handleClose();
-    }, 300);
+    const token = 'YOUR_JWT_TOKEN'; // 토큰을 여기에 추가
+
+    try {
+      const response = await axios.post('/schedule', newPlan, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
+        },
+      });
+      console.log('응답:', response.data);
+      setIsAnimating(false);
+      setTimeout(() => {
+        onAdd(newPlan);
+        handleClose();
+      }, 300);
+    } catch (error) {
+      console.error('일정 추가 중 오류 발생:', error);
+    }
   };
 
   if (!isMounted) return null;
@@ -122,8 +142,7 @@ const CalendarBottomSheet = ({
               className="text-blue-500 text-lg font-medium mr-2"
               onClick={handleAddClick}
             >
-              {plan ? '수정' : '추가'}{' '}
-              {/* plan이 있을 때는 '수정', 없을 때는 '추가' */}
+              {plan ? '수정' : '추가'}
             </button>
           </div>
           <div className="p-4">
@@ -205,6 +224,7 @@ const CalendarBottomSheet = ({
         isOpen={isMemberModalOpen}
         onClose={handleMemberModalClose}
         members={['멤버 1', '멤버 2', '멤버 3']}
+        onMemberSelect={(selectedMembers) => setMembers(selectedMembers)}
       />
 
       <ColorSelectModal
