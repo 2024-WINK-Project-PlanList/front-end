@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Planlist from '../../assets/Login/Planlist.svg';
 import axios from 'axios';
@@ -9,6 +9,15 @@ const Profile = () => {
   const [name, setName] = useState('');
   const [isValid, setIsValid] = useState(false);
 
+  const kakaoAccessToken = sessionStorage.getItem('token');
+
+  useEffect(() => {
+    // 카카오 엑세스 토큰 X -> 로그인 페이지로 리디렉션
+    if (!kakaoAccessToken) {
+      navigate('/login');
+    }
+  }, [kakaoAccessToken, navigate]);
+
   const nameHandler = (e) => {
     const { value } = e.target;
     setName(value);
@@ -16,12 +25,23 @@ const Profile = () => {
   };
 
   const completeHandler = async () => {
-    if (isValid) {
+    if (isValid && kakaoAccessToken) {
       try {
-        const res = await axios.get(
+        // 닉네임 중복 검사
+        const NicknameRes = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/auth/nick-validation/${name}`,
         );
-        if (!res.data) {
+        if (!NicknameRes.data) {
+          const registerRes = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/auth/register`,
+            {
+              kakaoAccessToken,
+              nickname: name,
+            },
+          );
+          // 회원가입 성공 시, 반환된 토큰 저장
+          const { accessToken } = registerRes.data;
+          sessionStorage.setItem('token', accessToken);
           navigate('/main');
         } else {
           alert('이미 존재하는 닉네임입니다.');
