@@ -18,3 +18,26 @@ export const getUserInfo = async () => {
     throw error;
   }
 };
+
+export const modifyUserInfo = async (userData) => {
+  try {
+    const response = await customAxios.patch(
+      `/user/me`,
+      {
+        nickname: userData.nickname,
+        profileImage: userData.profileImage,
+        songId: userData.songId,
+        comment: userData.comment,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('유저 정보 수정 오류!', error);
+    throw error;
+  }
+};

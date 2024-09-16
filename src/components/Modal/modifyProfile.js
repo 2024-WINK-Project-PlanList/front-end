@@ -5,9 +5,11 @@ import { ReactComponent as PicChange } from '../../assets/mypage/picChange.svg';
 import { ReactComponent as Pencil } from '../../assets/mypage/pencil.svg';
 
 const ModifyProfile = ({ onClose, onSave, profileData }) => {
-  const [text, setText] = useState(profileData.bio || '');
-  const [name, setName] = useState(profileData.name || '');
-  const [uploadedImage, setUploadedImage] = useState(profileData.image);
+  const [text, setText] = useState(profileData.comment || '');
+  const [name, setName] = useState(profileData.nickname || '');
+  const [uploadedImage, setUploadedImage] = useState(
+    profileData.profileImagePath,
+  );
   const fileInputRef = useRef(null);
   const maxLength = 30;
   const [isClose, setIsClose] = useState(false);
@@ -39,10 +41,10 @@ const ModifyProfile = ({ onClose, onSave, profileData }) => {
     setIsClose(true);
     setTimeout(() => {
       onSave({
-        name: name,
-        email: profileData.email,
-        bio: text,
-        image: uploadedImage,
+        nickname: name,
+        comment: text,
+        profileImage: uploadedImage,
+        songId: profileData.songId,
       });
       onClose();
     }, 150);

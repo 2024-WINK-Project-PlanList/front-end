@@ -8,7 +8,7 @@ import PlayList from '../../components/PlayList/playList';
 import ModifyProfile from '../../components/Modal/modifyProfile';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
-import { getUserInfo } from '../../api/user';
+import { getUserInfo, modifyUserInfo } from '../../api/user';
 
 const MyPage = () => {
   const [profileData, setProfileData] = useState([]);
@@ -29,8 +29,16 @@ const MyPage = () => {
     fetchUserInfo();
   }, []);
 
-  const handleSaveProfile = (updatedProfile) => {
-    setProfileData(updatedProfile);
+  const handleSaveProfile = async (updatedProfile) => {
+    try {
+      await modifyUserInfo(updatedProfile);
+
+      setProfileData(updatedProfile);
+
+      console.log('프로필 수정 성공');
+    } catch (error) {
+      console.log('프로필 수정 중 오류 발생');
+    }
   };
 
   function clickedModifyButton() {
