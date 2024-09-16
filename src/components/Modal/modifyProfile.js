@@ -10,6 +10,7 @@ const ModifyProfile = ({ onClose, onSave, profileData }) => {
   const [uploadedImage, setUploadedImage] = useState(profileData.image);
   const fileInputRef = useRef(null);
   const maxLength = 30;
+  const [isClose, setIsClose] = useState(false);
 
   const handleChangeBio = (event) => {
     const inputValue = event.target.value;
@@ -35,21 +36,33 @@ const ModifyProfile = ({ onClose, onSave, profileData }) => {
   };
 
   const handleSave = () => {
-    // 부모 컴포넌트로 변경된 데이터 전달
-    onSave({
-      name: name,
-      email: profileData.email,
-      bio: text,
-      image: uploadedImage,
-    });
-    onClose();
+    setIsClose(true);
+    setTimeout(() => {
+      onSave({
+        name: name,
+        email: profileData.email,
+        bio: text,
+        image: uploadedImage,
+      });
+      onClose();
+    }, 150);
+  };
+
+  const handleCancel = () => {
+    // 취소 시 애니메이션 실행 후 onClose 호출
+    setIsClose(true);
+    setTimeout(() => {
+      onClose();
+    }, 150); // 애니메이션 시간에 맞춰서 setTimeout 조정
   };
 
   return (
     <div className="fixed inset-0 bg-black/20 z-10 flex justify-center items-end">
-      <div className="w-full max-w-[480px] mx-auto h-[826px] bg-white rounded-t-[30px] px-[32px] overflow-hidden">
+      <div
+        className={`w-full max-w-[480px] mx-auto h-[826px] bg-white rounded-t-[30px] px-[32px] overflow-hidden ${isClose ? 'animate-[bottom-sheet-down_200ms_ease-in-out]' : 'animate-[bottom-sheet-up_200ms_ease-in-out]'}`}
+      >
         <div className="flex justify-between pt-[16px]">
-          <div onClick={onClose} className="font-preMedium text-lg">
+          <div onClick={handleCancel} className="font-preMedium text-lg">
             취소
           </div>
           <div
