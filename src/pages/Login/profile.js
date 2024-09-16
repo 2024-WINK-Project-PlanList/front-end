@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Planlist from '../../assets/Login/Planlist.svg';
+import axios from 'axios';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -14,9 +15,20 @@ const Profile = () => {
     setIsValid(value.length <= 10 && value.length > 0);
   };
 
-  const completeHandler = () => {
+  const completeHandler = async () => {
     if (isValid) {
-      navigate('/main');
+      try {
+        const res = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/auth/nick-validation/${name}`,
+        );
+        if (!res.data) {
+          navigate('/main');
+        } else {
+          alert('이미 존재하는 닉네임입니다.');
+        }
+      } catch (error) {
+        alert('오류 발생');
+      }
     }
   };
 
