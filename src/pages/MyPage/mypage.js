@@ -12,6 +12,7 @@ import { getUserInfo, modifyUserInfo } from '../../api/user';
 
 const MyPage = () => {
   const [profileData, setProfileData] = useState([]);
+  const [countFriends, setCountFriends] = useState([]);
   const [modalIsOpen, setModalState] = useState(false);
   const navigate = useNavigate();
 
@@ -20,6 +21,7 @@ const MyPage = () => {
       try {
         const data = await getUserInfo();
         setProfileData(data.user);
+        setCountFriends(data.totalFriendCount);
         console.log(data);
       } catch (error) {
         console.error('Failed to fetch user info:', error);
@@ -92,7 +94,7 @@ const MyPage = () => {
           </div>
           <div className="flex items-center">
             <div className="font-preSemiBold text-xl text-[#5DA4E7] pr-[17px]">
-              {profileData?.totalFriendCount || '0명'}
+              {countFriends}명
             </div>
             <SignIcon />
           </div>
