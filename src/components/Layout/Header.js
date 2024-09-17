@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { ReactComponent as Plus } from '../../assets/header/plus.svg';
 import { ReactComponent as Left } from '../../assets/header/left.svg';
