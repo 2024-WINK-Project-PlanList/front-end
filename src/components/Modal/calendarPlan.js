@@ -20,6 +20,9 @@ const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
   };
 
   const handlePlanClick = (plan) => {
+    // 클릭된 일정의 정보를 콘솔에 출력
+    console.log('클릭된 일정 정보:', plan);
+
     // 일정 수정 시 선택된 일정 데이터로 설정
     setSelectedPlan(plan);
     setIsBottomSheetOpen(true);
@@ -29,41 +32,18 @@ const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
     setIsBottomSheetOpen(false);
   };
 
-  const handleAddPlan = (newPlan) => {
-    if (selectedPlan) {
-      // 수정일 경우, 기존 계획을 수정
-      setPlans((prevPlans) =>
-        prevPlans.map((plan) =>
-          plan === selectedPlan
-            ? { ...newPlan, date: selectedPlan.date }
-            : plan,
-        ),
-      );
-    } else {
-      // 새 계획 추가는 Calendar 컴포넌트에서 처리
-      // selectedDates에 대해 일정을 추가하도록 Calendar 컴포넌트에 위임
-      setPlans((prevPlans) => {
-        const updatedPlans = [...prevPlans];
-        selectedDates.forEach((date) => {
-          updatedPlans.push({ ...newPlan, date });
-        });
-        return updatedPlans;
-      });
-    }
-    setIsBottomSheetOpen(false);
-    onClose(); // 바텀시트 닫기 후 캘린더 플랜 모달도 닫기
-  };
+  // **여기에 함수 정의를 추가합니다.**
 
   // 날짜 포맷팅 함수 (YYYY년 M월 D일 ~ YYYY년 M월 D일 형식으로 변환)
   const formatDateRange = (dates) => {
     if (!Array.isArray(dates) || dates.length === 0) return '';
     if (dates.length === 1) {
       const [year, month, day] = dates[0].split('-');
-      return `${year}년 ${month}월 ${day}일`;
+      return `${year}년 ${parseInt(month)}월 ${parseInt(day)}일`;
     } else {
       const [startYear, startMonth, startDay] = dates[0].split('-');
       const [endYear, endMonth, endDay] = dates[dates.length - 1].split('-');
-      return `${startYear}년 ${startMonth}월 ${startDay}일 ~ ${endYear}년 ${endMonth}월 ${endDay}일`;
+      return `${startYear}년 ${parseInt(startMonth)}월 ${parseInt(startDay)}일 ~ ${endYear}년 ${parseInt(endMonth)}월 ${parseInt(endDay)}일`;
     }
   };
 
@@ -97,6 +77,21 @@ const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
     return dates.length === 1 ? dDayStart : `${dDayStart} ~ ${dDayEnd}`;
   };
 
+  // 선택된 날짜에 해당하는 일정 필터링
+  const filteredPlans = plans.filter((plan) => {
+    const planStartDate = plan.startDate ? plan.startDate.slice(0, 10) : null;
+    const planEndDate = plan.endDate ? plan.endDate.slice(0, 10) : null;
+
+    if (!planStartDate || !planEndDate) {
+      return false;
+    }
+
+    // 선택된 날짜 중 하나라도 일정의 날짜 범위에 포함되는지 확인
+    return selectedDates.some((date) => {
+      return date >= planStartDate && date <= planEndDate;
+    });
+  });
+
   return (
     <>
       <div
@@ -116,29 +111,28 @@ const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
               {getDDayText(selectedDates)}
             </p>
             <div className="flex flex-col mt-4 space-y-2 w-full">
-              {plans
-                .filter((plan) => selectedDates.includes(plan.date))
-                .map((plan, index) => (
+              {/* 필터링된 일정 표시 */}
+              {filteredPlans.map((plan, index) => (
+                <div
+                  key={index}
+                  className="relative w-full px-4 py-2 bg-white rounded-lg cursor-pointer hover:bg-gray-100 flex items-center"
+                  onClick={() => handlePlanClick(plan)}
+                >
+                  {/* 일정의 색상 막대 표시 */}
                   <div
-                    key={index}
-                    className="relative w-full px-4 py-2 bg-white rounded-lg cursor-pointer hover:bg-gray-100 flex items-center"
-                    onClick={() => handlePlanClick(plan)}
-                  >
-                    {/* 세로 막대 */}
-                    <div
-                      className="absolute left-0 top-2 bottom-1 w-[2.2%] rounded-lg"
-                      style={{ backgroundColor: plan.color || '#73B7FF' }}
-                    ></div>
-                    <div className="ml-0">
-                      <p className="text-m font-medium truncate">
-                        {plan.title}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1 text-left">
-                        {plan.details}
-                      </p>
-                    </div>
+                    className="absolute left-0 top-2 bottom-1 w-[2.2%] rounded-lg"
+                    style={{ backgroundColor: plan.color || '#73B7FF' }}
+                  ></div>
+                  <div className="ml-4">
+                    <p className="text-m font-medium truncate">
+                      {plan.name}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1 text-left">
+                      {plan.description}
+                    </p>
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
           </div>
           <div className="modal-content p-4 flex-1 overflow-y-auto"></div>
@@ -157,8 +151,7 @@ const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
       <CalendarBottomSheet
         isOpen={isBottomSheetOpen}
         onClose={handleCloseBottomSheet}
-        onAdd={handleAddPlan}
-        selectedDates={selectedDates} // Prop 이름 변경
+        selectedDates={selectedDates}
         plan={selectedPlan} // 선택된 일정 전달 (null이면 새 일정 추가)
       />
     </>
