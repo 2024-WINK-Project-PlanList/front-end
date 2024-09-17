@@ -6,12 +6,16 @@ import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import RequestModal from '../../components/Modal/requestFriends';
 import { getFriendsList, searchFriends } from '../../api/friends';
+import { useLocation } from 'react-router-dom';
 
 const FriendsList = () => {
   const [friends, setFriends] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [findUser, setFindUser] = useState(friends);
   const [isShow, setShow] = useState(false);
+  const location = useLocation();
+  const { userData } = location.state;
+  const isEmpty = friends.length === 0;
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -83,11 +87,13 @@ const FriendsList = () => {
           <Glass className="absolute bottom-[12px] left-[40px] w-[20px] h-[20px] fill-[#3F3F3F]" />
         </div>
         <div className="w-full px-[19px]">
-          {findUser.length === 0 ? (
+          {isEmpty ? (
             <div className="flex justify-center font-preRegular text-xl pt-[73px]">
-              {userInput === ''
-                ? '새로운 친구를 추가해보세요!'
-                : '검색 결과가 없습니다.'}
+              새로운 친구를 추가해보세요!
+            </div>
+          ) : findUser.length === 0 ? (
+            <div className="flex justify-center font-preRegular text-xl pt-[73px]">
+              검색 결과가 없습니다.
             </div>
           ) : (
             <div>
@@ -108,7 +114,7 @@ const FriendsList = () => {
           )}
         </div>
       </div>
-      {isShow && <RequestModal hideModal={hideModal} />}
+      {isShow && <RequestModal hideModal={hideModal} userData={userData} />}
       <Footer />
     </>
   );

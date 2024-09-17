@@ -50,7 +50,7 @@ const MyPage = () => {
   }
 
   function clickFriends() {
-    navigate('/friends');
+    navigate('/friends', { state: { userData: profileData.id } });
   }
 
   function clickPlayList() {

@@ -38,3 +38,25 @@ export const searchFriends = async (keyword, onlyFriends) => {
     throw error;
   }
 };
+
+// 친구 요청
+export const requestFriend = async (userData, friendData) => {
+  try {
+    const response = await customAxios.post(
+      `/friend`,
+      {
+        followingId: friendData,
+        followerId: userData,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('친구 신청 오류!', error);
+    throw error;
+  }
+};

@@ -5,7 +5,7 @@ import Friend from '../../components/Friends/newFriends';
 import { ReactComponent as Profile } from '../../assets/friendsList/profile.svg';
 import { searchFriends } from '../../api/friends';
 
-const RequestFriends = ({ hideModal }) => {
+const RequestFriends = ({ hideModal, userData }) => {
   const [userInput, setUserInput] = useState('');
   const [findUser, setFindUser] = useState([]);
 
@@ -77,6 +77,8 @@ const RequestFriends = ({ hideModal }) => {
                   }
                   name={item.nickname}
                   email={item.email}
+                  userData={userData}
+                  friendData={item.id}
                 />
               ))}
             </div>
@@ -89,6 +91,7 @@ const RequestFriends = ({ hideModal }) => {
 
 RequestFriends.propTypes = {
   hideModal: PropTypes.func.isRequired,
+  userData: PropTypes.number.isRequired,
 };
 
 export default RequestFriends;
