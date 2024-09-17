@@ -8,8 +8,8 @@ const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET;
 
 const getToken = () => {
-  // return sessionStorage.getItem('token');
-  return process.env.REACT_APP_TEST_TOKEN;
+  return localStorage.getItem('token');
+  // return process.env.REACT_APP_TEST_TOKEN;
 };
 
 const getEncodedCredentials = () => {

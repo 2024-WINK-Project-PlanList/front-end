@@ -9,7 +9,7 @@ const Profile = () => {
   const [name, setName] = useState('');
   const [isValid, setIsValid] = useState(false);
 
-  const kakaoAccessToken = sessionStorage.getItem('token');
+  const kakaoAccessToken = localStorage.getItem('token');
 
   useEffect(() => {
     // 카카오 엑세스 토큰 X -> 로그인 페이지로 리디렉션
@@ -41,7 +41,7 @@ const Profile = () => {
           );
           // 회원가입 성공 시, 반환된 토큰 저장
           const { accessToken } = registerRes.data;
-          sessionStorage.setItem('token', accessToken);
+          localStorage.setItem('token', accessToken);
           navigate('/main');
         } else {
           alert('이미 존재하는 닉네임입니다.');

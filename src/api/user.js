@@ -1,8 +1,8 @@
 import { customAxios } from './customAxios';
 
 const getToken = () => {
-  // return sessionStorage.getItem('token');
-  return process.env.REACT_APP_TEST_TOKEN;
+  return localStorage.getItem('token');
+  // return process.env.REACT_APP_TEST_TOKEN;
 };
 
 export const getUserInfo = async () => {
