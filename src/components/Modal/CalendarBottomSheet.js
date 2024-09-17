@@ -4,12 +4,13 @@ import MemberSelectModal from './MemberSelectModal';
 import ColorSelectModal from './ColorSelectModal';
 
 const CalendarBottomSheet = ({
-  isOpen,
-  onClose,
-  onAdd,
-  selectedDates = [], // 기본값으로 빈 배열 설정
-  plan,
-}) => {
+                               isOpen,
+                               onClose,
+                               onAdd,
+                               selectedDates = [],
+                               plan,
+                               fetchCalendarData,
+                             }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
@@ -84,20 +85,18 @@ const CalendarBottomSheet = ({
   };
 
   const handleAddClick = async () => {
-    // 배열의 값이 있는지 확인하고, 문자열이나 다른 형식일 경우 Date 객체로 변환
-    const startDate = new Date(selectedDates?.[0]) || new Date();
-    const endDate = new Date(selectedDates?.[selectedDates.length - 1]) || new Date();
+    const startDate = new Date(selectedDates?.[0] || Date.now());
+    const endDate = new Date(selectedDates?.[selectedDates.length - 1] || Date.now());
 
-    // 백엔드에서 요구하는 형식에 맞춘 newPlan 객체
     const newPlan = {
-      name: title,  // 일정 이름은 name 필드에 저장
-      description: details,  // 상세 설명은 description 필드에 저장
-      startDate: startDate.toISOString(),  // Date 객체를 ISO 형식 문자열로 변환
-      endDate: endDate.toISOString(),  // Date 객체를 ISO 형식 문자열로 변환
-      openStatus: isPublic ? 'PUBLIC' : 'PRIVATE',  // 대문자로 수정
-      colorId: selectedColor,  // 선택된 색상
-      scheduleMembers: members.map(member => member.id),  // 멤버들의 ID 리스트로 변환
-      calendarId: 1,  // calendarId는 상수로 사용 (필요시 동적으로 변경)
+      name: title,
+      description: details,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      openStatus: isPublic ? 'PUBLIC' : 'PRIVATE',
+      colorId: selectedColor,
+      scheduleMembers: members.map(member => member.id),
+      calendarId: 1,
     };
 
     try {
@@ -111,12 +110,12 @@ const CalendarBottomSheet = ({
       setTimeout(() => {
         onAdd(newPlan);
         handleClose();
+        fetchCalendarData();
       }, 300);
     } catch (error) {
       console.error('일정 추가 중 오류 발생:', error);
     }
   };
-
 
   if (!isMounted) return null;
 
@@ -133,16 +132,10 @@ const CalendarBottomSheet = ({
           style={{ height: 'calc(100vh - 4.25rem)', overflowY: 'auto' }}
         >
           <div className="p-4 flex justify-between items-center">
-            <button
-              className="text-gray-500 text-lg font-medium ml-2"
-              onClick={handleClose}
-            >
+            <button className="text-gray-500 text-lg font-medium ml-2" onClick={handleClose}>
               취소
             </button>
-            <button
-              className="text-blue-500 text-lg font-medium mr-2"
-              onClick={handleAddClick}
-            >
+            <button className="text-blue-500 text-lg font-medium mr-2" onClick={handleAddClick}>
               {plan ? '수정' : '추가'}
             </button>
           </div>

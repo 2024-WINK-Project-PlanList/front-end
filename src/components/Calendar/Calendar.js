@@ -7,16 +7,16 @@ const Calendar = ({ calendarId, readOnly = false }) => {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
-  const [selectedDates, setSelectedDates] = useState([]); // 초기값 빈 배열
+  const [selectedDates, setSelectedDates] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [plans, setPlans] = useState([]); // 초기값 빈 배열
+  const [plans, setPlans] = useState([]);
 
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(null);
   const [dragEnd, setDragEnd] = useState(null);
 
   const dragTimer = useRef(null);
-  const holdThreshold = 200; // 밀리초
+  const holdThreshold = 200;
 
   const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -29,15 +29,15 @@ const Calendar = ({ calendarId, readOnly = false }) => {
     year === today.getFullYear();
 
   const totalDays = firstDayOfMonth + daysInMonth;
-  const totalWeeks = Math.ceil(totalDays / 7); // 총 주 계산
+  const totalWeeks = Math.ceil(totalDays / 7);
 
   let buttonPadding = '';
   if (totalWeeks === 4) {
-    buttonPadding = 'pb-[22.65%]'; // 4주차일 때 패딩
+    buttonPadding = 'pb-[22.65%]';
   } else if (totalWeeks === 5) {
-    buttonPadding = 'pb-[17%]'; // 5주차일 때 패딩
+    buttonPadding = 'pb-[17%]';
   } else if (totalWeeks === 6) {
-    buttonPadding = 'pb-[13.2%]'; // 6주차일 때 패딩
+    buttonPadding = 'pb-[13.2%]';
   }
 
   const weeks = [];
@@ -117,7 +117,7 @@ const Calendar = ({ calendarId, readOnly = false }) => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedDates([]); // 모달 닫힐 때 선택된 날짜 초기화
+    setSelectedDates([]);
   };
 
   useEffect(() => {
@@ -131,19 +131,16 @@ const Calendar = ({ calendarId, readOnly = false }) => {
 
         console.log('API 응답 데이터:', response.data);
 
-        // `individualScheduleList`가 없을 경우 빈 배열로 설정
         const individualSchedule = response.data?.individualScheduleList || [];
-        setPlans(Array.isArray(individualSchedule) ? individualSchedule : []); // 배열 여부 확인 후 설정
+        setPlans(Array.isArray(individualSchedule) ? individualSchedule : []);
       } catch (error) {
         console.error('캘린더 데이터 가져오기 오류:', error);
-        setPlans([]); // 오류 발생 시 빈 배열 설정
+        setPlans([]);
       }
     };
 
-
     fetchCalendarData();
   }, [calendarId]);
-
 
   const handleAddPlan = (newPlan) => {
     if (readOnly) return;
@@ -219,10 +216,7 @@ const Calendar = ({ calendarId, readOnly = false }) => {
       : '';
 
     const dateKey = formatDateKey(new Date(year, month, day));
-
-    // plans 배열이 정의되어 있지 않거나 빈 배열일 경우 안전하게 처리
     const plansForDay = Array.isArray(plans) ? plans.filter((plan) => plan.date === dateKey) : [];
-
     const isSelected = Array.isArray(selectedDates) && selectedDates.includes(dateKey);
     const marginBottoms = ['mb-[80%]', 'mb-[42%]', 'mb-[4%]'];
 
@@ -233,7 +227,7 @@ const Calendar = ({ calendarId, readOnly = false }) => {
           (firstDayOfMonth + day - 1) % 7 === 0 ? 'text-red-500' : ''
         } ${(firstDayOfMonth + day - 1) % 7 === 6 ? 'text-blue-500' : ''} hover:bg-gray-100 ${
           isSelected ? 'bg-gray-200' : ''
-        }`}
+        } rounded-md`} // 여기에 rounded-md 추가
         onMouseDown={() => handleMouseDown(day, year, month)}
         onMouseEnter={() => handleMouseEnter(day, year, month)}
         onClick={() => handleDateClick(day, year, month)}
@@ -274,7 +268,6 @@ const Calendar = ({ calendarId, readOnly = false }) => {
       }
     }
   }
-
 
   const nextMonth = month + 1;
   const nextYear = nextMonth > 11 ? year + 1 : year;
