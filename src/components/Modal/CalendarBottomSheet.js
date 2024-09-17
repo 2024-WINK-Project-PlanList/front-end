@@ -11,7 +11,7 @@ const CalendarBottomSheet = ({
                                plan,
                                closeCalendarPlanModal,
                                calendarId,
-                               setPlans, // setPlans 받아옴
+                               setPlans,
                              }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -96,6 +96,13 @@ const CalendarBottomSheet = ({
     const startDate = parseDate(dateStrings[0]);
     const endDate = parseDate(dateStrings[dateStrings.length - 1]);
 
+    // 사용자가 하루만 선택했는지 확인하는 로직 추가
+    if (selectedDates.length === 1) {
+      console.log("하루만 선택되었습니다:", selectedDates);
+    } else {
+      console.log("여러 날이 선택되었습니다:", selectedDates);
+    }
+
     const formattedStartDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss");
     const formattedEndDate = format(endDate, "yyyy-MM-dd'T'HH:mm:ss");
 
@@ -142,7 +149,7 @@ const CalendarBottomSheet = ({
         }
       };
 
-      await refreshCalendar(); // 캘린더 데이터를 새로 가져옴
+      await refreshCalendar();
 
       setIsAnimating(false);
       setTimeout(() => {
@@ -210,7 +217,7 @@ const CalendarBottomSheet = ({
                 className="w-full max-w-md px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#92C7FA] text-left"
                 onClick={handleMemberModalOpen}
               >
-                멤버 선택하기
+                멤버
               </button>
             </div>
 
