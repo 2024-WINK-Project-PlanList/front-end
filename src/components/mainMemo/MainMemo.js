@@ -50,9 +50,9 @@ const MainMemo = ({ memoData }) => {
 
     try {
       // 캘린더 데이터 요청
-      const response = await axios.get(`/calendar/${userId}`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/calendar/${userId}`, {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
 

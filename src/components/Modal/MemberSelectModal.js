@@ -13,13 +13,13 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
     // 친구 검색 API 호출
     const searchFriends = async () => {
       try {
-        const response = await axios.get('/friend/search', {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/friend/search`, {
           params: {
             keyword: searchTerm,
             onlyFriends: onlyFriends,
           },
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`, // Bearer 토큰을 헤더에 추가
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // Bearer 토큰을 헤더에 추가
           },
         });
 

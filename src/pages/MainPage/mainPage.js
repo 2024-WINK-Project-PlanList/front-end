@@ -5,20 +5,28 @@ import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import MainMemo from '../../components/mainMemo/MainMemo';
 
+// .env 파일의 BACKEND URL 가져오기
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
 const MainPage = () => {
   const [friendComments, setFriendComments] = useState([]); // 친구 댓글 데이터 상태
   const [newNotificationCount, setNewNotificationCount] = useState(0); // 새로운 알림 개수 상태
 
   useEffect(() => {
-    // 고정된 토큰 사용
-    const token =
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0bmFsczY1NUBrb29rbWluLmFjLmtyIiwiaWF0IjoxNzI2NDEwNjE0LCJleHAiOjE3MjcwMTU0MTQsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWQiOjF9.TQ-HNQnEWVfbhXeQJw6AKB2REhqbyJjRvQ-Oj-OY8BI';
+    // 로컬 스토리지에서 토큰 가져오기
+    let token = localStorage.getItem('token');
+
+    // 토큰이 없을 경우 경고 또는 리다이렉션 처리
+    if (!token) {
+      console.error('토큰이 없습니다. 로그인 필요');
+      return;
+    }
 
     // 데이터 요청
     axios
-      .get('/main', {
+      .get(`${BASE_URL}/main`, {
         headers: {
-          Authorization: `Bearer ${token}`, // 고정된 토큰을 Authorization 헤더에 추가
+          Authorization: `Bearer ${token}`, // 로컬 스토리지에서 가져온 토큰을 Authorization 헤더에 추가
         },
       })
       .then((response) => {
