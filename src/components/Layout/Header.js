@@ -21,7 +21,7 @@ const Header = ({ onClick, newNotificationCount }) => {
       right: false,
       text: '알림',
     },
-    '/calendar/list': {
+    '/calendar/': {
       left: true,
       right: false,
       text: '공유 캘린더',
