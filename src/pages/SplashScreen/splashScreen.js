@@ -14,14 +14,16 @@ const SplashScreen = () => {
 
   useEffect(() => {
     const checkAutoLogin = async () => {
-      const accessToken = localStorage.getItem('accessToken'); // 로컬 스토리지에서 토큰 가져옴
+      const accessToken = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져옴
       if (accessToken) {
         try {
           await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, {
             accessToken,
           });
 
-          sessionStorage.setItem('token', accessToken);
+          console.log('로그인 성공~', accessToken); // 응답 확인
+
+          localStorage.setItem('token', accessToken);
 
           navigate('/main');
         } catch (error) {
@@ -29,6 +31,7 @@ const SplashScreen = () => {
           navigate('/login');
         }
       } else {
+        console.log('자동 로그인 오류');
         navigate('/login'); // accessToken X
       }
     };

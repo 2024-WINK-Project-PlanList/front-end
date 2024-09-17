@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as ProfilePic } from '../../assets/mypage/profile.svg';
 import { ReactComponent as FriendsIcon } from '../../assets/mypage/friends.svg';
@@ -8,19 +8,37 @@ import PlayList from '../../components/PlayList/playList';
 import ModifyProfile from '../../components/Modal/modifyProfile';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
+import { getUserInfo, modifyUserInfo } from '../../api/user';
 
 const MyPage = () => {
-  const [profileData, setProfileData] = useState({
-    name: '왕연진',
-    email: 'jjini6530@kookmin.ac.kr',
-    bio: '야무진 개발자가 되',
-    image: null,
-  });
+  const [profileData, setProfileData] = useState([]);
   const [modalIsOpen, setModalState] = useState(false);
   const navigate = useNavigate();
 
-  const handleSaveProfile = (updatedProfile) => {
-    setProfileData(updatedProfile);
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const data = await getUserInfo();
+        setProfileData(data.user);
+        console.log(data);
+      } catch (error) {
+        console.error('Failed to fetch user info:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  const handleSaveProfile = async (updatedProfile) => {
+    try {
+      await modifyUserInfo(updatedProfile);
+
+      setProfileData(updatedProfile);
+
+      console.log('프로필 수정 성공');
+    } catch (error) {
+      console.log('프로필 수정 중 오류 발생');
+    }
   };
 
   function clickedModifyButton() {
@@ -43,9 +61,9 @@ const MyPage = () => {
     <>
       <Header />
       <div className="flex flex-col items-center">
-        {profileData.image ? (
+        {profileData.profileImagePath ? (
           <img
-            src={profileData.image}
+            src={profileData.profileImagePath}
             alt="Profile"
             className="mt-[30px] w-[154px] h-[154px] object-cover rounded-full"
           />
@@ -53,10 +71,10 @@ const MyPage = () => {
           <ProfilePic className="mt-[30px]" />
         )}
         <div className="text-2xl font-preSemiBold pt-[15px]">
-          {profileData.name}
+          {profileData?.nickname || '이름 없음'}
         </div>
         <div className="text-base font-preLight text-[#3F3F3F] pt-[7px]">
-          {profileData.email}
+          {profileData?.email || '이메일 없음'}
         </div>
         <div
           className="flex justify-center items-center text-sm text-white font-preMedium bg-[#6AB6FF] w-[5.8125rem] h-[1.6875rem] rounded-[0.625rem] mt-4"
@@ -74,7 +92,7 @@ const MyPage = () => {
           </div>
           <div className="flex items-center">
             <div className="font-preSemiBold text-xl text-[#5DA4E7] pr-[17px]">
-              650명
+              {profileData?.totalFriendCount || '0명'}
             </div>
             <SignIcon />
           </div>
@@ -85,7 +103,7 @@ const MyPage = () => {
             <div className="font-preRegular pl-[6px]">나의 한마디</div>
           </div>
           <div className="font-preLight text-sm max-w-[160px] overflow-hidden text-ellipsis whitespace-nowrap">
-            {profileData.bio}
+            {profileData?.comment || '한마디 없음'}
           </div>
         </div>
         <div className="w-full pb-[13px] pt-[33px] pl-[33px] font-preSemiBold text-xl">

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const Song = ({ cover, title, artist, time }) => {
+const Song = ({ cover, title, artist, time, onClick }) => {
   const [isCliked, setIsCliked] = useState(false);
 
   const btnCliked = () => {
     setIsCliked(!isCliked);
+    onClick();
   };
 
   return (
@@ -45,6 +46,7 @@ Song.propTypes = {
   title: PropTypes.string.isRequired,
   artist: PropTypes.string.isRequired,
   time: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default Song;

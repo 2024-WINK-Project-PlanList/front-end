@@ -4,7 +4,7 @@ import Song from '../../components/PlayList/song';
 import { ReactComponent as Cover } from '../../assets/playList/noCover.svg';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
-import { fetchToken, searchTracks } from '../../api/music';
+import { fetchToken, searchTracks, modifySong } from '../../api/music';
 
 const PlayList = () => {
   const [searchInput, setSearchInput] = useState('');
@@ -33,6 +33,7 @@ const PlayList = () => {
           if (token) {
             const tracks = await searchTracks(token, searchInput);
             setFindMusic(tracks);
+            console.log(tracks);
           }
         } catch (error) {
           console.error('검색 에러 발생:', error);
@@ -45,6 +46,16 @@ const PlayList = () => {
 
   const getValue = (e) => {
     setSearchInput(e.target.value);
+  };
+
+  const selectSong = async (songId) => {
+    try {
+      await modifySong({ songId });
+      alert('나만의 playList가 변경되었습니다.');
+      console.log(songId);
+    } catch (error) {
+      console.error('노래 변경 오류 발생', error);
+    }
   };
 
   return (
@@ -73,6 +84,7 @@ const PlayList = () => {
               {findMusic.map((track) => (
                 <Song
                   key={track.id}
+                  onClick={() => selectSong(track.id)}
                   cover={
                     <img
                       src={track.album.images[2]?.url || Cover}

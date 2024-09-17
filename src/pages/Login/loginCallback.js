@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react';
+import { React, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LoginCallback = () => {
@@ -40,9 +40,10 @@ const LoginCallback = () => {
         .then((data) => {
           console.log(data);
           if (data.type === 'EXIST') {
+            localStorage.setItem('token', data.token);
             navigate('/main');
           } else if (data.type === 'REGISTER') {
-            sessionStorage.setItem('token', data.token);
+            localStorage.setItem('token', data.token);
             navigate('/profile');
           } else {
             alert('로그인 실패');
