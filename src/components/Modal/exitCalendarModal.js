@@ -1,12 +1,31 @@
 import React from 'react';
+import axios from 'axios';
 
 const ExitCalendarModal = ({
   isOpen,
   onClose,
   onConfirm,
+  calendarId,
   calendarName,
   calendarImage,
 }) => {
+  // 나가기 API
+  const handleExit = async () => {
+    try {
+      const token =
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0bmFsczY1NUBrb29rbWluLmFjLmtyIiwiaWF0IjoxNzI2NDEwNjE0LCJleHAiOjE3MjcwMTU0MTQsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWQiOjF9.TQ-HNQnEWVfbhXeQJw6AKB2REhqbyJjRvQ-Oj-OY8BI';
+
+      await axios.delete(`/shared-calendar/${calendarId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      onConfirm();
+    } catch (error) {
+      console.error('공유 캘린더 나가기 오류:', error);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -39,7 +58,7 @@ const ExitCalendarModal = ({
             </button>
             <button
               className="flex p-2 mt-2 ml-28 text-red-500 font-bold bg-transparent"
-              onClick={onConfirm}
+              onClick={handleExit}
             >
               나가기
             </button>

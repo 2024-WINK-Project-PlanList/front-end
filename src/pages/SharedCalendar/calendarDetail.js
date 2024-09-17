@@ -1,44 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import setting from '../../assets/sharedCalendar/setting.svg';
-import wink from '../../assets/sharedCalendar/wink.svg';
-import clerker from '../../assets/sharedCalendar/clerker.svg';
-import planlist from '../../assets/sharedCalendar/logo.svg';
 import Calendar from '../../components/Calendar/Calendar';
 import BottomSheet from '../../components/Modal/modifySharedCalendar';
 
-const sharedCalendars = [
-  {
-    id: 1,
-    name: '2024 WINK',
-    members: 49,
-    description: '국민대학교 소프트웨어융합대학 소속 웹 학습 동아리 WINK',
-    image: wink,
-  },
-  {
-    id: 2,
-    name: 'Clerker',
-    members: 11,
-    description: '자이 컨퍼런스 서비스 1팀, AI 회의 요약 서비스 클러커',
-    image: clerker,
-  },
-  {
-    id: 3,
-    name: 'PlanList',
-    members: 7,
-    description: '팀 일정관리 캘린더, 플랜리스트',
-    image: planlist,
-  },
-];
-
 const CalendarDetail = () => {
-  const { id } = useParams();
-  const calendarId = parseInt(id);
+  const calendarId = useParams();
   const navigate = useNavigate();
-  const [calendar, setCalendar] = useState(
-    sharedCalendars.find((cal) => cal.id === calendarId),
-  );
+  const [calendar, setCalendar] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const token =
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0bmFsczY1NUBrb29rbWluLmFjLmtyIiwiaWF0IjoxNzI2NDEwNjE0LCJleHAiOjE3MjcwMTU0MTQsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWQiOjF9.TQ-HNQnEWVfbhXeQJw6AKB2REhqbyJjRvQ-Oj-OY8BI';
+
+    axios
+      .get(`/shared-calendar/${calendarId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setCalendar(res.data || []);
+      })
+      .catch((error) => {
+        console.error('공유캘린더 조회 오류:', error);
+      });
+  }, [calendarId]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);

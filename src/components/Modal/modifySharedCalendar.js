@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import add from '../../assets/sharedCalendar/add.svg';
 import exit from '../../assets/sharedCalendar/exit.svg';
 import DetailModal from './exitCalendarModal';
@@ -13,6 +14,7 @@ const CalendarBottomSheet = ({
   description,
   members,
   image,
+  calendarId,
   onSave,
   onExit,
 }) => {
@@ -103,16 +105,84 @@ const CalendarBottomSheet = ({
     onClose();
   };
 
-  const handleSave = () => {
-    if (onSave) {
-      onSave({
-        name: calendarName,
-        description: calendarDescription,
-        members: calendarMembers,
-        image: calendarImage,
-      });
+  // 캘린더 수정 API
+  const modifyCalendar = async (calendarId, name, description, imageBase64) => {
+    try {
+      const token =
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0bmFsczY1NUBrb29rbWluLmFjLmtyIiwiaWF0IjoxNzI2NDEwNjE0LCJleHAiOjE3MjcwMTU0MTQsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWQiOjF9.TQ-HNQnEWVfbhXeQJw6AKB2REhqbyJjRvQ-Oj-OY8BI';
+      const res = await axios.patch(
+        `/shared-calendar/${calendarId}`,
+        { name, description, imageBase64 },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      return res.data;
+    } catch (error) {
+      console.error('캘린더 수정 실패:', error);
+      throw error;
     }
-    onClose();
+  };
+
+  // 캘린더 생성 API
+  const createCalendar = async (
+    name,
+    description,
+    imageBase64,
+    membersToInvite,
+  ) => {
+    try {
+      const token =
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0bmFsczY1NUBrb29rbWluLmFjLmtyIiwiaWF0IjoxNzI2NDEwNjE0LCJleHAiOjE3MjcwMTU0MTQsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWQiOjF9.TQ-HNQnEWVfbhXeQJw6AKB2REhqbyJjRvQ-Oj-OY8BI';
+      const res = await axios.post(
+        '/shared-calendar',
+        { name, description, imageBase64, membersToInvite },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      return res.data;
+    } catch (error) {
+      console.error('캘린더 생성 실패:', error);
+      throw error;
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      if (mode === 'edit') {
+        await modifyCalendar(
+          calendarId,
+          calendarName,
+          calendarDescription,
+          calendarImage,
+        );
+        console.log('캘린더 수정 성공');
+      } else {
+        await createCalendar(
+          calendarName,
+          calendarDescription,
+          calendarImage,
+          [], // 초대할 멤버 ID 목록
+        );
+        console.log('캘린더 생성 성공');
+      }
+      if (onSave) {
+        onSave({
+          name: calendarName,
+          description: calendarDescription,
+          members: calendarMembers,
+          image: calendarImage,
+        });
+      }
+      onClose();
+    } catch (error) {
+      console.error('캘린더 저장 실패:', error);
+    }
   };
 
   if (!isMounted) return null;
@@ -214,20 +284,21 @@ const CalendarBottomSheet = ({
         isOpen={isMemberModalOpen}
         onClose={handleMemberModalClose}
         members={['멤버 1', '멤버 2', '멤버 3']}
-      />
-
-      <DetailModal
-        isOpen={isDetailModalOpen}
-        onClose={handleDetailModalClose}
-        onConfirm={handleDetailModalConfirm}
-        calendarName={calendarName}
-        calendarImage={calendarImage}
+        onSelect={(selectedMembers) => {
+          setCalendarMembers(selectedMembers.length);
+        }}
       />
 
       <ChooseImageModal
         isOpen={isImageModalOpen}
         onClose={handleImageModalClose}
         onImageSelect={handleImageSelect}
+      />
+
+      <DetailModal
+        isOpen={isDetailModalOpen}
+        onClose={handleDetailModalClose}
+        onConfirm={handleDetailModalConfirm}
       />
     </>
   );
