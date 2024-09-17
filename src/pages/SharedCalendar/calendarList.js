@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import BottomSheet from '../../components/Modal/modifySharedCalendar';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
+import { getCalendarList } from '../../api/sharedCalendar';
 
 const CalendarItem = ({ calendar, onClick }) => (
   <div
@@ -35,27 +35,22 @@ const CalendarList = () => {
   const [selectedCalendar, setSelectedCalendar] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token =
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0bmFsczY1NUBrb29rbWluLmFjLmtyIiwiaWF0IjoxNzI2NDEwNjE0LCJleHAiOjE3MjcwMTU0MTQsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWQiOjF9.TQ-HNQnEWVfbhXeQJw6AKB2REhqbyJjRvQ-Oj-OY8BI';
-
-    axios
-      .get('/shared-calendar', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setCalendars(res.data || []);
-      })
-      .catch((error) => {
-        console.error('공유 캘린더 목록 가져오기 오류:', error);
-      });
-  }, []);
-
   const handleCalendarClick = (calendarId) => {
     navigate(`/calendar/${calendarId}`);
   };
+
+  useEffect(() => {
+    const fetchCalendarList = async () => {
+      try {
+        const res = await getCalendarList();
+        setCalendars(res.data || []);
+      } catch (error) {
+        console.error('캘린더 목록 조회 실패:', error);
+      }
+    };
+
+    fetchCalendarList();
+  }, []);
 
   const handleSave = (newCalendar) => {
     if (isEditMode) {

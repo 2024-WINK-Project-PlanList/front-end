@@ -1,32 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import setting from '../../assets/sharedCalendar/setting.svg';
 import Calendar from '../../components/Calendar/Calendar';
 import BottomSheet from '../../components/Modal/modifySharedCalendar';
+import { getSharedCalendar } from '../../api/sharedCalendar';
 
 const CalendarDetail = () => {
-  const calendarId = useParams();
+  const { calendarId } = useParams();
   const navigate = useNavigate();
   const [calendar, setCalendar] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const token =
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0bmFsczY1NUBrb29rbWluLmFjLmtyIiwiaWF0IjoxNzI2NDEwNjE0LCJleHAiOjE3MjcwMTU0MTQsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWQiOjF9.TQ-HNQnEWVfbhXeQJw6AKB2REhqbyJjRvQ-Oj-OY8BI';
+    const fetchCalendar = async () => {
+      try {
+        const res = await getSharedCalendar(calendarId);
+        setCalendar(res.data);
+      } catch (error) {
+        console.error('공유캘린더 조회 실패:', error);
+      }
+    };
 
-    axios
-      .get(`/shared-calendar/${calendarId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setCalendar(res.data || []);
-      })
-      .catch((error) => {
-        console.error('공유캘린더 조회 오류:', error);
-      });
+    fetchCalendar();
   }, [calendarId]);
 
   const openModal = () => setIsModalOpen(true);
