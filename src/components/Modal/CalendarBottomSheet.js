@@ -9,9 +9,9 @@ const CalendarBottomSheet = ({
                                onClose,
                                selectedDates = [],
                                plan,
-                               fetchCalendarData,
                                closeCalendarPlanModal,
                                calendarId,
+                               setPlans, // setPlans 받아옴
                              }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -80,7 +80,6 @@ const CalendarBottomSheet = ({
 
   const handleColorSelect = (colorId) => {
     setSelectedColorId(colorId);
-    handleColorModalClose();
   };
 
   const toggleIsPublic = () => {
@@ -97,12 +96,6 @@ const CalendarBottomSheet = ({
     const startDate = parseDate(dateStrings[0]);
     const endDate = parseDate(dateStrings[dateStrings.length - 1]);
 
-    // 색상을 16진수에서 10진수로 변환하는 함수
-    const hexToNumber = (hexColor) => {
-      return parseInt(hexColor.replace('#', ''), 16); // ex) '#FF9898' => 16751448
-    };
-
-    // 날짜를 서버에서 기대하는 형식으로 변환
     const formattedStartDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss");
     const formattedEndDate = format(endDate, "yyyy-MM-dd'T'HH:mm:ss");
 
@@ -112,12 +105,10 @@ const CalendarBottomSheet = ({
       startDate: formattedStartDate,
       endDate: formattedEndDate,
       openStatus: isPublic ? 'PUBLIC' : 'PRIVATE',
-      colorId: hexToNumber(selectedColorId), // 숫자로 변환된 색상 전달
+      colorId: selectedColorId,
       scheduleMembers: members.length > 0 ? members.map((member) => member.id) : [],
       calendarId: calendarId || 1,
     };
-
-    console.log('서버로 보낼 newPlan 데이터:', newPlan);
 
     try {
       const response = await axios.post(
@@ -131,13 +122,31 @@ const CalendarBottomSheet = ({
       );
       console.log('응답:', response.data);
 
-      // 성공 시 처리
+      const refreshCalendar = async () => {
+        try {
+          const calendarResponse = await axios.get(
+            `${process.env.REACT_APP_BACKEND_URL}/calendar`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
+            }
+          );
+          console.log('캘린더 새로 고침 정보:', calendarResponse.data);
+
+          if (calendarResponse.data && Array.isArray(calendarResponse.data.individualScheduleList)) {
+            setPlans(calendarResponse.data.individualScheduleList);
+          }
+        } catch (error) {
+          console.error('캘린더 데이터 다시 가져오기 오류:', error);
+        }
+      };
+
+      await refreshCalendar(); // 캘린더 데이터를 새로 가져옴
+
       setIsAnimating(false);
       setTimeout(() => {
         handleClose();
-        if (fetchCalendarData) {
-          fetchCalendarData();
-        }
         if (closeCalendarPlanModal) {
           closeCalendarPlanModal();
         }
@@ -250,7 +259,6 @@ const CalendarBottomSheet = ({
         </div>
       </div>
 
-      {/* 멤버 선택 모달 */}
       <MemberSelectModal
         isOpen={isMemberModalOpen}
         onClose={handleMemberModalClose}
@@ -258,7 +266,6 @@ const CalendarBottomSheet = ({
         onMemberSelect={(selectedMembers) => setMembers(selectedMembers)}
       />
 
-      {/* 색상 선택 모달 */}
       <ColorSelectModal
         isOpen={isColorModalOpen}
         onClose={handleColorModalClose}
@@ -270,12 +277,11 @@ const CalendarBottomSheet = ({
 
 export default CalendarBottomSheet;
 
-// Helper function to get color by ID
 function getColorById(colorId) {
   const colorMap = {
     1: '#6BB6FF',
-    2: '#FFA500',
-    3: '#FF69B4',
+    2: '#FF6B6B',
+    3: '#BEFF6B',
   };
   return colorMap[colorId] || '#6BB6FF';
 }

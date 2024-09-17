@@ -109,7 +109,6 @@ const Calendar = ({ readOnly = false }) => {
     setSelectedDates([]);
   };
 
-  // fetchData 함수 정의
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -121,22 +120,12 @@ const Calendar = ({ readOnly = false }) => {
         }
       );
 
-      // 캘린더 정보를 콘솔에 출력
       console.log('캘린더 정보:', response.data);
-
-      // calendarId 저장
       setCalendarId(response.data.calendarId);
 
-      // 일정 리스트를 plans에 저장 (키 이름 수정)
-      if (
-        response.data &&
-        Array.isArray(response.data.individualScheduleList)
-      ) {
+      if (response.data && Array.isArray(response.data.individualScheduleList)) {
         setPlans(response.data.individualScheduleList);
-        console.log(
-          '캘린더에서 가져온 일정들:',
-          response.data.individualScheduleList
-        );
+        console.log('캘린더에서 가져온 일정들:', response.data.individualScheduleList);
       } else {
         setPlans([]);
       }
@@ -175,7 +164,19 @@ const Calendar = ({ readOnly = false }) => {
     trackMouse: true,
   });
 
-  // 캘린더 렌더링을 위한 변수들
+  const getColorByColorId = (colorId) => {
+    switch (colorId) {
+      case 1:
+        return '#6BB6FF';
+      case 2:
+        return '#FF6B6B';
+      case 3:
+        return '#BEFF6B';
+      default:
+        return '#92C7FA'; // 기본 색상
+    }
+  };
+
   const totalDays = firstDayOfMonth + daysInMonth;
   const totalWeeks = Math.ceil(totalDays / 7);
 
@@ -191,7 +192,6 @@ const Calendar = ({ readOnly = false }) => {
   const weeks = [];
   let days = [];
 
-  // 이전 달의 날짜들 추가
   for (let i = 0; i < firstDayOfMonth; i++) {
     const day = prevMonthDays - firstDayOfMonth + i + 1;
     const prevMonth = month - 1;
@@ -209,7 +209,6 @@ const Calendar = ({ readOnly = false }) => {
     );
   }
 
-  // 현재 달의 날짜들 추가
   for (let day = 1; day <= daysInMonth; day++) {
     const todayClass = isToday(day)
       ? 'bg-[#90C8FF] text-white rounded-full w-6 h-6 flex items-center justify-center'
@@ -237,8 +236,7 @@ const Calendar = ({ readOnly = false }) => {
       return currentDate >= planStartDate && currentDate <= planEndDate;
     });
 
-    const isSelected =
-      Array.isArray(selectedDates) && selectedDates.includes(dateKey);
+    const isSelected = Array.isArray(selectedDates) && selectedDates.includes(dateKey);
     const marginBottoms = ['mb-[80%]', 'mb-[42%]', 'mb-[4%]'];
 
     days.push(
@@ -262,7 +260,7 @@ const Calendar = ({ readOnly = false }) => {
               key={index}
               className={`absolute bottom-0 w-[90%] h-[18%] text-xs text-gray-600 flex justify-center ${marginBottoms[index]}`}
               style={{
-                backgroundColor: plan.color || '#92C7FA',
+                backgroundColor: getColorByColorId(plan.colorId),
                 borderRadius: '4px',
                 padding: '2px 4px',
                 color: '#fff',
@@ -292,7 +290,6 @@ const Calendar = ({ readOnly = false }) => {
     }
   }
 
-  // 다음 달의 날짜들 추가
   const nextMonth = month + 1;
   const nextYear = nextMonth > 11 ? year + 1 : year;
 
@@ -311,7 +308,6 @@ const Calendar = ({ readOnly = false }) => {
     }
   }
 
-  // 주 헤더 생성
   const weekHeader = (
     <div className="calendar-week-header flex">
       {daysOfWeek.map((day, index) => (
@@ -370,7 +366,7 @@ const Calendar = ({ readOnly = false }) => {
           selectedDates={selectedDates}
           closeCalendarPlanModal={() => setIsModalOpen(false)}
           calendarId={calendarId}
-          fetchData={fetchData} // fetchData 함수 전달
+          setPlans={setPlans} // setPlans 전달
         />
       )}
     </div>
