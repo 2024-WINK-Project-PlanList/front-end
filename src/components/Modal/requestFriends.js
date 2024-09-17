@@ -3,29 +3,10 @@ import PropTypes from 'prop-types';
 import { ReactComponent as Glass } from '../../assets/friendsList/magnifyingGlass.svg';
 import Friend from '../../components/Friends/newFriends';
 import { ReactComponent as Profile } from '../../assets/friendsList/profile.svg';
+import { searchFriends } from '../../api/friends';
 
 const RequestFriends = ({ hideModal }) => {
-  const [friends, setFriends] = useState([
-    {
-      id: 1,
-      profile: Profile,
-      name: '왕연진',
-      email: 'jjini6530@kookmin.ac.kr',
-    },
-    {
-      id: 2,
-      profile: Profile,
-      name: '한준교',
-      email: 'hjk5533@kookmin.ac.kr',
-    },
-    {
-      id: 3,
-      profile: Profile,
-      name: '왕연진',
-      email: 'jjini6530@kookmin.ac.kr',
-    },
-  ]);
-
+  const [friends, setFriends] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [findUser, setFindUser] = useState([]);
 
@@ -37,12 +18,21 @@ const RequestFriends = ({ hideModal }) => {
     if (userInput === '') {
       setFindUser([]);
     } else {
-      const searched = friends.filter((item) =>
-        item.email.toLowerCase().includes(userInput),
-      );
-      setFindUser(searched);
+      const fetchFriends = async () => {
+        try {
+          const data = await searchFriends(userInput, false);
+          const users = data.map((item) => item.user);
+          setFindUser(users || []);
+          console.log('새로운 친구 목록', data);
+        } catch (error) {
+          console.error('친구 검색 오류!', error);
+          setFindUser([]); // 오류가 발생하면 빈 배열로 설정
+        }
+      };
+
+      fetchFriends();
     }
-  }, [userInput, friends]);
+  }, [userInput]);
 
   const getValue = (e) => {
     setUserInput(e.target.value.toLowerCase());
@@ -83,8 +73,10 @@ const RequestFriends = ({ hideModal }) => {
                 <Friend
                   key={item.id}
                   {...item}
-                  profile={<item.profile />}
-                  name={item.name}
+                  profile={
+                    item.profileImagePath ? item.profileImagePath : <Profile />
+                  }
+                  name={item.nickname}
                   email={item.email}
                 />
               ))}
