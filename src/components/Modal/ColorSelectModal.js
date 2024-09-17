@@ -34,7 +34,7 @@ const SortableItem = ({ id, color, onClick, selectedColor }) => {
           backgroundColor: color,
         }}
         // 클릭 이벤트를 분리하여 설정
-        onClick={() => onClick(color)}
+        onClick={() => onClick(id)} // 색상 ID (1, 2, 3)을 전달
       />
       <div className="ml-2" {...listeners}>
         <ColorMoveIcon />
@@ -44,24 +44,30 @@ const SortableItem = ({ id, color, onClick, selectedColor }) => {
 };
 
 const ColorSelectModal = ({ isOpen, onClose, onSelectColor }) => {
-  const [colors, setColors] = useState(['#98CCFF', '#FF9898', '#D2FF98']);
-  const [selectedColor, setSelectedColor] = useState(colors[0]);
+  // 색상 ID와 실제 색상을 매핑합니다.
+  const colorOptions = [
+    { id: 1, color: '#98CCFF' },
+    { id: 2, color: '#FF9898' },
+    { id: 3, color: '#D2FF98' },
+  ];
+
+  const [selectedColor, setSelectedColor] = useState(colorOptions[0].id);
 
   if (!isOpen) return null;
 
   const handleOnDragEnd = ({ active, over }) => {
     if (active.id !== over.id) {
-      setColors((prevColors) => {
-        const oldIndex = prevColors.indexOf(active.id);
-        const newIndex = prevColors.indexOf(over.id);
-        return arrayMove(prevColors, oldIndex, newIndex);
+      setSelectedColor((prevColors) => {
+        const oldIndex = colorOptions.findIndex((c) => c.id === active.id);
+        const newIndex = colorOptions.findIndex((c) => c.id === over.id);
+        return arrayMove(colorOptions, oldIndex, newIndex);
       });
     }
   };
 
-  const handleColorSelect = (color) => {
-    setSelectedColor(color); // 선택한 색상을 상태로 업데이트
-    onSelectColor(color); // 부모 컴포넌트에 선택한 색상 전달
+  const handleColorSelect = (colorId) => {
+    setSelectedColor(colorId); // 선택한 색상을 상태로 업데이트
+    onSelectColor(colorId); // 부모 컴포넌트에 선택한 색상 ID 전달
   };
 
   return (
@@ -78,7 +84,7 @@ const ColorSelectModal = ({ isOpen, onClose, onSelectColor }) => {
           <h2 className="text-base font-semibold mb-4 ml-2 mt-3">현재 색상</h2>
           <div
             className="w-[95%] h-6 rounded-2xl cursor-pointer ml-2 mb-4"
-            style={{ backgroundColor: selectedColor }}
+            style={{ backgroundColor: colorOptions.find(c => c.id === selectedColor)?.color }}
           />
           <div className="text-sm text-gray-500 mb-2 ml-2">색상 목록</div>
           <DndContext
@@ -86,16 +92,16 @@ const ColorSelectModal = ({ isOpen, onClose, onSelectColor }) => {
             onDragEnd={handleOnDragEnd}
           >
             <SortableContext
-              items={colors}
+              items={colorOptions.map(option => option.id)}
               strategy={verticalListSortingStrategy}
             >
-              {colors
-                .filter((color) => color !== selectedColor) // 선택된 색상 제외
-                .map((color) => (
+              {colorOptions
+                .filter((colorOption) => colorOption.id !== selectedColor) // 선택된 색상 제외
+                .map((colorOption) => (
                   <SortableItem
-                    key={color}
-                    id={color}
-                    color={color}
+                    key={colorOption.id}
+                    id={colorOption.id}
+                    color={colorOption.color}
                     onClick={handleColorSelect} // 한 번 클릭으로 색상 선택
                     selectedColor={selectedColor} // 선택된 색상 반영
                   />
