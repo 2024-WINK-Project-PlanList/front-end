@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { format } from 'date-fns';
 import MemberSelectModal from './MemberSelectModal';
 import ColorSelectModal from './ColorSelectModal';
 
 const CalendarBottomSheet = ({
                                isOpen,
                                onClose,
-                               onAdd,
                                selectedDates = [],
                                plan,
                                fetchCalendarData,
+                               closeCalendarPlanModal,
+                               calendarId,
                              }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
-  const [selectedColor, setSelectedColor] = useState(plan?.color || '');
-  const [isPublic, setIsPublic] = useState(plan?.isPublic || false);
-  const [title, setTitle] = useState(plan?.title || '');
-  const [details, setDetails] = useState(plan?.details || '');
-  const [members, setMembers] = useState([]);
+  const [selectedColorId, setSelectedColorId] = useState(plan?.colorId || 1);
+  const [isPublic, setIsPublic] = useState(plan?.openStatus === 'PUBLIC' || false);
+  const [title, setTitle] = useState(plan?.name || '');
+  const [details, setDetails] = useState(plan?.description || '');
+  const [members, setMembers] = useState(plan?.members || []);
 
   useEffect(() => {
     if (isOpen) {
@@ -38,10 +40,11 @@ const CalendarBottomSheet = ({
 
   useEffect(() => {
     if (plan) {
-      setSelectedColor(plan?.color || '');
-      setIsPublic(plan?.isPublic || false);
-      setTitle(plan?.title || '');
-      setDetails(plan?.details || '');
+      setSelectedColorId(plan?.colorId || 1);
+      setIsPublic(plan?.openStatus === 'PUBLIC' || false);
+      setTitle(plan?.name || '');
+      setDetails(plan?.description || '');
+      setMembers(plan?.members || []);
     }
   }, [plan]);
 
@@ -75,8 +78,8 @@ const CalendarBottomSheet = ({
     setIsColorModalOpen(true);
   };
 
-  const handleColorSelect = (color) => {
-    setSelectedColor(color);
+  const handleColorSelect = (colorId) => {
+    setSelectedColorId(colorId);
     handleColorModalClose();
   };
 
@@ -85,35 +88,68 @@ const CalendarBottomSheet = ({
   };
 
   const handleAddClick = async () => {
-    const startDate = new Date(selectedDates?.[0] || Date.now());
-    const endDate = new Date(selectedDates?.[selectedDates.length - 1] || Date.now());
+    const parseDate = (dateString) => {
+      const parts = dateString.split('-');
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    };
+
+    const dateStrings = selectedDates.slice().sort();
+    const startDate = parseDate(dateStrings[0]);
+    const endDate = parseDate(dateStrings[dateStrings.length - 1]);
+
+    // 색상을 16진수에서 10진수로 변환하는 함수
+    const hexToNumber = (hexColor) => {
+      return parseInt(hexColor.replace('#', ''), 16); // ex) '#FF9898' => 16751448
+    };
+
+    // 날짜를 서버에서 기대하는 형식으로 변환
+    const formattedStartDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss");
+    const formattedEndDate = format(endDate, "yyyy-MM-dd'T'HH:mm:ss");
 
     const newPlan = {
       name: title,
       description: details,
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
       openStatus: isPublic ? 'PUBLIC' : 'PRIVATE',
-      colorId: selectedColor,
-      scheduleMembers: members.map(member => member.id),
-      calendarId: 1,
+      colorId: hexToNumber(selectedColorId), // 숫자로 변환된 색상 전달
+      scheduleMembers: members.length > 0 ? members.map((member) => member.id) : [],
+      calendarId: calendarId || 1,
     };
 
+    console.log('서버로 보낼 newPlan 데이터:', newPlan);
+
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/schedule`, newPlan, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/schedule`,
+        newPlan,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
       console.log('응답:', response.data);
+
+      // 성공 시 처리
       setIsAnimating(false);
       setTimeout(() => {
-        onAdd(newPlan);
         handleClose();
-        fetchCalendarData();
+        if (fetchCalendarData) {
+          fetchCalendarData();
+        }
+        if (closeCalendarPlanModal) {
+          closeCalendarPlanModal();
+        }
       }, 300);
     } catch (error) {
       console.error('일정 추가 중 오류 발생:', error);
+      if (error.response) {
+        console.error('서버 응답 상태 코드:', error.response.status);
+        console.error('서버 응답 데이터:', error.response.data);
+      } else {
+        console.error('서버로부터 응답이 없습니다.');
+      }
     }
   };
 
@@ -165,7 +201,7 @@ const CalendarBottomSheet = ({
                 className="w-full max-w-md px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#92C7FA] text-left"
                 onClick={handleMemberModalOpen}
               >
-                멤버
+                멤버 선택하기
               </button>
             </div>
 
@@ -177,7 +213,7 @@ const CalendarBottomSheet = ({
                 색상
                 <span
                   className="w-24 h-5 rounded-md"
-                  style={{ backgroundColor: selectedColor || '#6BB6FF' }}
+                  style={{ backgroundColor: getColorById(selectedColorId) }}
                 ></span>
               </button>
             </div>
@@ -214,13 +250,15 @@ const CalendarBottomSheet = ({
         </div>
       </div>
 
+      {/* 멤버 선택 모달 */}
       <MemberSelectModal
         isOpen={isMemberModalOpen}
         onClose={handleMemberModalClose}
-        members={['멤버 1', '멤버 2', '멤버 3']}
+        members={members}
         onMemberSelect={(selectedMembers) => setMembers(selectedMembers)}
       />
 
+      {/* 색상 선택 모달 */}
       <ColorSelectModal
         isOpen={isColorModalOpen}
         onClose={handleColorModalClose}
@@ -231,3 +269,13 @@ const CalendarBottomSheet = ({
 };
 
 export default CalendarBottomSheet;
+
+// Helper function to get color by ID
+function getColorById(colorId) {
+  const colorMap = {
+    1: '#6BB6FF',
+    2: '#FFA500',
+    3: '#FF69B4',
+  };
+  return colorMap[colorId] || '#6BB6FF';
+}
