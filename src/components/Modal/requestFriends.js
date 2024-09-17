@@ -6,7 +6,6 @@ import { ReactComponent as Profile } from '../../assets/friendsList/profile.svg'
 import { searchFriends } from '../../api/friends';
 
 const RequestFriends = ({ hideModal }) => {
-  const [friends, setFriends] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [findUser, setFindUser] = useState([]);
 
