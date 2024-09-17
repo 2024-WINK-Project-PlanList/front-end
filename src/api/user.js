@@ -1,8 +1,8 @@
 import { customAxios } from './customAxios';
 
 const getToken = () => {
-  return sessionStorage.getItem('token');
-  // return 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0bmFsczY1NUBrb29rbWluLmFjLmtyIiwiaWF0IjoxNzI2NDEwNjE0LCJleHAiOjE3MjcwMTU0MTQsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWQiOjF9.TQ-HNQnEWVfbhXeQJw6AKB2REhqbyJjRvQ-Oj-OY8BI';
+  // return sessionStorage.getItem('token');
+  return process.env.REACT_APP_TEST_TOKEN;
 };
 
 export const getUserInfo = async () => {

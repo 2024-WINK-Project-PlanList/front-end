@@ -1,10 +1,16 @@
 import axios from 'axios';
+import { customAxios } from './customAxios';
 
 const SPOTIFY_API_BASE_URL = 'https://api.spotify.com/v1';
 const TOKEN_URL = 'https://accounts.spotify.com/api/token';
 
 const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET;
+
+const getToken = () => {
+  // return sessionStorage.getItem('token');
+  return process.env.REACT_APP_TEST_TOKEN;
+};
 
 const getEncodedCredentials = () => {
   if (!CLIENT_ID || !CLIENT_SECRET) {
@@ -15,7 +21,7 @@ const getEncodedCredentials = () => {
   return btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
 };
 
-// 토큰 가져오기
+// spotify 토큰 가져오기
 export const fetchToken = async () => {
   try {
     const response = await axios.post(
@@ -55,6 +61,27 @@ export const searchTracks = async (token, query) => {
       '트랙을 검색하는 중 에러 발생:',
       error.response ? error.response.data : error.message,
     );
+    throw error;
+  }
+};
+
+// 음악 변경 api
+export const modifySong = async (songData) => {
+  try {
+    const response = await customAxios.patch(
+      `/user/me/song`,
+      {
+        songId: songData.songId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('노래 변경 오류!', error);
     throw error;
   }
 };
