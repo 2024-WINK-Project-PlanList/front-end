@@ -22,7 +22,7 @@ const MemberSelectModal = ({
     }
   }, [isOpen, members]);
 
-  
+  useEffect(() => {
     const searchFriends = async () => {
       try {
         const response = await axios.get(
@@ -36,31 +36,25 @@ const MemberSelectModal = ({
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           },
-        },
-      );
+        );
 
-      const allFriendsData = response.data.map((result) => ({
-        friend: result.friend,
-        friendshipId: result.friendshipId,
-      }));
+        const allFriendsData = response.data.map((result) => ({
+          friend: result.friend,
+          friendshipId: result.friendshipId,
+        }));
 
-
-        setFilteredMembers(searchResults);
+        setFilteredMembers(allFriendsData);
       } catch (error) {
         console.error('친구 검색 중 오류 발생:', error);
       }
     };
 
-
     if (searchTerm) {
       searchFriends(); // 검색어가 있을 때 친구 검색
     } else {
-
       setFilteredMembers(members);
     }
   }, [searchTerm, onlyFriends, isOpen, members]);
-
-  if (!isOpen) return null;
 
   // 선택된 멤버의 상태를 토글하는 함수 (선택 또는 선택 해제)
   const toggleMemberSelection = (member) => {
@@ -73,7 +67,6 @@ const MemberSelectModal = ({
 
   const handleAdd = async () => {
     try {
-
       if (invite) {
         await InviteMembers(selectedMembers);
       } else {
@@ -90,7 +83,6 @@ const MemberSelectModal = ({
       onClose();
     } catch (error) {
       console.error('멤버 처리 중 오류 발생:', error);
-
     }
   };
 
@@ -135,8 +127,12 @@ const MemberSelectModal = ({
           <div className="text-sm text-gray-500 mb-2 ml-2">친구 목록</div>
           <div className="space-y-2">
             {filteredMembers.map((result, index) => {
-              if (!result.user) return null;
+              const { friend, profileImage } = result; // Destructure the result
+              if (!friend) return null;
 
+              const isSelected = selectedMembers.find(
+                (m) => m.id === friend.id,
+              );
 
               return (
                 <div
@@ -147,7 +143,7 @@ const MemberSelectModal = ({
                   onClick={() => toggleMemberSelection(friend)}
                 >
                   <img
-                    src={profileImage}
+                    src={profileImage || myProfileImage}
                     alt={friend.nickname || 'No Name'}
                     className="w-10 h-10 rounded-full mr-3"
                   />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deleteSharedCalendar } from '../../api/sharedCalendar';
+import { ReactComponent as BasicPic } from '../../assets/sharedCalendar/shareCalendarNone.svg';
 
 const ExitCalendarModal = ({
   isOpen,
@@ -30,12 +31,14 @@ const ExitCalendarModal = ({
         <div className="absolute inset-x-0 bottom-11 border-t border-[#D5D5D5]" />
         <div className="absolute inset-y-56 left-1/2 border-l border-[#D5D5D5] h-[44px]" />
         <div className="text-center mb-4 flex flex-col items-center">
-          {calendarImage && (
+          {calendarImage ? (
             <img
               src={calendarImage}
               alt="calendar logo"
               className="w-24 h-24 border border-gray-300 rounded-lg mb-2"
             />
+          ) : (
+            <BasicPic className="w-24 h-24 mb-2" />
           )}
           {calendarName && (
             <p className="text-xl font-semibold">{calendarName}</p>

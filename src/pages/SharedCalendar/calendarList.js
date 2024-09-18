@@ -4,18 +4,22 @@ import BottomSheet from '../../components/Modal/modifySharedCalendar';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import { getCalendarList } from '../../api/sharedCalendar';
+import { ReactComponent as BasicPic } from '../../assets/sharedCalendar/shareCalendarNone.svg';
 
 const CalendarItem = ({ calendar, onClick }) => (
   <div
-    className="flex items-center border-b p-4 hover:bg-gray-100 cursor-pointer"
+    className="flex items-center p-4 hover:bg-gray-100 cursor-pointer"
     onClick={() => onClick(calendar.id)}
   >
-    <img
-      src={calendar.image}
-      alt="calendar-logo"
-      className="w-16 h-16 border border-[#E6E6E6] rounded"
-      style={{ borderRadius: '10px' }}
-    />
+    {calendar.image ? (
+      <img
+        src={calendar.image}
+        alt="calendar-logo"
+        className="w-16 h-16 border border-[#E6E6E6] rounded-[10px]"
+      />
+    ) : (
+      <BasicPic />
+    )}
     <div className="ml-4">
       <div className="flex items-center">
         <div className="text-[20px] font-bold">{calendar.name}</div>

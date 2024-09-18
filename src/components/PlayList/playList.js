@@ -5,7 +5,7 @@ import { ReactComponent as Pause } from '../../assets/mypage/pause.svg';
 import { ReactComponent as PlayBack } from '../../assets/mypage/play-back.svg';
 import { ReactComponent as PlayForward } from '../../assets/mypage/play-forward.svg';
 
-const PlayList = ({ onClick, music, title, artist, time }) => {
+const PlayList = ({ onClick, music, title, artist, time, cover }) => {
   return (
     <div onClick={onClick} className="px-[39px] w-full">
       {music === false ? (
@@ -16,9 +16,21 @@ const PlayList = ({ onClick, music, title, artist, time }) => {
         <div className="h-[183px] rounded-[0.625rem] bg-[#ECF5FF] drop-shadow-[4px_4px_6px_rgba(0,0,0,0.25)]">
           <div className="flex items-center pl-[20px] pt-[18px] justify-between">
             <div className="flex items-center">
-              <div className="w-[67px] h-[67px] rounded-[0.625rem] bg-[#D9D9D9]"></div>
+              <div className="w-[67px] h-[67px] rounded-[0.625rem] bg-[#D9D9D9] overflow-hidden">
+                {cover ? (
+                  <img
+                    src={cover}
+                    alt="Cover"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="text-[#9B9B9B] text-xs">앨범 커버 없음</div>
+                  </div>
+                )}
+              </div>
               <div className="flex-col pl-[12px]">
-                <div className="font-preMedium ">{title}</div>
+                <div className="font-preMedium">{title}</div>
                 <div className="font-preLight text-sm text-[#676767]">
                   {artist}
                 </div>
@@ -51,7 +63,8 @@ PlayList.propTypes = {
   onClick: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   artist: PropTypes.string.isRequired,
-  time: PropTypes.number.isRequired,
+  time: PropTypes.string.isRequired,
+  cover: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
 };
 
 export default PlayList;
