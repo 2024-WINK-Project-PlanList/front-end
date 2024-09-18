@@ -24,14 +24,17 @@ const FriendsList = () => {
 
         if (data && Array.isArray(data.user)) {
           setFriends(data.user);
+          setFindUser(data.user);
         } else {
           setFriends([]);
+          setFindUser([]);
         }
 
         console.log('내친구 목록', data);
       } catch (error) {
         console.error('친구리스트 불러오기 실패', error);
         setFriends([]);
+        setFindUser([]);
       }
     };
 
@@ -40,20 +43,12 @@ const FriendsList = () => {
 
   useEffect(() => {
     if (userInput === '') {
-      setFindUser([]);
+      setFindUser(friends); // 검색어가 없으면 전체 친구 목록을 표시
     } else {
-      const fetchFriends = async () => {
-        try {
-          const data = await searchFriends(userInput, true);
-          const users = data.map((item) => item.user);
-          setFindUser(users || []);
-        } catch (error) {
-          console.error('친구 검색 오류!', error);
-          setFindUser([]); // 오류가 발생하면 빈 배열로 설정
-        }
-      };
-
-      fetchFriends();
+      const filteredFriends = friends.filter((friend) =>
+        friend.email.toLowerCase().includes(userInput),
+      );
+      setFindUser(filteredFriends || []); // 필터링된 결과 표시
     }
   }, [userInput, friends]);
 
@@ -71,7 +66,8 @@ const FriendsList = () => {
 
   const handleDelete = (id) => {
     const updatedFriends = friends.filter((friend) => friend.id !== id);
-    setFriends(updatedFriends);
+    setFriends(updatedFriends); // 친구 목록에서 해당 친구 삭제
+    setFindUser(updatedFriends); // 검색 결과에서도 삭제
   };
 
   return (
