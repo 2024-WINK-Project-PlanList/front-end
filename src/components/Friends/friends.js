@@ -46,7 +46,7 @@ const Friends = ({ profile, name, email, song, onDelete }) => {
             <div className="font-preLight text-xs text-[#3F3F3F]">{email}</div>
           </div>
         </div>
-        <FriendsMusic song={song} />
+        {song === null ? null : <FriendsMusic song={song} />}
       </div>
 
       {isSlide && (

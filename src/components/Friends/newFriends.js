@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { requestFriend } from '../../api/friends';
 
-const NewFriends = ({ profile, name, email }) => {
+const NewFriends = ({ profile, name, email, friendData, userData }) => {
   const [isCliked, setIsCliked] = useState(false);
 
-  const btnCliked = () => {
-    setIsCliked(!isCliked);
+  const btnCliked = async () => {
+    setIsCliked(true);
+
+    // 친구 요청 API 호출
+    if (!isCliked) {
+      try {
+        await requestFriend(friendData, userData);
+        console.log('친구 요청 성공');
+      } catch (error) {
+        console.error('친구 요청 실패', error);
+        console.log(userData, friendData);
+      }
+    }
   };
 
   return (
@@ -40,6 +52,8 @@ NewFriends.propTypes = {
     .isRequired,
   name: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
+  friendData: PropTypes.number.isRequired,
+  userData: PropTypes.number.isRequired,
 };
 
 export default NewFriends;
