@@ -6,14 +6,17 @@ const token = localStorage.getItem('token');
 const Friend = ({ value, onRemove }) => {
   const onAllow = () => {
     customAxios
-      .post(`/friend/accept`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: {
+      .post(
+        `/friend/accept`,
+        {
           friendshipId: value.referenceId,
         },
-      })
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
       .then((response) => {
         if (response.status === 200) {
           onRemove(value.id);
