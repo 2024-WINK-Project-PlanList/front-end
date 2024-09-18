@@ -8,7 +8,7 @@ import { getCalendarList } from '../../api/sharedCalendar';
 const CalendarItem = ({ calendar, onClick }) => (
   <div
     className="flex items-center border-b p-4 hover:bg-gray-100 cursor-pointer"
-    onClick={() => onClick(calendar.calendarId)}
+    onClick={() => onClick(calendar.id)}
   >
     <img
       src={calendar.image}
@@ -36,6 +36,7 @@ const CalendarList = () => {
   const navigate = useNavigate();
 
   const handleCalendarClick = (calendarId) => {
+    console.log(calendarId);
     navigate(`/calendar/${calendarId}`);
   };
 

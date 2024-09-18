@@ -15,7 +15,8 @@ const CalendarDetail = () => {
     const fetchCalendar = async () => {
       try {
         const res = await getSharedCalendar(calendarId);
-        setCalendar(res.data);
+        console.log(res);
+        setCalendar(res);
       } catch (error) {
         console.error('공유캘린더 조회 실패:', error);
       }
@@ -42,16 +43,19 @@ const CalendarDetail = () => {
     <div className="flex flex-col justify-center items-center h-screen p-8">
       <div className="flex items-center p-4 w-full">
         <img
-          src={calendar.image}
+          src={calendar?.image || '/default-image.png'} // Optional Chaining 사용 및 기본 이미지 처리
           alt="calendar-logo"
           className="w-20 h-20 border border-[#E6E6E6] rounded"
           style={{ borderRadius: '10px' }}
         />
         <div className="ml-4">
           <div className="flex items-center">
-            <div className="text-[24px] font-bold">{calendar.name}</div>
+            <div className="text-[24px] font-bold">
+              {calendar?.name || 'No name'}
+            </div>{' '}
+            {/* 기본값 처리 */}
             <div className="ml-2 text-[16px] text-[#676767]">
-              {calendar.members}
+              {calendar?.members || 'No members'}
             </div>
             <img
               src={setting}
@@ -62,7 +66,7 @@ const CalendarDetail = () => {
             />
           </div>
           <div className="text-[12px] text-[#676767]">
-            {calendar.description}
+            {calendar?.description || 'No description'} {/* 기본값 처리 */}
           </div>
         </div>
       </div>
@@ -73,10 +77,10 @@ const CalendarDetail = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         mode="edit"
-        name={calendar.name}
-        description={calendar.description}
-        members={calendar.members}
-        image={calendar.image}
+        name={calendar?.name}
+        description={calendar?.description}
+        members={calendar?.members}
+        image={calendar?.image}
         onSave={handleSave}
         onExit={handleExit}
       />
