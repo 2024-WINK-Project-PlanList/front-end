@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
-import MemberSelectModal from './MemberSelectModal';
+import FriendsSelectModal from './FriendsSelectModal';
 import ColorSelectModal from './ColorSelectModal';
+import myProfileImage from '../../assets/mainpage/profile.svg'; // 기본 프로필 이미지
 
 const CalendarBottomSheet = ({
   isOpen,
@@ -13,10 +14,6 @@ const CalendarBottomSheet = ({
   calendarId,
   setPlans,
 }) => {
-  useEffect(() => {
-    console.log('CalendarBottomSheet에서 setPlans:', setPlans);
-  }, [setPlans]);
-
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
@@ -27,7 +24,7 @@ const CalendarBottomSheet = ({
   );
   const [title, setTitle] = useState(plan?.name || '');
   const [details, setDetails] = useState(plan?.description || '');
-  const [members, setMembers] = useState(plan?.members || []);
+  const [members, setMembers] = useState([]); // 선택된 멤버 상태 관리
 
   useEffect(() => {
     if (isOpen) {
@@ -44,13 +41,15 @@ const CalendarBottomSheet = ({
     }
   }, [isOpen]);
 
+  // 클릭된 일정의 정보를 세팅하는 로직
   useEffect(() => {
     if (plan) {
       setSelectedColorId(plan?.colorId || 1);
       setIsPublic(plan?.openStatus === 'PUBLIC' || false);
       setTitle(plan?.name || '');
       setDetails(plan?.description || '');
-      setMembers(plan?.members || []);
+      // 'scheduleMemberList'가 있을 경우 members로 설정
+      setMembers(plan?.scheduleMemberList || []); // 수정 시 멤버 정보 설정
     }
   }, [plan]);
 
@@ -100,9 +99,6 @@ const CalendarBottomSheet = ({
       return;
     }
 
-    console.log('캘린더 ID:', calendarId); // 캘린더 ID 로그 출력
-    console.log('선택된 날짜들:', selectedDates); // 선택된 날짜 로그 출력
-
     const parseDate = (dateString) => {
       const parts = dateString.split('-');
       return new Date(parts[0], parts[1] - 1, parts[2]);
@@ -131,8 +127,6 @@ const CalendarBottomSheet = ({
       calendarId: calendarId, // 캘린더 ID 전달
     };
 
-    console.log('백엔드로 보낼 새로운 일정 정보:', newPlan); // 새로운 일정 정보 로그
-
     try {
       let response;
 
@@ -147,7 +141,6 @@ const CalendarBottomSheet = ({
             },
           },
         );
-        console.log('일정 수정 응답:', response.data);
       } else {
         // 새로운 일정 추가는 POST 요청을 사용
         response = await axios.post(
@@ -159,7 +152,6 @@ const CalendarBottomSheet = ({
             },
           },
         );
-        console.log('일정 추가 응답:', response.data);
       }
 
       // 일정 추가 또는 수정 후 일정 목록을 다시 가져옴
@@ -174,12 +166,6 @@ const CalendarBottomSheet = ({
       }, 300);
     } catch (error) {
       console.error('일정 처리 중 오류 발생:', error);
-      if (error.response) {
-        console.error('서버 응답 상태 코드:', error.response.status);
-        console.error('서버 응답 데이터:', error.response.data);
-      } else {
-        console.error('서버로부터 응답이 없습니다.');
-      }
     }
   };
 
@@ -194,7 +180,6 @@ const CalendarBottomSheet = ({
           },
         },
       );
-      console.log('캘린더 새로 고침 정보:', calendarResponse.data);
 
       if (
         calendarResponse.data &&
@@ -202,18 +187,19 @@ const CalendarBottomSheet = ({
       ) {
         if (typeof setPlans === 'function') {
           setPlans(calendarResponse.data.individualScheduleList);
-          console.log(
-            '업데이트된 일정들:',
-            calendarResponse.data.individualScheduleList,
-          );
-        } else {
-          console.error('setPlans가 함수가 아닙니다.');
         }
       }
     } catch (error) {
       console.error('캘린더 데이터 다시 가져오기 오류:', error);
     }
   };
+
+  const handleAddMembers = (selectedMembers) => {
+    setMembers(selectedMembers); // 선택된 멤버 업데이트
+  };
+
+  const displayedMembers = members.slice(0, 3); // 최대 3명의 멤버만 표시
+  const extraMembersCount = members.length - 3; // 3명 초과 시 나머지 멤버 수 계산
 
   if (!isMounted) return null;
 
@@ -243,6 +229,7 @@ const CalendarBottomSheet = ({
               {plan ? '수정' : '추가'}
             </button>
           </div>
+
           <div className="p-4">
             <div className="mb-4">
               <input
@@ -264,12 +251,28 @@ const CalendarBottomSheet = ({
               />
             </div>
 
-            <div className="mb-4">
+            {/* 멤버 버튼 내부에 멤버들을 우측 정렬하여 표시 */}
+            <div className="mb-4 relative">
               <button
-                className="w-full max-w-md px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#92C7FA] text-left"
+                className="w-full max-w-md px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#92C7FA] text-left flex items-center justify-between"
                 onClick={handleMemberModalOpen}
               >
                 멤버
+                <div className="flex items-center space-x-1">
+                  {displayedMembers.map((member, index) => (
+                    <img
+                      key={index}
+                      src={member.profileImagePath || myProfileImage}
+                      alt={member.nickname || 'No Name'}
+                      className="w-6 h-6 rounded-full"
+                    />
+                  ))}
+                  {extraMembersCount > 0 && (
+                    <span className="w-6 h-6 rounded-full flex items-center justify-center bg-gray-200">
+                      +{extraMembersCount}
+                    </span>
+                  )}
+                </div>
               </button>
             </div>
 
@@ -318,11 +321,11 @@ const CalendarBottomSheet = ({
         </div>
       </div>
 
-      <MemberSelectModal
+      <FriendsSelectModal
         isOpen={isMemberModalOpen}
         onClose={handleMemberModalClose}
         members={members}
-        onMemberSelect={(selectedMembers) => setMembers(selectedMembers)}
+        onAdd={handleAddMembers} // 멤버 추가 콜백 전달
       />
 
       <ColorSelectModal

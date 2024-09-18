@@ -1,4 +1,3 @@
-// Calendar 컴포넌트
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import CalendarPlan from '../../components/Modal/calendarPlan';
@@ -18,6 +17,7 @@ const Calendar = ({ readOnly = false }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(null);
   const [dragEnd, setDragEnd] = useState(null);
+  const [disableSwipe, setDisableSwipe] = useState(false); // 스와이프 비활성화 상태
 
   const dragTimer = useRef(null);
   const holdThreshold = 200;
@@ -58,6 +58,7 @@ const Calendar = ({ readOnly = false }) => {
     if (readOnly) return;
     dragTimer.current = setTimeout(() => {
       setIsDragging(true);
+      setDisableSwipe(true); // 드래그 중에는 스와이프 비활성화
       const startDate = new Date(selectedYear, selectedMonth, day);
       setDragStart(startDate);
       setDragEnd(startDate);
@@ -81,6 +82,7 @@ const Calendar = ({ readOnly = false }) => {
     clearTimeout(dragTimer.current);
     if (isDragging) {
       setIsDragging(false);
+      setDisableSwipe(false); // 드래그 종료 후 스와이프 활성화
       if (Array.isArray(selectedDates) && selectedDates.length > 0) {
         setIsBottomSheetOpen(true);
       }
@@ -171,9 +173,10 @@ const Calendar = ({ readOnly = false }) => {
     }
   };
 
+  // 스와이프 핸들러
   const handlers = useSwipeable({
-    onSwipedLeft: () => handleNextMonth(),
-    onSwipedRight: () => handlePrevMonth(),
+    onSwipedLeft: () => !disableSwipe && handleNextMonth(),
+    onSwipedRight: () => !disableSwipe && handlePrevMonth(),
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
   });
