@@ -9,8 +9,7 @@ import ModifyProfile from '../../components/Modal/modifyProfile';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import { getUserInfo, modifyUserInfo } from '../../api/user';
-import { fetchToken } from '../../api/music';
-import { getTrackById } from '../../api/music';
+import { fetchToken, getTrackById } from '../../api/music';
 
 const MyPage = () => {
   const [profileData, setProfileData] = useState([]);
@@ -18,25 +17,27 @@ const MyPage = () => {
   const [modalIsOpen, setModalState] = useState(false);
   const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState(null);
-  // const [token, setToken] = useState('');
-  // const [songTitle, setSongTitle] = useState(null);
-  // const [songArtist, setSongArtist] = useState(null);
-  // const [songTime, setSongTime] = useState(null);
+  const [token, setToken] = useState('');
+  const [songTitle, setSongTitle] = useState(null);
+  const [songArtist, setSongArtist] = useState(null);
+  const [songTime, setSongTime] = useState(null);
+  const [songCover, setSongCover] = useState(null);
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   // spotify token 가져오기
-  // useEffect(() => {
-  //   const getToken = async () => {
-  //     try {
-  //       const token = await fetchToken();
-  //       setToken(token);
-  //       console.log('토큰이왓서요', token);
-  //     } catch (error) {
-  //       console.error('토큰 에러 발생:', error);
-  //     }
-  //   };
-  //
-  //   getToken();
-  // }, []);
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        const token = await fetchToken();
+        setToken(token);
+        console.log('spotify 토큰', token);
+      } catch (error) {
+        console.error('토큰 에러 발생:', error);
+      }
+    };
+
+    getToken();
+  }, []);
 
   // 프로필 불러오기
   useEffect(() => {
@@ -50,25 +51,40 @@ const MyPage = () => {
           setImagePreview(data.user.profileImagePath);
         }
 
-        // if (data.user.songId && token) {
-        //   const trackData = await getTrackById(token, data.user.songId);
-        //   setSongTitle(trackData.name);
-        //   setSongArtist(trackData.artist.name);
-        //   setSongTime(trackData.duration_ms);
-        //   console.log('노래정보', trackData);
-        //   console.log('송인포에뇨', songTitle);
-        //   console.log(songArtist);
-        //   console.log(songTime);
-        // }
+        if (data.user.songId && token) {
+          setLoading(true); // 데이터 로딩 시작
+          const trackData = await getTrackById(token, data.user.songId);
+          setSongTitle(trackData.name);
+          setSongArtist(
+            trackData.artists.map((artist) => artist.name).join(', '),
+          );
+          setSongTime(
+            `${Math.floor(trackData.duration_ms / 60000)}:${Math.floor(
+              (trackData.duration_ms % 60000) / 1000,
+            )
+              .toString()
+              .padStart(2, '0')}`,
+          );
+          setSongCover(trackData.album.images[2].url);
+          console.log(songTitle);
+          console.log(songArtist);
+          console.log(songTime);
+          console.log(songCover);
+          console.log('노래정보', trackData);
+          setLoading(false); // 데이터 로딩 완료
+        } else {
+          setLoading(false); // 데이터가 없더라도 로딩 완료
+        }
 
         console.log('내정보', data);
       } catch (error) {
-        console.error('Failed to fetch user info:', error);
+        console.error('정보불러오기 오류:', error);
+        setLoading(false); // 오류 발생 시 로딩 완료
       }
     };
 
     fetchUserInfo();
-  }, []);
+  }, [token]);
 
   // 프로필 수정
   const handleSaveProfile = async (updatedProfile) => {
@@ -161,7 +177,20 @@ const MyPage = () => {
         <div className="w-full pb-[13px] pt-[33px] pl-[33px] font-preSemiBold text-xl">
           나의 PlayList
         </div>
-        <PlayList onClick={clickPlayList} music={!!profileData?.songId} />
+        {loading ? (
+          <div className="flex justify-center items-center w-full h-[200px] text-xl">
+            음악 로딩중...
+          </div>
+        ) : (
+          <PlayList
+            onClick={clickPlayList}
+            music={!!profileData?.songId}
+            title={songTitle}
+            artist={songArtist}
+            time={songTime}
+            cover={songCover}
+          />
+        )}
 
         {modalIsOpen && (
           <ModifyProfile
@@ -175,4 +204,5 @@ const MyPage = () => {
     </>
   );
 };
+
 export default MyPage;
