@@ -4,12 +4,8 @@ const ChooseImageModal = ({ isOpen, onClose, onImageSelect }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        onImageSelect(reader.result);
-        onClose();
-      };
-      reader.readAsDataURL(file);
+      onImageSelect(file);
+      onClose();
     }
   };
 

@@ -21,6 +21,7 @@ const CalendarBottomSheet = ({
   image,
   onSave,
   onExit,
+  id,
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -31,6 +32,7 @@ const CalendarBottomSheet = ({
   const [calendarMembers, setCalendarMembers] = useState(0);
   const [calendarImage, setCalendarImage] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedMemberIds, setSelectedMemberIds] = useState([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -149,7 +151,7 @@ const CalendarBottomSheet = ({
         await createSharedCalendar({
           name: calendarName,
           description: calendarDescription,
-          membersToInvite: [], // 멤버 선택 모달과 연동 필요
+          membersToInvite: selectedMemberIds, // 멤버 선택 모달과 연동 필요
         });
       }
 
@@ -171,6 +173,12 @@ const CalendarBottomSheet = ({
   };
 
   if (!isMounted) return null;
+
+  function handleMemberSelect(selectedMembers) {
+    const selectedMemberIds = selectedMembers.map((member) => member.id);
+    setSelectedMemberIds(selectedMemberIds);
+    console.log('선택된 유저 아이디:', selectedMemberIds);
+  }
 
   return (
     <>
@@ -269,6 +277,8 @@ const CalendarBottomSheet = ({
         isOpen={isMemberModalOpen}
         onClose={handleMemberModalClose}
         members={['멤버 1', '멤버 2', '멤버 3']}
+        invite={false}
+        onMemberSelect={handleMemberSelect}
       />
 
       <DetailModal
@@ -277,6 +287,7 @@ const CalendarBottomSheet = ({
         onConfirm={handleDetailModalConfirm}
         calendarName={calendarName}
         calendarImage={calendarImage}
+        calendarId={id}
       />
 
       <ChooseImageModal

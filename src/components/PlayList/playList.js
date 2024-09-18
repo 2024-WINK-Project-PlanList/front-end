@@ -5,7 +5,7 @@ import { ReactComponent as Pause } from '../../assets/mypage/pause.svg';
 import { ReactComponent as PlayBack } from '../../assets/mypage/play-back.svg';
 import { ReactComponent as PlayForward } from '../../assets/mypage/play-forward.svg';
 
-const PlayList = ({ onClick, music }) => {
+const PlayList = ({ onClick, music, title, artist, time }) => {
   return (
     <div onClick={onClick} className="px-[39px] w-full">
       {music === false ? (
@@ -18,9 +18,9 @@ const PlayList = ({ onClick, music }) => {
             <div className="flex items-center">
               <div className="w-[67px] h-[67px] rounded-[0.625rem] bg-[#D9D9D9]"></div>
               <div className="flex-col pl-[12px]">
-                <div className="font-preMedium ">JASMINE</div>
+                <div className="font-preMedium ">{title}</div>
                 <div className="font-preLight text-sm text-[#676767]">
-                  DPR LIVE
+                  {artist}
                 </div>
               </div>
             </div>
@@ -33,7 +33,7 @@ const PlayList = ({ onClick, music }) => {
             <div className="relative w-[239px] h-[8px] rounded-[0.625rem] bg-[#D1D1D1]">
               <div className="absolute w-[79px] h-[8px] rounded-l-[0.625rem] bg-[#676767]"></div>
             </div>
-            <div className="text-[#B3B3B3] pl-[5px]">- 03:16</div>
+            <div className="text-[#B3B3B3] pl-[5px]">- {time}</div>
           </div>
           <div className="flex justify-between items-center pt-[23px] px-[89px]">
             <PlayBack />
@@ -49,6 +49,9 @@ const PlayList = ({ onClick, music }) => {
 PlayList.propTypes = {
   music: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  artist: PropTypes.string.isRequired,
+  time: PropTypes.number.isRequired,
 };
 
 export default PlayList;

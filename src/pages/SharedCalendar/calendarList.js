@@ -8,7 +8,7 @@ import { getCalendarList } from '../../api/sharedCalendar';
 const CalendarItem = ({ calendar, onClick }) => (
   <div
     className="flex items-center border-b p-4 hover:bg-gray-100 cursor-pointer"
-    onClick={() => onClick(calendar.calendarId)}
+    onClick={() => onClick(calendar.id)}
   >
     <img
       src={calendar.image}
@@ -36,14 +36,18 @@ const CalendarList = () => {
   const navigate = useNavigate();
 
   const handleCalendarClick = (calendarId) => {
-    navigate(`/calendar/${calendarId}`);
+    console.log(calendarId);
+    navigate(`/calendar/${calendarId}`, {
+      state: { calendarId },
+    });
   };
 
   useEffect(() => {
     const fetchCalendarList = async () => {
       try {
-        const res = await getCalendarList();
-        setCalendars(res.data || []);
+        const res = await await getCalendarList();
+        console.log(res);
+        setCalendars(res || []);
       } catch (error) {
         console.error('캘린더 목록 조회 실패:', error);
       }
@@ -78,7 +82,7 @@ const CalendarList = () => {
   return (
     <div className="flex flex-col h-screen relative">
       <Header />
-      <div className="flex-grow overflow-y-auto">
+      <div className="flex-grow overflow-y-auto pb-[5.875rem]">
         {calendars.map((calendar) => (
           <CalendarItem
             key={calendar.calendarId}

@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import myProfileImage from '../../assets/mainpage/profile.svg'; // 기본 프로필 이미지 임포트
+import { SearchFriends, InviteMembers } from '../../api/members';
 
-const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
+const MemberSelectModal = ({
+  isOpen,
+  onClose,
+  members,
+  onAdd,
+  invite,
+  onMemberSelect, // New prop for member selection callback
+}) => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredMembers, setFilteredMembers] = useState([]); // 검색된 멤버 저장
-  const [allFriends, setAllFriends] = useState([]); // 모든 친구 저장
+  const [filteredMembers, setFilteredMembers] = useState([]);
+  const [onlyFriends, setOnlyFriends] = useState(true);
 
   useEffect(() => {
     if (isOpen) {
@@ -14,14 +22,19 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
     }
   }, [isOpen, members]);
 
-  // 친구 목록 불러오기 함수
-  const fetchAllFriends = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/friend`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Bearer 토큰을 헤더에 추가
+  
+    const searchFriends = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/friend/search`,
+          {
+            params: {
+              keyword: searchTerm,
+              onlyFriends: onlyFriends,
+            },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
           },
         },
       );
@@ -31,54 +44,23 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
         friendshipId: result.friendshipId,
       }));
 
-      console.log('모든 친구 목록:', allFriendsData);
-      setAllFriends(allFriendsData); // 모든 친구 목록 저장
-      setFilteredMembers(allFriendsData); // 초기에는 모든 친구 목록을 표시
-    } catch (error) {
-      console.error('모든 친구 목록 불러오기 중 오류 발생:', error);
-    }
-  };
 
-  // 검색된 친구 목록 불러오기 함수
-  const searchFriends = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/friend/search`,
-        {
-          params: {
-            keyword: searchTerm,
-            onlyFriends: true, // 친구만 검색
-          },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Bearer 토큰을 헤더에 추가
-          },
-        },
-      );
+        setFilteredMembers(searchResults);
+      } catch (error) {
+        console.error('친구 검색 중 오류 발생:', error);
+      }
+    };
 
-      const searchResults = response.data.map((result) => ({
-        friend: result.user,
-        isFriend: result.isFriend,
-      }));
-
-      console.log('검색된 친구 목록:', searchResults);
-      setFilteredMembers(searchResults); // 검색된 친구 목록을 상태에 저장
-    } catch (error) {
-      console.error('친구 검색 중 오류 발생:', error);
-    }
-  };
-
-  useEffect(() => {
-    if (!isOpen) {
-      setSearchTerm('');
-      return;
-    }
 
     if (searchTerm) {
       searchFriends(); // 검색어가 있을 때 친구 검색
     } else {
-      fetchAllFriends(); // 검색어가 없을 때는 모든 친구 목록 불러오기
+
+      setFilteredMembers(members);
     }
-  }, [searchTerm, isOpen]);
+  }, [searchTerm, onlyFriends, isOpen, members]);
+
+  if (!isOpen) return null;
 
   // 선택된 멤버의 상태를 토글하는 함수 (선택 또는 선택 해제)
   const toggleMemberSelection = (member) => {
@@ -91,10 +73,24 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
 
   const handleAdd = async () => {
     try {
-      onAdd(selectedMembers); // 선택된 멤버를 부모로 전달하는 콜백
+
+      if (invite) {
+        await InviteMembers(selectedMembers);
+      } else {
+        const selectedMemberIds = selectedMembers.map((member) => member.id);
+        if (typeof onAdd === 'function') {
+          onAdd(selectedMemberIds);
+        }
+      }
+      // Notify parent of selected members
+      if (typeof onMemberSelect === 'function') {
+        onMemberSelect(selectedMembers);
+      }
+      setSelectedMembers([]);
       onClose();
     } catch (error) {
-      console.error('멤버 추가 중 오류 발생:', error);
+      console.error('멤버 처리 중 오류 발생:', error);
+
     }
   };
 
@@ -139,14 +135,8 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
           <div className="text-sm text-gray-500 mb-2 ml-2">친구 목록</div>
           <div className="space-y-2">
             {filteredMembers.map((result, index) => {
-              const friend = result.friend;
+              if (!result.user) return null;
 
-              if (!friend) return null; // friend 객체가 없을 경우 렌더링하지 않음
-
-              const profileImage = friend.profileImagePath || myProfileImage; // 기본 이미지 처리
-              const isSelected = selectedMembers.find(
-                (m) => m.id === friend.id,
-              ); // 이미 선택된 멤버인지 확인
 
               return (
                 <div
