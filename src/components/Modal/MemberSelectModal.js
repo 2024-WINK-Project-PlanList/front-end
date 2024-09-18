@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // axios 임포트 추가
+import axios from 'axios';
 import { SearchFriends, InviteMembers } from '../../api/members';
 
-const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
+const MemberSelectModal = ({
+  isOpen,
+  onClose,
+  members,
+  onAdd,
+  invite,
+  onMemberSelect, // New prop for member selection callback
+}) => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredMembers, setFilteredMembers] = useState([]); // 검색된 멤버 저장
-  const [onlyFriends, setOnlyFriends] = useState(true); // 친구만 검색 여부
+  const [filteredMembers, setFilteredMembers] = useState([]);
+  const [onlyFriends, setOnlyFriends] = useState(true);
 
   useEffect(() => {
     if (!isOpen) {
@@ -24,7 +31,7 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
               onlyFriends: onlyFriends,
             },
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`, // Bearer 토큰을 헤더에 추가
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           },
         );
@@ -34,7 +41,7 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
           isFriend: result.isFriend,
         }));
 
-        setFilteredMembers(searchResults); // 검색 결과를 상태에 저장
+        setFilteredMembers(searchResults);
       } catch (error) {
         console.error('친구 검색 중 오류 발생:', error);
       }
@@ -43,11 +50,11 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
     if (searchTerm) {
       searchFriends();
     } else {
-      setFilteredMembers(members); // 검색어 X, 기존 멤버 목록 표시
+      setFilteredMembers(members);
     }
   }, [searchTerm, onlyFriends, isOpen, members]);
 
-  if (!isOpen) return null; // 모달이 열려있지 않으면 렌더링하지 않음
+  if (!isOpen) return null;
 
   const toggleMemberSelection = (member) => {
     if (selectedMembers.includes(member)) {
@@ -59,12 +66,22 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
 
   const handleAdd = async () => {
     try {
-      await InviteMembers(selectedMembers);
-      onAdd(selectedMembers);
-      setSelectedMembers([]); // 선택된 멤버 초기화
+      if (invite) {
+        await InviteMembers(selectedMembers);
+      } else {
+        const selectedMemberIds = selectedMembers.map((member) => member.id);
+        if (typeof onAdd === 'function') {
+          onAdd(selectedMemberIds);
+        }
+      }
+      // Notify parent of selected members
+      if (typeof onMemberSelect === 'function') {
+        onMemberSelect(selectedMembers);
+      }
+      setSelectedMembers([]);
       onClose();
     } catch (error) {
-      console.error('멤버 초대 중 오류 발생:', error);
+      console.error('멤버 처리 중 오류 발생:', error);
     }
   };
 
@@ -103,7 +120,7 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
           <div className="text-sm text-gray-500 mb-2 ml-2">친구 목록</div>
           <div className="space-y-2">
             {filteredMembers.map((result, index) => {
-              if (!result.user) return null; // user 객체가 없을 경우 렌더링하지 않음
+              if (!result.user) return null;
 
               return (
                 <div
