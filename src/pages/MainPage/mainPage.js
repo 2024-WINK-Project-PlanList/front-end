@@ -33,6 +33,7 @@ const MainPage = () => {
         const { friendComments, newNotificationCount } = response.data;
         setFriendComments(friendComments); // 친구 데이터 저장
         setNewNotificationCount(newNotificationCount);
+        console.log('친구 정보: ', friendComments);
         console.log('새알람 : ', newNotificationCount); // 알림 개수 저장
       })
       .catch((error) => {
@@ -49,12 +50,14 @@ const MainPage = () => {
       )}
       {/* 알림 개수 전달 */}
 
-      {/* 받아온 친구 댓글 데이터를 MainMemo 컴포넌트로 전달 */}
-      <MainMemo memoData={friendComments} />
 
-      {/* 캘린더 컴포넌트도 필요 시 수정 */}
-      <Calendar calendarData={friendComments} />
-      {/* friendComments를 캘린더에 맞게 사용 */}
+      <div className="relative mt-2">
+        <MainMemo memoData={friendComments} />
+      </div>
+
+      <div className="relative">
+        <Calendar calendarData={friendComments} />
+      </div>
 
       <Footer />
     </div>

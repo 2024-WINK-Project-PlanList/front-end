@@ -7,6 +7,7 @@ const FriendsProfile = ({
   profileName = '이름',
   profileEmail = 'email@example.com',
   currentSong = 'No Song Playing', // 기본값을 'No Song Playing'으로 설정
+  profileMessage, // 친구의 코멘트
 }) => {
   return (
     <div className="relative flex items-center">
@@ -16,7 +17,7 @@ const FriendsProfile = ({
           <img
             src={profileImage}
             alt="Profile"
-            className="w-[55%] h-[55%] rounded-full border-2 border-gray-300"
+            className="w-[80px] h-[80px] rounded-full border-2 border-gray-300"
           />
         </div>
       )}
@@ -32,15 +33,6 @@ const FriendsProfile = ({
       {/* FriendsMusic 컴포넌트를 이름과 이메일 오른쪽에 추가 */}
       <div className="absolute mt-[20%] ml-[62%]">
         <FriendsMusic song={currentSong} />
-      </div>
-
-      {/* 친구 메시지 이미지 */}
-      <div className="absolute mt-[6%] ml-[5%]">
-        <img
-          src={friendsMessageImage} // 친구 메시지 이미지 경로를 import로 가져옴
-          alt="Friends Message"
-          className="w-[90px] h-[90px]"
-        />
       </div>
     </div>
   );

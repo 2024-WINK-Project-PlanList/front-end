@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Calendar from '../../components/Calendar/Calendar'; // Calendar 컴포넌트 임포트
-import FriendsProfile from '../../components/FriendsProfile/friendsProfile'; // 새로 만든 FriendsProfile 컴포넌트 가져오기
+import FriendCalendar from '../../components/Calendar/FriendCalendar'; // 새로 만든 FriendCalendar
+import FriendsProfile from '../../components/FriendsProfile/friendsProfile';
 
 const MemoBottomSheet = ({
   isOpen,
   onClose,
   profileImage,
   profileName,
+  profileEmail, // 이메일 전달
+  currentSong, // 현재 노래
   profileMessage,
-  calendarData, // 캘린더 데이터를 props로 전달받음
+  userId, // 친구의 userId 받기
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -20,14 +22,14 @@ const MemoBottomSheet = ({
       setTimeout(() => {
         setIsAnimating(true);
       }, 30);
-    } else if (isAnimating) {
+    } else {
       setIsAnimating(false);
       setTimeout(() => {
         setIsMounted(false);
         onClose();
       }, 300);
     }
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -60,7 +62,7 @@ const MemoBottomSheet = ({
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
-          overflowY: 'auto', // 스크롤 추가
+          overflowY: 'auto',
         }}
       >
         <div
@@ -74,14 +76,20 @@ const MemoBottomSheet = ({
         <div className="mt-8">
           <FriendsProfile
             profileImage={profileImage}
-            profileName={profileName} // 이름을 전달 (없으면 기본값 사용)
-            profileMessage={profileMessage} // 친구의 코멘트를 전달
+            profileName={profileName}
+            profileEmail={profileEmail} // 이메일 정보 표시
+            currentSong={currentSong} // 노래 정보 전달
+            profileMessage={profileMessage}
           />
         </div>
 
-        {/* 캘린더 컴포넌트에 calendarData 전달하여 렌더링 */}
+        {/* 친구 캘린더 렌더링 */}
         <div className="flex-grow mt-[25%]">
-          <Calendar readOnly={true} calendarData={calendarData} />
+          {userId ? (
+            <FriendCalendar userId={userId} /> // FriendCalendar에 userId 전달
+          ) : (
+            <p>캘린더 데이터를 불러올 수 없습니다. 유저 ID가 없습니다.</p>
+          )}
         </div>
       </div>
     </div>
