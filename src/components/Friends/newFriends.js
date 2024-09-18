@@ -25,7 +25,11 @@ const NewFriends = ({ profile, name, email, friendData, userData }) => {
       <div className="flex justify-between items-center h-full">
         <div className="flex items-center pl-[7px]">
           {typeof profile === 'string' ? (
-            <img src={profile} alt={name} className="w-[35px] h-[37px]" />
+            <img
+              src={profile}
+              alt={name}
+              className="w-[35px] h-[37px] rounded-full"
+            />
           ) : (
             profile
           )}
