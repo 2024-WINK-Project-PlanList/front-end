@@ -96,7 +96,7 @@ const ModifyProfile = ({ onClose, onSave, profileData }) => {
             onChange={onChangeImage}
             accept="image/*"
           />
-          <PicChange className="absolute bottom-[17px] right-[130px]" />
+          <PicChange className="absolute bottom-[13px] right-[110px]" />
         </div>
         <div className="relative">
           <input

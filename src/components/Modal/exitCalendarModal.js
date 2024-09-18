@@ -35,10 +35,10 @@ const ExitCalendarModal = ({
             <img
               src={calendarImage}
               alt="calendar logo"
-              className="w-24 h-24 border border-gray-300 rounded-lg mb-2"
+              className="w-24 h-24 border border-gray-300 rounded-lg mb-2 drop-shadow-md"
             />
           ) : (
-            <BasicPic className="w-24 h-24 mb-2" />
+            <BasicPic className="w-24 h-24 mb-2 drop-shadow-md" />
           )}
           {calendarName && (
             <p className="text-xl font-semibold">{calendarName}</p>
