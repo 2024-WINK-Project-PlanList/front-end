@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
-import MemberSelectModal from './MemberSelectModal';
+import FriendsSelectModal from './FriendsSelectModal';
 import ColorSelectModal from './ColorSelectModal';
 import myProfileImage from '../../assets/mainpage/profile.svg'; // 기본 프로필 이미지
 
@@ -321,7 +321,7 @@ const CalendarBottomSheet = ({
         </div>
       </div>
 
-      <MemberSelectModal
+      <FriendsSelectModal
         isOpen={isMemberModalOpen}
         onClose={handleMemberModalClose}
         members={members}
