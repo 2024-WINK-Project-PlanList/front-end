@@ -20,9 +20,11 @@ const RequestFriends = ({ hideModal, userData }) => {
       const fetchFriends = async () => {
         try {
           const data = await searchFriends(userInput, false);
-          const users = data.map((item) => item.user);
+          const users = data
+            .filter((item) => item.friend === false)
+            .map((item) => item.user);
           setFindUser(users || []);
-          console.log('새로운 친구 목록', data);
+          // console.log('새로운 친구 목록', data);
         } catch (error) {
           console.error('친구 검색 오류!', error);
           setFindUser([]); // 오류가 발생하면 빈 배열로 설정
