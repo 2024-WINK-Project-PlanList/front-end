@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CalendarBottomSheet from './CalendarBottomSheet';
+import myProfileImage from '../../assets/mainpage/profile.svg'; // 기본 프로필 이미지
 
 const CalendarPlan = ({
   isOpen,
@@ -131,27 +132,44 @@ const CalendarPlan = ({
             </p>
             <div className="flex flex-col mt-4 space-y-2 w-full">
               {/* 필터링된 일정 표시 */}
-              {filteredPlans.map((plan, index) => (
-                <div
-                  key={index}
-                  className="relative w-full px-4 py-2 bg-white rounded-lg cursor-pointer hover:bg-gray-100 flex items-center"
-                  onClick={() => handlePlanClick(plan)}
-                >
-                  {/* 일정의 색상 막대 표시 */}
+              {filteredPlans.map((plan, index) => {
+                const displayedMembers = plan.scheduleMemberList.slice(0, 3);
+
+                return (
                   <div
-                    className="absolute left-0 top-2 bottom-1 w-[2.2%] rounded-lg"
-                    style={{ backgroundColor: getColorByColorId(plan.colorId) }} // 일정의 colorId에 따라 색상 설정
-                  ></div>
-                  <div className="ml-2">
-                    <p className="text-m font-medium truncate ml-[-7px]">
-                      {plan.name}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1 text-left ml-[-7px]">
-                      {plan.description}
-                    </p>
+                    key={index}
+                    className="relative w-full px-4 py-2 bg-white rounded-lg cursor-pointer hover:bg-gray-100 flex items-center"
+                    onClick={() => handlePlanClick(plan)}
+                  >
+                    {/* 일정의 색상 막대 표시 */}
+                    <div
+                      className="absolute left-0 top-2 bottom-1 w-[2.2%] rounded-lg"
+                      style={{
+                        backgroundColor: getColorByColorId(plan.colorId),
+                      }} // 일정의 colorId에 따라 색상 설정
+                    ></div>
+                    <div className="ml-2">
+                      <p className="text-m font-medium truncate ml-[-7px]">
+                        {plan.name}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1 text-left ml-[-7px]">
+                        {plan.description}
+                      </p>
+                    </div>
+                    {/* 멤버 리스트를 우측에 표시 */}
+                    <div className="flex items-center space-x-1 ml-auto">
+                      {displayedMembers.map((member, idx) => (
+                        <img
+                          key={idx}
+                          src={member.profileImagePath || myProfileImage}
+                          alt={member.nickname || 'No Name'}
+                          className="w-6 h-6 rounded-full"
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
           <div className="modal-content p-4 flex-1 overflow-y-auto"></div>
