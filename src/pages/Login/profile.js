@@ -8,6 +8,7 @@ const Profile = () => {
 
   const [name, setName] = useState('');
   const [isValid, setIsValid] = useState(false);
+  const [isDuplicate, setIsDuplicate] = useState(false); // 닉네임 중복 여부 상태 추가
 
   const kakaoAccessToken = localStorage.getItem('token');
 
@@ -22,6 +23,7 @@ const Profile = () => {
     const { value } = e.target;
     setName(value);
     setIsValid(value.length <= 10 && value.length > 0);
+    setIsDuplicate(false);
   };
 
   const completeHandler = async () => {
@@ -44,7 +46,7 @@ const Profile = () => {
           localStorage.setItem('token', accessToken);
           navigate('/main');
         } else {
-          alert('이미 존재하는 닉네임입니다.');
+          setIsDuplicate(true);
         }
       } catch (error) {
         alert('오류 발생');
@@ -68,29 +70,37 @@ const Profile = () => {
           className={`w-72 border-b-2 py-2 px-2 outline-none ${
             name.length === 0
               ? 'border-gray-400'
-              : isValid
-                ? 'border-blue-500'
-                : 'border-red-500'
+              : isDuplicate
+                ? 'border-red-500'
+                : isValid
+                  ? 'border-blue-500'
+                  : 'border-gray-400'
           }`}
         />
         <span
           className={`mt-4 text-xs ${
-            isValid ? 'text-blue-500' : 'text-red-500'
+            isDuplicate
+              ? 'text-red-500'
+              : isValid
+                ? 'text-blue-500'
+                : 'text-gray-400'
           } absolute top-8 left-2 w-full text-left`}
         >
-          {name.length > 10
-            ? '사용하실 이름은 10글자 이내로 제한됩니다.'
-            : name.length > 0 && isValid
-              ? '사용 가능한 이름입니다.'
-              : ''}
+          {isDuplicate
+            ? '이미 존재하는 닉네임입니다.'
+            : name.length > 10
+              ? '사용하실 이름은 10글자 이내로 제한됩니다.'
+              : name.length > 0 && isValid
+                ? '사용 가능한 이름입니다.'
+                : ''}
         </span>
         <button
           type="button"
           onClick={completeHandler}
-          disabled={!isValid}
+          disabled={!isValid || isDuplicate}
           className={`w-72 h-12 text-white font-semibold rounded-lg mt-60 
             ${
-              isValid
+              isValid && !isDuplicate
                 ? 'bg-[#1E86FF] cursor-pointer'
                 : 'bg-gray-300 text-gray-400 cursor-default'
             }`}
