@@ -85,3 +85,22 @@ export const modifySong = async (songData) => {
     throw error;
   }
 };
+
+// id로 음악 정보 가져오기
+export const getTrackById = async (token, songId) => {
+  try {
+    const response = await axios.get(
+      `${SPOTIFY_API_BASE_URL}/tracks/${songId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      'id로 음악 정보 가져오기 오류 발생:',
+      error.response ? error.response.data : error.message,
+    );
+    throw error;
+  }
+};

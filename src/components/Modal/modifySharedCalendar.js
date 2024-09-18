@@ -31,6 +31,7 @@ const CalendarBottomSheet = ({
   const [calendarMembers, setCalendarMembers] = useState(0);
   const [calendarImage, setCalendarImage] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedMemberIds, setSelectedMemberIds] = useState([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -150,7 +151,7 @@ const CalendarBottomSheet = ({
         await createSharedCalendar({
           name: calendarName,
           description: calendarDescription,
-          membersToInvite: [], // 멤버 선택 모달과 연동 필요
+          membersToInvite: selectedMemberIds, // 멤버 선택 모달과 연동 필요
         });
       }
 
