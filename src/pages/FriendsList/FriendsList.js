@@ -5,7 +5,7 @@ import { ReactComponent as Profile } from '../../assets/friendsList/profilePic.s
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import RequestModal from '../../components/Modal/requestFriends';
-import { getFriendsList, searchFriends } from '../../api/friends';
+import { getFriendsList, searchFriends, deleteFriend } from '../../api/friends';
 import { useLocation } from 'react-router-dom';
 
 const FriendsList = () => {
@@ -45,7 +45,7 @@ const FriendsList = () => {
       const fetchFriends = async () => {
         try {
           const data = await searchFriends(userInput, true);
-          const users = data.map((item) => item.user);
+          const users = data.map((item) => item);
           setFindUser(users || []);
           console.log('친구 검색 목록', data);
         } catch (error) {
@@ -70,10 +70,18 @@ const FriendsList = () => {
     setUserInput(e.target.value.toLowerCase());
   };
 
-  const handleDelete = (id) => {
-    const updatedFriends = friends.filter((friend) => friend.id !== id);
-    setFriends(updatedFriends); // 친구 목록에서 해당 친구 삭제
-    setFindUser(updatedFriends); // 검색 결과에서도 삭제
+  const handleDelete = async (id) => {
+    try {
+      await deleteFriend({ friendshipId: id });
+      const updatedFriends = friends.filter(
+        (friend) => friend.friendshipId !== id,
+      );
+      setFriends(updatedFriends); // 친구 목록에서 해당 친구 삭제
+      setFindUser(updatedFriends); // 검색 결과에서도 삭제
+      console.log('친구 삭제 성공');
+    } catch (error) {
+      console.error('친구 삭제 중 오류 발생', error);
+    }
   };
 
   return (
@@ -137,15 +145,15 @@ const FriendsList = () => {
                     key={item.friendshipId}
                     {...item}
                     profile={
-                      item.profileImagePath ? (
-                        item.profileImagePath
+                      item.user.profileImagePath ? (
+                        item.user.profileImagePath
                       ) : (
                         <Profile />
                       )
                     }
-                    name={item.nickname}
-                    email={item.email}
-                    song={item.songId}
+                    name={item.user.nickname}
+                    email={item.user.email}
+                    song={item.user.songId}
                     onDelete={() => handleDelete(item.friendshipId)}
                   />
                 );

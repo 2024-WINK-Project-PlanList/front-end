@@ -60,3 +60,21 @@ export const requestFriend = async (userData, friendData) => {
     throw error;
   }
 };
+
+// 친구 삭제
+export const deleteFriend = async (friendData) => {
+  try {
+    const response = await customAxios.delete(
+      `/friend/${friendData.friendshipId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('친구 삭제 오류!', error);
+    throw error;
+  }
+};
