@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { ReactComponent as Uncheck } from '../../assets/todolist/uncheck.svg';
 import { ReactComponent as Check } from '../../assets/todolist/check.svg';
 import { ReactComponent as Trash } from '../../assets/todolist/trash.svg';
+import { customAxios } from '../../api/customAxios';
+const token = localStorage.getItem('token');
 
-const TodoItem = ({ id, text, removeTodo }) => {
-  const [isChecked, setIsChecked] = useState(false);
+const TodoItem = ({ id, content, checked, removeTodo }) => {
+  const [isChecked, setIsChecked] = useState(checked);
   const [isSwiped, setIsSwiped] = useState(false);
   const [startX, setStartX] = useState(null);
 
@@ -30,6 +32,23 @@ const TodoItem = ({ id, text, removeTodo }) => {
 
   const onClick = () => {
     setIsChecked(!isChecked);
+    customAxios
+      .patch(
+        '/todolist/tasks',
+        {
+          id: id,
+          content: content,
+          checked: !checked,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      .catch((error) => {
+        console.error('투두리스트 수정 오류', error);
+      });
   };
 
   return (
@@ -47,7 +66,7 @@ const TodoItem = ({ id, text, removeTodo }) => {
           <div onClick={onClick} className={'w-5 mx-4'}>
             {isChecked ? <Check /> : <Uncheck />}
           </div>
-          <a className={'font-semibold tracking-tight'}>{text}</a>
+          <p className={'font-semibold tracking-tight'}>{content}</p>
         </div>
       </div>
       <Trash

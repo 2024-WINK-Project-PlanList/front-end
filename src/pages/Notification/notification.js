@@ -27,22 +27,19 @@ const Notification = () => {
         console.error('알림 조회하기 오류', error);
       });
 
-    const handleBeforeUnload = () => {
-      customAxios
-        .patch(`/notification`, {
+    customAxios
+      .patch(
+        `/notification`,
+        {},
+        {
           headers: {
-            authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
-        })
-        .catch((error) => {
-          console.error('알림 읽음 처리 오류', error);
-        });
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
+        },
+      )
+      .catch((error) => {
+        console.error('알림 읽음 처리 오류', error);
+      });
   }, []);
 
   return (
@@ -51,12 +48,12 @@ const Notification = () => {
       <div className={'tracking-tight'}>
         <div>
           <p className={'m-5 mb-2 font-bold text-[1.0625rem]'}>최근 알림</p>
-          {notificationList.some((item) => !item.isRead) || (
+          {notificationList.some((item) => !item.read) || (
             <p className={'text-center my-10 text-sm'}>최근 알림이 없습니다</p>
           )}
           <div>
             {notificationList
-              .filter((item) => !item.isRead)
+              .filter((item) => !item.read)
               .map((item) => (
                 <NotificationItem
                   key={item.id}
@@ -68,11 +65,11 @@ const Notification = () => {
         </div>
         <div>
           <p className={'m-5 mb-2 font-bold text-[1.0625rem]'}>지난 알림</p>
-          {notificationList.some((item) => item.isRead) || (
+          {notificationList.some((item) => item.read) || (
             <p className={'text-center my-10 text-sm'}>지난 알림이 없습니다</p>
           )}
           {notificationList
-            .filter((item) => item.isRead)
+            .filter((item) => item.read)
             .map((item) => (
               <NotificationItem
                 key={item.id}
