@@ -1,0 +1,29 @@
+<svg width="60" height="59" viewBox="0 0 60 59" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 624">
+<g id="Group 504">
+<g id="Group 26">
+<g id="Group 6">
+<rect id="Rectangle 1" x="0.601562" y="0.203125" width="58.8" height="58.8" rx="14.28" fill="url(#paint0_linear_735_12686)"/>
+</g>
+</g>
+<g id="Group 9">
+<rect id="Rectangle 1_2" x="7.68408" y="30.9062" width="36.9471" height="15.5048" rx="7.75239" fill="white"/>
+</g>
+<g id="Group 10">
+<rect id="Rectangle 1_3" x="15.4819" y="13.4609" width="36.9471" height="15.5048" rx="7.75239" fill="white"/>
+<ellipse id="Ellipse 1" cx="43.9924" cy="20.9629" rx="4.78193" ry="4.71098" fill="url(#paint1_linear_735_12686)"/>
+</g>
+<path id="Vector" fill-rule="evenodd" clip-rule="evenodd" d="M46.7294 18.7641C46.9217 18.888 46.9756 19.1418 46.8498 19.3313L44.0209 23.5938C43.9879 23.6435 43.9444 23.6855 43.8933 23.717C43.8423 23.7484 43.7849 23.7686 43.7251 23.7761C43.6654 23.7836 43.6047 23.7782 43.5472 23.7603C43.4898 23.7424 43.437 23.7124 43.3925 23.6725L41.562 22.0331C41.4803 21.9599 41.4315 21.8578 41.4263 21.7492C41.421 21.6407 41.4598 21.5345 41.534 21.454C41.6082 21.3736 41.7119 21.3255 41.8221 21.3203C41.9323 21.3152 42.0401 21.3533 42.1218 21.4265L43.5915 22.7426L46.1536 18.8828C46.214 18.7918 46.3085 18.7282 46.4165 18.706C46.5245 18.6837 46.637 18.7046 46.7294 18.7641Z" fill="white"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_735_12686" x1="30.0016" y1="0.203125" x2="30.0016" y2="59.0031" gradientUnits="userSpaceOnUse">
+<stop stop-color="#66B6FF"/>
+<stop offset="1" stop-color="#FF9BD1"/>
+</linearGradient>
+<linearGradient id="paint1_linear_735_12686" x1="43.9924" y1="16.252" x2="43.9924" y2="25.6739" gradientUnits="userSpaceOnUse">
+<stop stop-color="#66B6FF"/>
+<stop offset="1" stop-color="#FF9BD1"/>
+</linearGradient>
+</defs>
+</svg>
