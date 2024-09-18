@@ -5,20 +5,26 @@ import MemberSelectModal from './MemberSelectModal';
 import ColorSelectModal from './ColorSelectModal';
 
 const CalendarBottomSheet = ({
-                               isOpen,
-                               onClose,
-                               selectedDates = [],
-                               plan,
-                               closeCalendarPlanModal,
-                               calendarId,
-                               setPlans,
-                             }) => {
+  isOpen,
+  onClose,
+  selectedDates = [],
+  plan,
+  closeCalendarPlanModal,
+  calendarId,
+  setPlans,
+}) => {
+  useEffect(() => {
+    console.log('CalendarBottomSheet에서 setPlans:', setPlans);
+  }, [setPlans]);
+
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const [selectedColorId, setSelectedColorId] = useState(plan?.colorId || 1);
-  const [isPublic, setIsPublic] = useState(plan?.openStatus === 'PUBLIC' || false);
+  const [isPublic, setIsPublic] = useState(
+    plan?.openStatus === 'PUBLIC' || false,
+  );
   const [title, setTitle] = useState(plan?.name || '');
   const [details, setDetails] = useState(plan?.description || '');
   const [members, setMembers] = useState(plan?.members || []);
@@ -87,6 +93,16 @@ const CalendarBottomSheet = ({
   };
 
   const handleAddClick = async () => {
+    if (!calendarId) {
+      console.error(
+        '캘린더 아이디가 null입니다. 올바른 캘린더를 선택했는지 확인해주세요.',
+      );
+      return;
+    }
+
+    console.log('캘린더 ID:', calendarId); // 캘린더 ID 로그 출력
+    console.log('선택된 날짜들:', selectedDates); // 선택된 날짜 로그 출력
+
     const parseDate = (dateString) => {
       const parts = dateString.split('-');
       return new Date(parts[0], parts[1] - 1, parts[2]);
@@ -96,15 +112,12 @@ const CalendarBottomSheet = ({
     const startDate = parseDate(dateStrings[0]);
     const endDate = parseDate(dateStrings[dateStrings.length - 1]);
 
-    // 사용자가 하루만 선택했는지 확인하는 로직 추가
-    if (selectedDates.length === 1) {
-      console.log("하루만 선택되었습니다:", selectedDates);
-    } else {
-      console.log("여러 날이 선택되었습니다:", selectedDates);
-    }
+    const isSingleDay = selectedDates.length === 1;
 
     const formattedStartDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss");
-    const formattedEndDate = format(endDate, "yyyy-MM-dd'T'HH:mm:ss");
+    const formattedEndDate = isSingleDay
+      ? format(startDate, "yyyy-MM-dd'T'23:59:59")
+      : format(endDate, "yyyy-MM-dd'T'HH:mm:ss");
 
     const newPlan = {
       name: title,
@@ -113,59 +126,92 @@ const CalendarBottomSheet = ({
       endDate: formattedEndDate,
       openStatus: isPublic ? 'PUBLIC' : 'PRIVATE',
       colorId: selectedColorId,
-      scheduleMembers: members.length > 0 ? members.map((member) => member.id) : [],
-      calendarId: calendarId || 1,
+      scheduleMembers:
+        members.length > 0 ? members.map((member) => member.id) : [],
+      calendarId: calendarId, // 캘린더 ID 전달
     };
 
+    console.log('백엔드로 보낼 새로운 일정 정보:', newPlan); // 새로운 일정 정보 로그
+
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/schedule`,
-        newPlan,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+      let response;
+
+      // 수정할 일정이 있는 경우 PATCH 요청을 보냄
+      if (plan && plan.id) {
+        response = await axios.patch(
+          `${process.env.REACT_APP_BACKEND_URL}/schedule/${plan.id}`,
+          newPlan,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
           },
-        }
-      );
-      console.log('응답:', response.data);
+        );
+        console.log('일정 수정 응답:', response.data);
+      } else {
+        // 새로운 일정 추가는 POST 요청을 사용
+        response = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/schedule`,
+          newPlan,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          },
+        );
+        console.log('일정 추가 응답:', response.data);
+      }
 
-      const refreshCalendar = async () => {
-        try {
-          const calendarResponse = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/calendar`,
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-              },
-            }
-          );
-          console.log('캘린더 새로 고침 정보:', calendarResponse.data);
-
-          if (calendarResponse.data && Array.isArray(calendarResponse.data.individualScheduleList)) {
-            setPlans(calendarResponse.data.individualScheduleList);
-          }
-        } catch (error) {
-          console.error('캘린더 데이터 다시 가져오기 오류:', error);
-        }
-      };
-
-      await refreshCalendar();
+      // 일정 추가 또는 수정 후 일정 목록을 다시 가져옴
+      await fetchUpdatedPlans();
 
       setIsAnimating(false);
       setTimeout(() => {
         handleClose();
         if (closeCalendarPlanModal) {
-          closeCalendarPlanModal();
+          closeCalendarPlanModal(); // CalendarPlan 모달 닫기
         }
       }, 300);
     } catch (error) {
-      console.error('일정 추가 중 오류 발생:', error);
+      console.error('일정 처리 중 오류 발생:', error);
       if (error.response) {
         console.error('서버 응답 상태 코드:', error.response.status);
         console.error('서버 응답 데이터:', error.response.data);
       } else {
         console.error('서버로부터 응답이 없습니다.');
       }
+    }
+  };
+
+  // 일정 목록을 다시 가져오는 함수 추가
+  const fetchUpdatedPlans = async () => {
+    try {
+      const calendarResponse = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/calendar`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
+      );
+      console.log('캘린더 새로 고침 정보:', calendarResponse.data);
+
+      if (
+        calendarResponse.data &&
+        Array.isArray(calendarResponse.data.individualScheduleList)
+      ) {
+        if (typeof setPlans === 'function') {
+          setPlans(calendarResponse.data.individualScheduleList);
+          console.log(
+            '업데이트된 일정들:',
+            calendarResponse.data.individualScheduleList,
+          );
+        } else {
+          console.error('setPlans가 함수가 아닙니다.');
+        }
+      }
+    } catch (error) {
+      console.error('캘린더 데이터 다시 가져오기 오류:', error);
     }
   };
 
@@ -184,10 +230,16 @@ const CalendarBottomSheet = ({
           style={{ height: 'calc(100vh - 4.25rem)', overflowY: 'auto' }}
         >
           <div className="p-4 flex justify-between items-center">
-            <button className="text-gray-500 text-lg font-medium ml-2" onClick={handleClose}>
+            <button
+              className="text-gray-500 text-lg font-medium ml-2"
+              onClick={handleClose}
+            >
               취소
             </button>
-            <button className="text-blue-500 text-lg font-medium mr-2" onClick={handleAddClick}>
+            <button
+              className="text-blue-500 text-lg font-medium mr-2"
+              onClick={handleAddClick}
+            >
               {plan ? '수정' : '추가'}
             </button>
           </div>

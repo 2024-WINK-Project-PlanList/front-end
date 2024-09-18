@@ -32,7 +32,8 @@ const MainPage = () => {
       .then((response) => {
         const { friendComments, newNotificationCount } = response.data;
         setFriendComments(friendComments); // 친구 데이터 저장
-        setNewNotificationCount(newNotificationCount); // 알림 개수 저장
+        setNewNotificationCount(newNotificationCount);
+        console.log('새알람 : ', newNotificationCount); // 알림 개수 저장
       })
       .catch((error) => {
         console.error('메인 페이지 데이터 가져오기 오류:', error);

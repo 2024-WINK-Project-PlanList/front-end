@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import CalendarBottomSheet from './CalendarBottomSheet';
 
-const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
+const CalendarPlan = ({
+  isOpen,
+  onClose,
+  selectedDates,
+  plans,
+  setPlans,
+  calendarId,
+}) => {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
 
@@ -31,8 +38,6 @@ const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
   const handleCloseBottomSheet = () => {
     setIsBottomSheetOpen(false);
   };
-
-  // **여기에 함수 정의를 추가합니다.**
 
   // 날짜 포맷팅 함수 (YYYY년 M월 D일 ~ YYYY년 M월 D일 형식으로 변환)
   const formatDateRange = (dates) => {
@@ -75,6 +80,20 @@ const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
           : 'D-day';
 
     return dates.length === 1 ? dDayStart : `${dDayStart} ~ ${dDayEnd}`;
+  };
+
+  // 일정 색상 가져오는 함수
+  const getColorByColorId = (colorId) => {
+    switch (colorId) {
+      case 1:
+        return '#6BB6FF';
+      case 2:
+        return '#FF6B6B';
+      case 3:
+        return '#BEFF6B';
+      default:
+        return '#73B7FF'; // 기본 색상
+    }
   };
 
   // 선택된 날짜에 해당하는 일정 필터링
@@ -121,12 +140,10 @@ const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
                   {/* 일정의 색상 막대 표시 */}
                   <div
                     className="absolute left-0 top-2 bottom-1 w-[2.2%] rounded-lg"
-                    style={{ backgroundColor: plan.color || '#73B7FF' }}
+                    style={{ backgroundColor: getColorByColorId(plan.colorId) }} // 일정의 colorId에 따라 색상 설정
                   ></div>
-                  <div className="ml-4">
-                    <p className="text-m font-medium truncate">
-                      {plan.name}
-                    </p>
+                  <div className="ml-2">
+                    <p className="text-m font-medium truncate">{plan.name}</p>
                     <p className="text-xs text-gray-500 mt-1 text-left">
                       {plan.description}
                     </p>
@@ -146,13 +163,14 @@ const CalendarPlan = ({ isOpen, onClose, selectedDates, plans, setPlans }) => {
           </div>
         </div>
       </div>
-
       {/* CalendarBottomSheet 모달 */}
       <CalendarBottomSheet
         isOpen={isBottomSheetOpen}
         onClose={handleCloseBottomSheet}
-        selectedDates={selectedDates}
-        plan={selectedPlan} // 선택된 일정 전달 (null이면 새 일정 추가)
+        selectedDates={selectedDates} // 선택된 날짜를 제대로 전달
+        plan={selectedPlan} // 선택된 일정 전달
+        calendarId={calendarId}
+        setPlans={setPlans}
       />
     </>
   );

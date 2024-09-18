@@ -21,6 +21,7 @@ const Notification = () => {
       })
       .then((response) => {
         setNotificationList(response.data);
+        console.log(response.data);
       })
       .catch((error) => {
         console.error('알림 조회하기 오류', error);
