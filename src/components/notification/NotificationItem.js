@@ -41,7 +41,7 @@ const Friend = ({ value, onRemove }) => {
     <div className={'flex justify-between mb-5'}>
       <div className={'ml-5 w-9/12'}>
         <div
-          className={`rounded-full w-[0.375rem] h-[0.375rem] translate-y-[0.375rem] ${value.isRead || 'bg-blue-400'}`}
+          className={`rounded-full w-[0.375rem] h-[0.375rem] translate-y-[0.375rem] ${value.read ? '' : 'bg-blue-400'}`}
         />
         <p className={'ml-2 text-sm font-semibold'}>{value.title}</p>
         <p className={'ml-3 mt-2 w-full text-[0.7rem] text-gray-900'}>
@@ -110,7 +110,7 @@ const Invitation = ({ value, onRemove }) => {
     <div className={'flex justify-between mb-5'}>
       <div className={'ml-5 w-9/12'}>
         <div
-          className={`rounded-full w-[0.375rem] h-[0.375rem] translate-y-[0.375rem] ${value.isRead || 'bg-blue-400'}`}
+          className={`rounded-full w-[0.375rem] h-[0.375rem] translate-y-[0.375rem] ${value.read ? '' : 'bg-blue-400'}`}
         />
         <p className={'ml-2 text-sm font-semibold'}>{value.title}</p>
         <p className={'ml-3 mt-2 w-full text-[0.7rem] text-gray-900'}>
@@ -152,7 +152,7 @@ const Normal = ({ value }) => {
     <div className={'flex justify-between mb-5'} onClick={onClick}>
       <div className={'ml-5 w-9/12'}>
         <div
-          className={`rounded-full w-[0.375rem] h-[0.375rem] translate-y-[0.375rem] ${value.isRead || 'bg-blue-400'}`}
+          className={`rounded-full w-[0.375rem] h-[0.375rem] translate-y-[0.375rem] ${value.read ? '' : 'bg-blue-400'}`}
         />
         <p className={'ml-2 text-sm font-semibold'}>{value.title}</p>
         <p className={'ml-3 mt-2 w-full text-[0.7rem] text-gray-900'}>
