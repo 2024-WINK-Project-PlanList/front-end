@@ -15,19 +15,21 @@ const CalendarItem = ({ calendar, onClick }) => (
       <img
         src={calendar.image}
         alt="calendar-logo"
-        className="w-16 h-16 border border-[#E6E6E6] rounded-[10px]"
+        className="w-16 h-16 border border-[#E6E6E6] rounded-[10px] drop-shadow-md"
       />
     ) : (
-      <BasicPic />
+      <BasicPic className="drop-shadow-md" />
     )}
     <div className="ml-4">
       <div className="flex items-center">
-        <div className="text-[20px] font-bold">{calendar.name}</div>
-        <div className="ml-2 text-[14px] text-[#676767]">
+        <div className="text-[20px] font-preRegular">{calendar.name}</div>
+        <div className="ml-2 text-[14px] text-[#676767] font-preMedium">
           {calendar.members}
         </div>
       </div>
-      <div className="text-[12px] text-[#676767]">{calendar.description}</div>
+      <div className="text-[12px] text-[#676767] font-preRegular">
+        {calendar.description}
+      </div>
     </div>
   </div>
 );

@@ -65,7 +65,7 @@ const Header = ({ onClick, newNotificationCount }) => {
                 <Left stroke={'#000000'} onClick={back} />
               ) : null}
             </div>
-            <div className={'font-semibold text-xl tracking-tighter'}>
+            <div className={'font-preSemiBold text-xl tracking-tighter'}>
               {pages[page].text}
             </div>
             <div className={'w-10'}>

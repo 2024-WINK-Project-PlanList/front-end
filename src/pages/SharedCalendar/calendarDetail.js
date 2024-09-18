@@ -6,6 +6,7 @@ import BottomSheet from '../../components/Modal/modifySharedCalendar';
 import { getSharedCalendar } from '../../api/sharedCalendar';
 import Header from '../../components/Layout/Header';
 import { ReactComponent as BasicPic } from '../../assets/sharedCalendar/shareCalendarNone.svg';
+import Footer from '../../components/Layout/Footer';
 
 const CalendarDetail = () => {
   const location = useLocation();
@@ -53,18 +54,18 @@ const CalendarDetail = () => {
             <img
               src={calendar.image}
               alt="calendar-logo"
-              className="w-20 h-20 border border-[#E6E6E6] rounded-[10px]"
+              className="w-20 h-20 border border-[#E6E6E6] rounded-[10px] drop-shadow-md"
             />
           ) : (
-            <BasicPic className="w-20 h-20" />
+            <BasicPic className="w-20 h-20 drop-shadow-md" />
           )}
           <div className="ml-4">
             <div className="flex items-center">
-              <div className="text-[24px] font-bold">
+              <div className="text-[26px] font-preRegular">
                 {calendar?.name || 'No name'}
               </div>{' '}
               {/* 기본값 처리 */}
-              <div className="ml-2 text-[16px] text-[#676767]">
+              <div className="ml-2 text-[16px] text-[#676767] font-preMedium">
                 {calendar?.members || 'No members'}
               </div>
               <img
@@ -75,7 +76,7 @@ const CalendarDetail = () => {
                 onClick={openModal}
               />
             </div>
-            <div className="text-[12px] text-[#676767]">
+            <div className="text-[12px] text-[#676767] font-preRegular">
               {calendar?.description || 'No description'} {/* 기본값 처리 */}
             </div>
           </div>
@@ -96,6 +97,7 @@ const CalendarDetail = () => {
           id={calendarId}
         />
       </div>
+      <Footer />
     </>
   );
 };
