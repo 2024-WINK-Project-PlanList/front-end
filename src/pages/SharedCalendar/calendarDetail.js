@@ -89,6 +89,7 @@ const CalendarDetail = () => {
           image={calendar?.image}
           onSave={handleSave}
           onExit={handleExit}
+          id={calendarId}
         />
       </div>
     </>

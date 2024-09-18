@@ -21,6 +21,7 @@ const CalendarBottomSheet = ({
   image,
   onSave,
   onExit,
+  id,
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -79,7 +80,6 @@ const CalendarBottomSheet = ({
   };
 
   const handleMemberModalClose = () => {
-    console.log('닫혔당!');
     setIsMemberModalOpen(false);
   };
 
@@ -287,6 +287,7 @@ const CalendarBottomSheet = ({
         onConfirm={handleDetailModalConfirm}
         calendarName={calendarName}
         calendarImage={calendarImage}
+        calendarId={id}
       />
 
       <ChooseImageModal

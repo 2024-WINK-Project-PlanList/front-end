@@ -95,11 +95,15 @@ export const modifySharedCalendar = async (calendarId, calendarData) => {
 // 공유캘린더 삭제 API
 export const deleteSharedCalendar = async (calendarId) => {
   try {
-    await customAxios.delete(`/shared-calendar/${calendarId}`, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
+    const response = await customAxios.delete(
+      `/shared-calendar/${calendarId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
       },
-    });
+    );
+    return response.data;
   } catch (error) {
     console.error('공유 캘린더 나가기 오류', error);
     throw error;
