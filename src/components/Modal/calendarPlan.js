@@ -143,8 +143,10 @@ const CalendarPlan = ({
                     style={{ backgroundColor: getColorByColorId(plan.colorId) }} // 일정의 colorId에 따라 색상 설정
                   ></div>
                   <div className="ml-2">
-                    <p className="text-m font-medium truncate">{plan.name}</p>
-                    <p className="text-xs text-gray-500 mt-1 text-left">
+                    <p className="text-m font-medium truncate ml-[-7px]">
+                      {plan.name}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1 text-left ml-[-7px]">
                       {plan.description}
                     </p>
                   </div>
