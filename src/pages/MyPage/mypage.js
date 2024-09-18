@@ -9,6 +9,8 @@ import ModifyProfile from '../../components/Modal/modifyProfile';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
 import { getUserInfo, modifyUserInfo } from '../../api/user';
+import { fetchToken } from '../../api/music';
+import { getTrackById } from '../../api/music';
 
 const MyPage = () => {
   const [profileData, setProfileData] = useState([]);
@@ -16,6 +18,25 @@ const MyPage = () => {
   const [modalIsOpen, setModalState] = useState(false);
   const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState(null);
+  // const [token, setToken] = useState('');
+  // const [songTitle, setSongTitle] = useState(null);
+  // const [songArtist, setSongArtist] = useState(null);
+  // const [songTime, setSongTime] = useState(null);
+
+  // spotify token 가져오기
+  // useEffect(() => {
+  //   const getToken = async () => {
+  //     try {
+  //       const token = await fetchToken();
+  //       setToken(token);
+  //       console.log('토큰이왓서요', token);
+  //     } catch (error) {
+  //       console.error('토큰 에러 발생:', error);
+  //     }
+  //   };
+  //
+  //   getToken();
+  // }, []);
 
   // 프로필 불러오기
   useEffect(() => {
@@ -29,7 +50,18 @@ const MyPage = () => {
           setImagePreview(data.user.profileImagePath);
         }
 
-        console.log(data);
+        // if (data.user.songId && token) {
+        //   const trackData = await getTrackById(token, data.user.songId);
+        //   setSongTitle(trackData.name);
+        //   setSongArtist(trackData.artist.name);
+        //   setSongTime(trackData.duration_ms);
+        //   console.log('노래정보', trackData);
+        //   console.log('송인포에뇨', songTitle);
+        //   console.log(songArtist);
+        //   console.log(songTime);
+        // }
+
+        console.log('내정보', data);
       } catch (error) {
         console.error('Failed to fetch user info:', error);
       }
@@ -129,7 +161,7 @@ const MyPage = () => {
         <div className="w-full pb-[13px] pt-[33px] pl-[33px] font-preSemiBold text-xl">
           나의 PlayList
         </div>
-        <PlayList onClick={clickPlayList} music={true} />
+        <PlayList onClick={clickPlayList} music={!!profileData?.songId} />
 
         {modalIsOpen && (
           <ModifyProfile

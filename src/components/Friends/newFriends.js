@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import { requestFriend } from '../../api/friends';
 
 const NewFriends = ({ profile, name, email, friendData, userData }) => {
-  const [isCliked, setIsCliked] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
 
   const btnCliked = async () => {
-    setIsCliked(true);
-
     // 친구 요청 API 호출
-    if (!isCliked) {
+    if (!isClicked) {
+      setIsClicked(true);
+
       try {
         await requestFriend(userData, friendData);
         console.log('친구 요청 성공');
@@ -42,7 +42,7 @@ const NewFriends = ({ profile, name, email, friendData, userData }) => {
         </div>
         <div
           onClick={btnCliked}
-          className={`flex justify-center items-center text-xs font-preMedium w-[3.3125rem] h-[1.41963rem] rounded-[0.3125rem] ${isCliked ? 'text-[#9E9E9E] bg-[#E7E7E7]' : 'text-white bg-[#6AB6FF]'}`}
+          className={`flex justify-center items-center text-xs font-preMedium w-[3.3125rem] h-[1.41963rem] rounded-[0.3125rem] ${isClicked ? 'text-[#9E9E9E] bg-[#E7E7E7]' : 'text-white bg-[#6AB6FF] disabled:'}`}
         >
           요청
         </div>
