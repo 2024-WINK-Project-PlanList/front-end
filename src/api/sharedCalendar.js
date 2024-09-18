@@ -23,17 +23,24 @@ export const getCalendarList = async () => {
 // 공유캘린더 생성 API
 export const createSharedCalendar = async (calendarData) => {
   try {
+    // FormData 인스턴스 여부 확인
+    const isFormData = calendarData instanceof FormData;
+
     const response = await customAxios.post(
-      `/shared-calendar`,
-      {
-        name: calendarData.name,
-        description: calendarData.description,
-        imageBase64: calendarData.imageBase64,
-        membersToInvite: calendarData.membersToInvite,
-      },
+      '/shared-calendar',
+      isFormData
+        ? calendarData
+        : JSON.stringify({
+            name: calendarData.name,
+            description: calendarData.description,
+            membersToInvite: calendarData.membersToInvite || [],
+          }),
       {
         headers: {
           Authorization: `Bearer ${getToken()}`,
+          'Content-Type': isFormData
+            ? 'multipart/form-data'
+            : 'application/json',
         },
       },
     );
@@ -47,16 +54,22 @@ export const createSharedCalendar = async (calendarData) => {
 // 공유캘린더 수정 API
 export const modifySharedCalendar = async (calendarId, calendarData) => {
   try {
+    const isFormData = calendarData instanceof FormData;
+
     const response = await customAxios.patch(
       `/shared-calendar/${calendarId}`,
-      {
-        name: calendarData.name,
-        description: calendarData.description,
-        imageBase64: calendarData.imageBase64,
-      },
+      isFormData
+        ? calendarData
+        : JSON.stringify({
+            name: calendarData.name,
+            description: calendarData.description,
+          }),
       {
         headers: {
           Authorization: `Bearer ${getToken()}`,
+          'Content-Type': isFormData
+            ? 'multipart/form-data'
+            : 'application/json',
         },
       },
     );

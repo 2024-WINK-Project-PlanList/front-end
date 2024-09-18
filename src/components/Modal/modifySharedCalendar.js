@@ -120,17 +120,35 @@ const CalendarBottomSheet = ({
 
   const handleSave = async () => {
     try {
+      let formData = new FormData();
+      if (calendarImage) {
+        formData.append('image', calendarImage);
+      }
       if (mode === 'edit') {
-        await modifySharedCalendar(calendarId, {
-          name: calendarName,
-          description: calendarDescription,
-          imageBase64: calendarImage || '',
-        });
+        if (calendarImage) {
+          // 이미지가 포함된 경우
+          await modifySharedCalendar(calendarId, formData, true);
+        }
+
+        // 이미지 제외 데이터
+        await modifySharedCalendar(
+          calendarId,
+          {
+            name: calendarName,
+            description: calendarDescription,
+          },
+          false,
+        );
       } else {
+        if (calendarImage) {
+          // 새 캘린더 생성 시 이미지 포함
+          await createSharedCalendar(formData);
+        }
+
+        // 이미지 제외 데이터
         await createSharedCalendar({
           name: calendarName,
           description: calendarDescription,
-          imageBase64: calendarImage || '',
           membersToInvite: [], // 멤버 선택 모달과 연동 필요
         });
       }
