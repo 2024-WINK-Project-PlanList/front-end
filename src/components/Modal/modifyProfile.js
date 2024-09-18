@@ -10,6 +10,7 @@ const ModifyProfile = ({ onClose, onSave, profileData }) => {
   const [uploadedImage, setUploadedImage] = useState(
     profileData.profileImagePath,
   );
+  const [previewUrl, setPreviewUrl] = useState(profileData.profileImagePath);
   const fileInputRef = useRef(null);
   const maxLength = 30;
   const [isClose, setIsClose] = useState(false);
@@ -32,8 +33,9 @@ const ModifyProfile = ({ onClose, onSave, profileData }) => {
   const onChangeImage = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setUploadedImage(file);
       const imageUrl = URL.createObjectURL(file);
-      setUploadedImage(imageUrl);
+      setPreviewUrl(imageUrl);
     }
   };
 
@@ -43,7 +45,7 @@ const ModifyProfile = ({ onClose, onSave, profileData }) => {
       onSave({
         nickname: name,
         comment: text,
-        profileImage: uploadedImage,
+        profileImagePath: uploadedImage,
         songId: profileData.songId,
       });
       onClose();
@@ -78,9 +80,9 @@ const ModifyProfile = ({ onClose, onSave, profileData }) => {
           onClick={handleProfilePicClick}
           className="relative flex justify-center items-center pt-[73px] cursor-pointer"
         >
-          {uploadedImage ? (
+          {previewUrl ? (
             <img
-              src={uploadedImage}
+              src={previewUrl}
               alt="프로필"
               className="w-[154px] h-[154px] object-cover rounded-full"
             />

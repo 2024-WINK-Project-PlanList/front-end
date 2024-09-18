@@ -12,16 +12,23 @@ import { getUserInfo, modifyUserInfo } from '../../api/user';
 
 const MyPage = () => {
   const [profileData, setProfileData] = useState([]);
-  const [countFriends, setCountFriends] = useState([]);
+  const [countFriends, setCountFriends] = useState(0);
   const [modalIsOpen, setModalState] = useState(false);
   const navigate = useNavigate();
+  const [imagePreview, setImagePreview] = useState(null);
 
+  // 프로필 불러오기
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const data = await getUserInfo();
         setProfileData(data.user);
         setCountFriends(data.totalFriendCount);
+
+        if (data.user.profileImagePath) {
+          setImagePreview(data.user.profileImagePath);
+        }
+
         console.log(data);
       } catch (error) {
         console.error('Failed to fetch user info:', error);
@@ -31,15 +38,26 @@ const MyPage = () => {
     fetchUserInfo();
   }, []);
 
+  // 프로필 수정
   const handleSaveProfile = async (updatedProfile) => {
     try {
       await modifyUserInfo(updatedProfile);
 
-      setProfileData(updatedProfile);
+      setProfileData((prevProfileData) => ({
+        ...prevProfileData,
+        ...updatedProfile,
+      }));
 
-      console.log('프로필 수정 성공');
+      if (updatedProfile.profileImagePath instanceof File) {
+        const imageUrl = URL.createObjectURL(updatedProfile.profileImagePath);
+        setImagePreview(imageUrl);
+      } else if (updatedProfile.profileImagePath) {
+        setImagePreview(updatedProfile.profileImagePath);
+      }
+
+      console.log('프로필 수정 성공', updatedProfile);
     } catch (error) {
-      console.log('프로필 수정 중 오류 발생');
+      console.error('프로필 수정 중 오류 발생', error);
     }
   };
 
@@ -63,9 +81,9 @@ const MyPage = () => {
     <>
       <Header />
       <div className="flex flex-col items-center">
-        {profileData.profileImagePath ? (
+        {imagePreview ? (
           <img
-            src={profileData.profileImagePath}
+            src={imagePreview}
             alt="Profile"
             className="mt-[30px] w-[154px] h-[154px] object-cover rounded-full"
           />

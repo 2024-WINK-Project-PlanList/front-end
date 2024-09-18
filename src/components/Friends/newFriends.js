@@ -11,7 +11,7 @@ const NewFriends = ({ profile, name, email, friendData, userData }) => {
     // 친구 요청 API 호출
     if (!isCliked) {
       try {
-        await requestFriend(friendData, userData);
+        await requestFriend(userData, friendData);
         console.log('친구 요청 성공');
       } catch (error) {
         console.error('친구 요청 실패', error);
@@ -25,7 +25,11 @@ const NewFriends = ({ profile, name, email, friendData, userData }) => {
       <div className="flex justify-between items-center h-full">
         <div className="flex items-center pl-[7px]">
           {typeof profile === 'string' ? (
-            <img src={profile} alt={name} className="w-[35px] h-[37px]" />
+            <img
+              src={profile}
+              alt={name}
+              className="w-[35px] h-[37px] rounded-full"
+            />
           ) : (
             profile
           )}
