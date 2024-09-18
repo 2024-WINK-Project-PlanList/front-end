@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { SearchFriends, InviteMembers } from '../../api/members';
 
 const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
   const [selectedMembers, setSelectedMembers] = useState([]);
@@ -8,9 +8,11 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
   const [onlyFriends, setOnlyFriends] = useState(true); // 친구만 검색 여부
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setSearchTerm('');
+      return;
+    }
 
-    // 친구 검색 API 호출
     const searchFriends = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/friend/search`, {
@@ -35,9 +37,9 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
     };
 
     if (searchTerm) {
-      searchFriends(); // 검색어가 입력되면 검색 실행
+      searchFriends();
     } else {
-      setFilteredMembers(members); // 검색어가 없을 경우 원래 멤버 목록 표시
+      setFilteredMembers(members); // 검색어 X, 기존 멤버 목록 표시
     }
   }, [searchTerm, onlyFriends, isOpen, members]);
 
@@ -48,6 +50,17 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
       setSelectedMembers(selectedMembers.filter((m) => m !== member));
     } else {
       setSelectedMembers([...selectedMembers, member]);
+    }
+  };
+
+  const handleAdd = async () => {
+    try {
+      await InviteMembers(selectedMembers);
+      onAdd(selectedMembers);
+      setSelectedMembers([]); // 선택된 멤버 초기화
+      onClose();
+    } catch (error) {
+      console.error('멤버 초대 중 오류 발생:', error);
     }
   };
 
@@ -131,7 +144,7 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
           </button>
           <button
             className="text-blue-500 hover:text-blue-700 mr-2"
-            onClick={() => onAdd(selectedMembers)}
+            onClick={handleAdd}
           >
             추가
           </button>

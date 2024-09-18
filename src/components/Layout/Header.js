@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { ReactComponent as Plus } from '../../assets/header/plus.svg';
 import { ReactComponent as Left } from '../../assets/header/left.svg';
@@ -21,7 +21,7 @@ const Header = ({ onClick, newNotificationCount }) => {
       right: false,
       text: '알림',
     },
-    '/calendar/list': {
+    '/calendar/': {
       left: true,
       right: false,
       text: '공유 캘린더',

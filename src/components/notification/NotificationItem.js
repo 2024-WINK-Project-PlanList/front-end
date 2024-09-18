@@ -13,9 +13,15 @@ const Friend = ({ value, onRemove }) => {
           ContentType: 'application/json',
         },
         body: {
+
           friendshipId: value.referenceId,
         },
-      })
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
       .then((response) => {
         if (response.status === 200) {
           onRemove(value.id);

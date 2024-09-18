@@ -21,20 +21,34 @@ export const getUserInfo = async () => {
 
 export const modifyUserInfo = async (userData) => {
   try {
-    const response = await customAxios.patch(
-      `/user/me`,
-      {
-        nickname: userData.nickname,
-        profileImage: userData.profileImage,
-        songId: userData.songId,
-        comment: userData.comment,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${getToken()}`,
-        },
-      },
+    const userFormData = new FormData();
+
+    if (
+      userData.profileImagePath &&
+      userData.profileImagePath instanceof File
+    ) {
+      userFormData.append('image', userData.profileImagePath);
+    } else {
+      console.log('사진이 안담겨요');
+    }
+
+    const profileData = {
+      nickname: userData.nickname,
+      songId: userData.songId,
+      comment: userData.comment,
+    };
+
+    userFormData.append(
+      'profile',
+      new Blob([JSON.stringify(profileData)], { type: 'application/json' }),
     );
+
+    const response = await customAxios.patch(`/user/me`, userFormData, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('유저 정보 수정 오류!', error);

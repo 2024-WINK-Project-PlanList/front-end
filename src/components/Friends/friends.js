@@ -37,7 +37,11 @@ const Friends = ({ profile, name, email, song, onDelete }) => {
       >
         <div className="flex items-center pl-[17px]">
           {typeof profile === 'string' ? (
-            <img src={profile} alt={name} className="w-[63px] h-[63px]" />
+            <img
+              src={profile}
+              alt={name}
+              className="w-[63px] h-[63px] rounded-full"
+            />
           ) : (
             profile
           )}
@@ -46,7 +50,7 @@ const Friends = ({ profile, name, email, song, onDelete }) => {
             <div className="font-preLight text-xs text-[#3F3F3F]">{email}</div>
           </div>
         </div>
-        <FriendsMusic song={song} />
+        {song === null ? null : <FriendsMusic song={song} />}
       </div>
 
       {isSlide && (
