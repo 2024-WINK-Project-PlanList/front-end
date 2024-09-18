@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // axios 임포트 추가
 import { SearchFriends, InviteMembers } from '../../api/members';
 
 const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
@@ -15,15 +16,18 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
 
     const searchFriends = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/friend/search`, {
-          params: {
-            keyword: searchTerm,
-            onlyFriends: onlyFriends,
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/friend/search`,
+          {
+            params: {
+              keyword: searchTerm,
+              onlyFriends: onlyFriends,
+            },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`, // Bearer 토큰을 헤더에 추가
+            },
           },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Bearer 토큰을 헤더에 추가
-          },
-        });
+        );
 
         const searchResults = response.data.map((result) => ({
           user: result.user,
