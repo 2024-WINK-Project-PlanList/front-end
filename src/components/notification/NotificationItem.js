@@ -7,13 +7,9 @@ const Friend = ({ value, onRemove }) => {
   const onAllow = () => {
     console.log(value.referenceId);
     customAxios
-      .post(`/friend/accept`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          ContentType: 'application/json',
-        },
-        body: {
-
+      .post(
+        `/friend/accept`,
+        {
           friendshipId: value.referenceId,
         },
         {
