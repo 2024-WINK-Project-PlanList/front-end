@@ -23,12 +23,9 @@ const Friend = ({ value, onRemove }) => {
   };
   const onDeny = () => {
     customAxios
-      .delete(`/friend`, {
+      .delete(`/friend/${value.referenceId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
-        },
-        params: {
-          friendshipId: value.referenceId,
         },
       })
       .then(() => {
