@@ -5,6 +5,7 @@ import Calendar from '../../components/Calendar/Calendar';
 import BottomSheet from '../../components/Modal/modifySharedCalendar';
 import { getSharedCalendar } from '../../api/sharedCalendar';
 import Header from '../../components/Layout/Header';
+import { ReactComponent as BasicPic } from '../../assets/sharedCalendar/shareCalendarNone.svg';
 
 const CalendarDetail = () => {
   const location = useLocation();
@@ -48,12 +49,15 @@ const CalendarDetail = () => {
       <Header />
       <div className="flex flex-col items-center h-screen">
         <div className="flex items-center p-4 w-full">
-          <img
-            src={calendar?.image || '/default-image.png'} // Optional Chaining 사용 및 기본 이미지 처리
-            alt="calendar-logo"
-            className="w-20 h-20 border border-[#E6E6E6] rounded"
-            style={{ borderRadius: '10px' }}
-          />
+          {calendar?.image ? (
+            <img
+              src={calendar.image}
+              alt="calendar-logo"
+              className="w-20 h-20 border border-[#E6E6E6] rounded-[10px]"
+            />
+          ) : (
+            <BasicPic className="w-20 h-20" />
+          )}
           <div className="ml-4">
             <div className="flex items-center">
               <div className="text-[24px] font-bold">
