@@ -23,8 +23,11 @@ export const modifyUserInfo = async (userData) => {
   try {
     const userFormData = new FormData();
 
-    if (userData.profileImage && userData.profileImage instanceof File) {
-      userFormData.append('profileImage', userData.profileImage);
+    if (
+      userData.profileImagePath &&
+      userData.profileImagePath instanceof File
+    ) {
+      userFormData.append('image', userData.profileImagePath);
     } else {
       console.log('사진이 안담겨요');
     }
