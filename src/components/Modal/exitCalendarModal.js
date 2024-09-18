@@ -1,12 +1,27 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { deleteSharedCalendar } from '../../api/sharedCalendar';
 
 const ExitCalendarModal = ({
   isOpen,
   onClose,
-  onConfirm,
+  calendarId,
   calendarName,
   calendarImage,
 }) => {
+  const navigate = useNavigate();
+
+  const handleConfirm = async () => {
+    try {
+      await deleteSharedCalendar(calendarId);
+      navigate('/calendar'); // 삭제 후 /calendar로 리디렉션
+      console.log('캘린더 삭제 성공');
+    } catch (error) {
+      console.error('캘린더 삭제 실패:', error);
+      // 에러 처리 로직
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -39,7 +54,7 @@ const ExitCalendarModal = ({
             </button>
             <button
               className="flex p-2 mt-2 ml-28 text-red-500 font-bold bg-transparent"
-              onClick={onConfirm}
+              onClick={handleConfirm} // API 호출 및 리디렉션
             >
               나가기
             </button>

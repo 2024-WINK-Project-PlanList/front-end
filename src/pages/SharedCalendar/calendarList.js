@@ -37,7 +37,9 @@ const CalendarList = () => {
 
   const handleCalendarClick = (calendarId) => {
     console.log(calendarId);
-    navigate(`/calendar/${calendarId}`);
+    navigate(`/calendar/${calendarId}`, {
+      state: { calendarId },
+    });
   };
 
   useEffect(() => {
