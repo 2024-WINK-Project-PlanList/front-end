@@ -27,7 +27,7 @@ const SplashScreen = () => {
 
           navigate('/main');
         } catch (error) {
-          alert('자동 로그인 실패');
+          console.log('자동 로그인 실패(첫 로그인)');
           navigate('/login');
         }
       } else {
