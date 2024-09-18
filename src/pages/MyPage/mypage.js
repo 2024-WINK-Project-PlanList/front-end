@@ -12,10 +12,11 @@ import { getUserInfo, modifyUserInfo } from '../../api/user';
 
 const MyPage = () => {
   const [profileData, setProfileData] = useState([]);
-  const [countFriends, setCountFriends] = useState([]);
+  const [countFriends, setCountFriends] = useState(0);
   const [modalIsOpen, setModalState] = useState(false);
   const navigate = useNavigate();
 
+  // 프로필 불러오기
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -31,15 +32,19 @@ const MyPage = () => {
     fetchUserInfo();
   }, []);
 
+  // 프로필 수정
   const handleSaveProfile = async (updatedProfile) => {
     try {
       await modifyUserInfo(updatedProfile);
 
-      setProfileData(updatedProfile);
+      setProfileData((prevProfileData) => ({
+        ...prevProfileData,
+        ...updatedProfile,
+      }));
 
       console.log('프로필 수정 성공');
     } catch (error) {
-      console.log('프로필 수정 중 오류 발생');
+      console.error('프로필 수정 중 오류 발생', error);
     }
   };
 
