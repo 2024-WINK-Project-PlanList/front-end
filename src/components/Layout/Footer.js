@@ -18,7 +18,7 @@ const Footer = () => {
             <Home
               width={'2.3rem'}
               height={'2.3rem'}
-              stroke={location === 'mainPage' ? '#000000' : '#858585'}
+              stroke={location === 'main' ? '#000000' : '#858585'}
             />
           </Link>
           <Link to={`/calendar`} className={'p-5'}>
@@ -39,7 +39,11 @@ const Footer = () => {
             <MyPage
               width={'2.3rem'}
               height={'2.3rem'}
-              fill={location === 'mypage' ? '#000000' : '#858585'}
+              fill={
+                ['mypage', 'playList', 'friends'].includes(location)
+                  ? '#000000'
+                  : '#858585'
+              }
             />
           </Link>
         </div>

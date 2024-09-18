@@ -1,40 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import wink from '../../assets/sharedCalendar/wink.svg';
-import clerker from '../../assets/sharedCalendar/clerker.svg';
-import planlist from '../../assets/sharedCalendar/logo.svg';
 import BottomSheet from '../../components/Modal/modifySharedCalendar';
 import Header from '../../components/Layout/Header';
 import Footer from '../../components/Layout/Footer';
-
-const initialCalendars = [
-  {
-    id: 1,
-    name: '2024 WINK',
-    members: 49,
-    description: '국민대학교 소프트웨어융합대학 소속 웹 학습 동아리 WINK',
-    image: wink,
-  },
-  {
-    id: 2,
-    name: 'Clerker',
-    members: 11,
-    description: '자이 컨퍼런스 서비스 1팀, AI 회의 요약 서비스 클러커',
-    image: clerker,
-  },
-  {
-    id: 3,
-    name: 'PlanList',
-    members: 7,
-    description: '팀 일정관리 캘린더, 플랜리스트',
-    image: planlist,
-  },
-];
+import { getCalendarList } from '../../api/sharedCalendar';
 
 const CalendarItem = ({ calendar, onClick }) => (
   <div
     className="flex items-center border-b p-4 hover:bg-gray-100 cursor-pointer"
-    onClick={() => onClick(calendar.id)}
+    onClick={() => onClick(calendar.calendarId)}
   >
     <img
       src={calendar.image}
@@ -55,26 +29,41 @@ const CalendarItem = ({ calendar, onClick }) => (
 );
 
 const CalendarList = () => {
-  const [calendars, setCalendars] = useState(initialCalendars);
+  const [calendars, setCalendars] = useState([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedCalendar, setSelectedCalendar] = useState(null);
   const navigate = useNavigate();
 
-  const handleCalendarClick = (id) => {
-    navigate(`/calendar/${id}`);
+  const handleCalendarClick = (calendarId) => {
+    navigate(`/calendar/${calendarId}`);
   };
+
+  useEffect(() => {
+    const fetchCalendarList = async () => {
+      try {
+        const res = await getCalendarList();
+        setCalendars(res.data || []);
+      } catch (error) {
+        console.error('캘린더 목록 조회 실패:', error);
+      }
+    };
+
+    fetchCalendarList();
+  }, []);
 
   const handleSave = (newCalendar) => {
     if (isEditMode) {
       setCalendars(
         calendars.map((cal) =>
-          cal.id === selectedCalendar.id ? { ...cal, ...newCalendar } : cal,
+          cal.calendarId === selectedCalendar.calendarId
+            ? { ...cal, ...newCalendar }
+            : cal,
         ),
       );
     } else {
-      const newId = Math.max(...calendars.map((cal) => cal.id), 0) + 1;
-      setCalendars([...calendars, { ...newCalendar, id: newId }]);
+      const newId = Math.max(...calendars.map((cal) => cal.calendarId), 0) + 1;
+      setCalendars([...calendars, { ...newCalendar, calendarId: newId }]);
     }
     setIsSheetOpen(false);
     setIsEditMode(false);
@@ -92,7 +81,7 @@ const CalendarList = () => {
       <div className="flex-grow overflow-y-auto">
         {calendars.map((calendar) => (
           <CalendarItem
-            key={calendar.id}
+            key={calendar.calendarId}
             calendar={calendar}
             onClick={handleCalendarClick}
           />

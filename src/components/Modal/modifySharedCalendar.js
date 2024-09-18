@@ -4,11 +4,17 @@ import exit from '../../assets/sharedCalendar/exit.svg';
 import DetailModal from './exitCalendarModal';
 import MemberSelectModal from './MemberSelectModal';
 import ChooseImageModal from './chooseImageModal';
+import {
+  createSharedCalendar,
+  modifySharedCalendar,
+  deleteSharedCalendar,
+} from '../../api/sharedCalendar';
 
 const CalendarBottomSheet = ({
   isOpen,
   onClose,
   mode,
+  calendarId,
   name,
   description,
   members,
@@ -95,24 +101,55 @@ const CalendarBottomSheet = ({
     setIsDetailModalOpen(false);
   };
 
-  const handleDetailModalConfirm = () => {
-    if (onExit) {
-      onExit();
+  const handleDetailModalConfirm = async () => {
+    try {
+      if (calendarId) {
+        await deleteSharedCalendar(calendarId);
+        console.log('캘린더 나가기 성공');
+        if (onExit) {
+          onExit();
+        }
+      }
+    } catch (error) {
+      console.error('캘린더 나가기 실패', error);
+    } finally {
+      handleDetailModalClose();
+      onClose();
     }
-    handleDetailModalClose();
-    onClose();
   };
 
-  const handleSave = () => {
-    if (onSave) {
-      onSave({
-        name: calendarName,
-        description: calendarDescription,
-        members: calendarMembers,
-        image: calendarImage,
-      });
+  const handleSave = async () => {
+    try {
+      if (mode === 'edit') {
+        await modifySharedCalendar(calendarId, {
+          name: calendarName,
+          description: calendarDescription,
+          imageBase64: calendarImage || '',
+        });
+      } else {
+        await createSharedCalendar({
+          name: calendarName,
+          description: calendarDescription,
+          imageBase64: calendarImage || '',
+          membersToInvite: [], // 멤버 선택 모달과 연동 필요
+        });
+      }
+
+      if (onSave) {
+        onSave({
+          name: calendarName,
+          description: calendarDescription,
+          members: calendarMembers,
+          image: calendarImage,
+        });
+      }
+      onClose();
+    } catch (error) {
+      console.error(
+        mode === 'edit' ? '캘린더 수정 오류' : '캘린더 생성 오류',
+        error,
+      );
     }
-    onClose();
   };
 
   if (!isMounted) return null;
