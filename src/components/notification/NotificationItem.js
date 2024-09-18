@@ -5,10 +5,15 @@ const token = localStorage.getItem('token');
 
 const Friend = ({ value, onRemove }) => {
   const onAllow = () => {
+    console.log(value.referenceId);
     customAxios
-      .post(
-        `/friend/accept`,
-        {
+      .post(`/friend/accept`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          ContentType: 'application/json',
+        },
+        body: {
+
           friendshipId: value.referenceId,
         },
         {
@@ -71,7 +76,8 @@ const Friend = ({ value, onRemove }) => {
 };
 
 const Invitation = ({ value, onRemove }) => {
-  const onAllow = () => {
+  const onAllow = (event) => {
+    event.preventDefault();
     customAxios
       .post('/shared-calendar/join', {
         headers: {

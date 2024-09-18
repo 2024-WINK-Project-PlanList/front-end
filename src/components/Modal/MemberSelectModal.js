@@ -15,13 +15,22 @@ const MemberSelectModal = ({ isOpen, onClose, members, onAdd }) => {
 
     const searchFriends = async () => {
       try {
-        const results = await SearchFriends(searchTerm, onlyFriends);
-        setFilteredMembers(
-          results.map((result) => ({
-            user: result.user,
-            isFriend: result.isFriend,
-          })),
-        );
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/friend/search`, {
+          params: {
+            keyword: searchTerm,
+            onlyFriends: onlyFriends,
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // Bearer 토큰을 헤더에 추가
+          },
+        });
+
+        const searchResults = response.data.map((result) => ({
+          user: result.user,
+          isFriend: result.isFriend,
+        }));
+
+        setFilteredMembers(searchResults); // 검색 결과를 상태에 저장
       } catch (error) {
         console.error('친구 검색 중 오류 발생:', error);
       }

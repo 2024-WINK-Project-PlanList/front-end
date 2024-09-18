@@ -1,24 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { format } from 'date-fns';
 import MemberSelectModal from './MemberSelectModal';
 import ColorSelectModal from './ColorSelectModal';
 
 const CalendarBottomSheet = ({
   isOpen,
   onClose,
-  onAdd,
-  selectedDates = [], // 기본값으로 빈 배열 설정
+  selectedDates = [],
   plan,
+  closeCalendarPlanModal,
+  calendarId,
+  setPlans,
 }) => {
+  useEffect(() => {
+    console.log('CalendarBottomSheet에서 setPlans:', setPlans);
+  }, [setPlans]);
+
   const [isAnimating, setIsAnimating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
-  const [selectedColor, setSelectedColor] = useState(plan?.color || '');
-  const [isPublic, setIsPublic] = useState(plan?.isPublic || false);
-  const [title, setTitle] = useState(plan?.title || '');
-  const [details, setDetails] = useState(plan?.details || '');
-  const [members, setMembers] = useState([]);
+  const [selectedColorId, setSelectedColorId] = useState(plan?.colorId || 1);
+  const [isPublic, setIsPublic] = useState(
+    plan?.openStatus === 'PUBLIC' || false,
+  );
+  const [title, setTitle] = useState(plan?.name || '');
+  const [details, setDetails] = useState(plan?.description || '');
+  const [members, setMembers] = useState(plan?.members || []);
 
   useEffect(() => {
     if (isOpen) {
@@ -37,10 +46,11 @@ const CalendarBottomSheet = ({
 
   useEffect(() => {
     if (plan) {
-      setSelectedColor(plan?.color || '');
-      setIsPublic(plan?.isPublic || false);
-      setTitle(plan?.title || '');
-      setDetails(plan?.details || '');
+      setSelectedColorId(plan?.colorId || 1);
+      setIsPublic(plan?.openStatus === 'PUBLIC' || false);
+      setTitle(plan?.name || '');
+      setDetails(plan?.description || '');
+      setMembers(plan?.members || []);
     }
   }, [plan]);
 
@@ -74,9 +84,8 @@ const CalendarBottomSheet = ({
     setIsColorModalOpen(true);
   };
 
-  const handleColorSelect = (color) => {
-    setSelectedColor(color);
-    handleColorModalClose();
+  const handleColorSelect = (colorId) => {
+    setSelectedColorId(colorId);
   };
 
   const toggleIsPublic = () => {
@@ -84,36 +93,125 @@ const CalendarBottomSheet = ({
   };
 
   const handleAddClick = async () => {
-    // 배열의 값이 있는지 확인하여 방어적인 코드 추가
-    const startDate = selectedDates?.[0] || new Date();
-    const endDate = selectedDates?.[selectedDates.length - 1] || new Date();
+    if (!calendarId) {
+      console.error(
+        '캘린더 아이디가 null입니다. 올바른 캘린더를 선택했는지 확인해주세요.',
+      );
+      return;
+    }
 
-    const newPlan = {
-      content: title,
-      startDate: startDate,
-      endDate: endDate,
-      openStatus: isPublic ? 'public' : 'private',
-      colorId: selectedColor,
-      scheduleMembers: members,
-      calendarId: 1,
+    console.log('캘린더 ID:', calendarId); // 캘린더 ID 로그 출력
+    console.log('선택된 날짜들:', selectedDates); // 선택된 날짜 로그 출력
+
+    const parseDate = (dateString) => {
+      const parts = dateString.split('-');
+      return new Date(parts[0], parts[1] - 1, parts[2]);
     };
 
-    const token = 'YOUR_JWT_TOKEN'; // 토큰을 여기에 추가
+    const dateStrings = selectedDates.slice().sort();
+    const startDate = parseDate(dateStrings[0]);
+    const endDate = parseDate(dateStrings[dateStrings.length - 1]);
+
+    const isSingleDay = selectedDates.length === 1;
+
+    const formattedStartDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss");
+    const formattedEndDate = isSingleDay
+      ? format(startDate, "yyyy-MM-dd'T'23:59:59")
+      : format(endDate, "yyyy-MM-dd'T'HH:mm:ss");
+
+    const newPlan = {
+      name: title,
+      description: details,
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
+      openStatus: isPublic ? 'PUBLIC' : 'PRIVATE',
+      colorId: selectedColorId,
+      scheduleMembers:
+        members.length > 0 ? members.map((member) => member.id) : [],
+      calendarId: calendarId, // 캘린더 ID 전달
+    };
+
+    console.log('백엔드로 보낼 새로운 일정 정보:', newPlan); // 새로운 일정 정보 로그
 
     try {
-      const response = await axios.post('/schedule', newPlan, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
-        },
-      });
-      console.log('응답:', response.data);
+      let response;
+
+      // 수정할 일정이 있는 경우 PATCH 요청을 보냄
+      if (plan && plan.id) {
+        response = await axios.patch(
+          `${process.env.REACT_APP_BACKEND_URL}/schedule/${plan.id}`,
+          newPlan,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          },
+        );
+        console.log('일정 수정 응답:', response.data);
+      } else {
+        // 새로운 일정 추가는 POST 요청을 사용
+        response = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/schedule`,
+          newPlan,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          },
+        );
+        console.log('일정 추가 응답:', response.data);
+      }
+
+      // 일정 추가 또는 수정 후 일정 목록을 다시 가져옴
+      await fetchUpdatedPlans();
+
       setIsAnimating(false);
       setTimeout(() => {
-        onAdd(newPlan);
         handleClose();
+        if (closeCalendarPlanModal) {
+          closeCalendarPlanModal(); // CalendarPlan 모달 닫기
+        }
       }, 300);
     } catch (error) {
-      console.error('일정 추가 중 오류 발생:', error);
+      console.error('일정 처리 중 오류 발생:', error);
+      if (error.response) {
+        console.error('서버 응답 상태 코드:', error.response.status);
+        console.error('서버 응답 데이터:', error.response.data);
+      } else {
+        console.error('서버로부터 응답이 없습니다.');
+      }
+    }
+  };
+
+  // 일정 목록을 다시 가져오는 함수 추가
+  const fetchUpdatedPlans = async () => {
+    try {
+      const calendarResponse = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/calendar`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
+      );
+      console.log('캘린더 새로 고침 정보:', calendarResponse.data);
+
+      if (
+        calendarResponse.data &&
+        Array.isArray(calendarResponse.data.individualScheduleList)
+      ) {
+        if (typeof setPlans === 'function') {
+          setPlans(calendarResponse.data.individualScheduleList);
+          console.log(
+            '업데이트된 일정들:',
+            calendarResponse.data.individualScheduleList,
+          );
+        } else {
+          console.error('setPlans가 함수가 아닙니다.');
+        }
+      }
+    } catch (error) {
+      console.error('캘린더 데이터 다시 가져오기 오류:', error);
     }
   };
 
@@ -183,7 +281,7 @@ const CalendarBottomSheet = ({
                 색상
                 <span
                   className="w-24 h-5 rounded-md"
-                  style={{ backgroundColor: selectedColor || '#6BB6FF' }}
+                  style={{ backgroundColor: getColorById(selectedColorId) }}
                 ></span>
               </button>
             </div>
@@ -223,7 +321,7 @@ const CalendarBottomSheet = ({
       <MemberSelectModal
         isOpen={isMemberModalOpen}
         onClose={handleMemberModalClose}
-        members={['멤버 1', '멤버 2', '멤버 3']}
+        members={members}
         onMemberSelect={(selectedMembers) => setMembers(selectedMembers)}
       />
 
@@ -237,3 +335,12 @@ const CalendarBottomSheet = ({
 };
 
 export default CalendarBottomSheet;
+
+function getColorById(colorId) {
+  const colorMap = {
+    1: '#6BB6FF',
+    2: '#FF6B6B',
+    3: '#BEFF6B',
+  };
+  return colorMap[colorId] || '#6BB6FF';
+}

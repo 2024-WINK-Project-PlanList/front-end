@@ -1,24 +1,26 @@
+// Calendar 컴포넌트
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios'; // axios import
+import axios from 'axios';
 import CalendarPlan from '../../components/Modal/calendarPlan';
 import { useSwipeable } from 'react-swipeable';
+import CalendarBottomSheet from '../../components/Modal/CalendarBottomSheet';
 
-const Calendar = ({ calendarId, readOnly = false }) => {
+const Calendar = ({ readOnly = false }) => {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [selectedDates, setSelectedDates] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [plans, setPlans] = useState([]); // 받아온 데이터를 상태로 관리
+  const [plans, setPlans] = useState([]);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [calendarId, setCalendarId] = useState(null);
 
-  // 드래그 선택 상태
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(null);
   const [dragEnd, setDragEnd] = useState(null);
 
-  // press-and-hold 타이머
   const dragTimer = useRef(null);
-  const holdThreshold = 200; // 밀리초
+  const holdThreshold = 200;
 
   const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -30,24 +32,13 @@ const Calendar = ({ calendarId, readOnly = false }) => {
     month === today.getMonth() &&
     year === today.getFullYear();
 
-  // 주차 계산
-  const totalDays = firstDayOfMonth + daysInMonth;
-  const totalWeeks = Math.ceil(totalDays / 7); // 총 주 계산
+  const formatDateKey = (date) => {
+    const year = date.getFullYear();
+    const monthStr = (date.getMonth() + 1).toString().padStart(2, '0');
+    const dayStr = date.getDate().toString().padStart(2, '0');
+    return `${year}-${monthStr}-${dayStr}`;
+  };
 
-  // 주차에 따른 패딩 설정
-  let buttonPadding;
-  if (totalWeeks === 4) {
-    buttonPadding = 'pb-[22.65%]'; // 4주차일 때 패딩
-  } else if (totalWeeks === 5) {
-    buttonPadding = 'pb-[17%]'; // 5주차일 때 패딩
-  } else if (totalWeeks === 6) {
-    buttonPadding = 'pb-[13.2%]'; // 6주차일 때 패딩
-  }
-
-  const weeks = [];
-  let days = [];
-
-  // 날짜 범위 내 모든 날짜 가져오기
   const getDatesInRange = (start, end) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -63,24 +54,15 @@ const Calendar = ({ calendarId, readOnly = false }) => {
     return dateArray;
   };
 
-  // 날짜 키 포맷팅 함수 (YYYY-MM-DD)
-  const formatDateKey = (date) => {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  // 마우스 이벤트 핸들러
   const handleMouseDown = (day, selectedYear, selectedMonth) => {
     if (readOnly) return;
-    // press-and-hold 타이머 시작
     dragTimer.current = setTimeout(() => {
       setIsDragging(true);
       const startDate = new Date(selectedYear, selectedMonth, day);
       setDragStart(startDate);
       setDragEnd(startDate);
-      setSelectedDates([formatDateKey(startDate)]);
+      const newSelectedDates = [formatDateKey(startDate)];
+      setSelectedDates(newSelectedDates);
     }, holdThreshold);
   };
 
@@ -96,18 +78,15 @@ const Calendar = ({ calendarId, readOnly = false }) => {
   };
 
   const handleMouseUp = () => {
-    // 타이머 클리어
     clearTimeout(dragTimer.current);
-
     if (isDragging) {
       setIsDragging(false);
-      if (selectedDates.length > 0) {
-        setIsModalOpen(true);
+      if (Array.isArray(selectedDates) && selectedDates.length > 0) {
+        setIsBottomSheetOpen(true);
       }
     }
   };
 
-  // 전역 마우스 업 이벤트
   useEffect(() => {
     window.addEventListener('mouseup', handleMouseUp);
     return () => {
@@ -116,54 +95,63 @@ const Calendar = ({ calendarId, readOnly = false }) => {
     };
   }, [isDragging, selectedDates]);
 
-  // 개별 날짜 클릭 처리
   const handleDateClick = (day, selectedYear, selectedMonth) => {
     if (readOnly) return;
 
     const selectedFullDate = formatDateKey(
       new Date(selectedYear, selectedMonth, day),
     );
-    setSelectedDates([selectedFullDate]); // 단일 날짜 선택
+    setSelectedDates([selectedFullDate]);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedDates([]); // 모달 닫힐 때 선택된 날짜 초기화
+    setSelectedDates([]);
   };
 
-  // 백엔드에서 캘린더 데이터 받아오기
-  useEffect(() => {
-    const fetchCalendarData = async () => {
-      try {
-        const token =
-          'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0bmFsczY1NUBrb29rbWluLmFjLmtyIiwiaWF0IjoxNzI2NDEwNjE0LCJleHAiOjE3MjcwMTU0MTQsInN1YiI6InRlc3RAZ21haWwuY29tIiwiaWQiOjF9.TQ-HNQnEWVfbhXeQJw6AKB2REhqbyJjRvQ-Oj-OY8BI';
-
-        const response = await axios.get(`/calendar`, {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/calendar`,
+        {
           headers: {
-            Authorization: `Bearer ${token}`, // 고정된 토큰을 Authorization 헤더에 추가
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-        });
-        setPlans(response.data.user.individualSchedule); // 받아온 스케줄 데이터 설정
-      } catch (error) {
-        console.error('캘린더 데이터 가져오기 오류:', error);
+        },
+      );
+
+      console.log('캘린더 정보:', response.data);
+
+      if (response.data.calendarId) {
+        setCalendarId(response.data.calendarId);
+        console.log('캘린더 ID:', response.data.calendarId);
+      } else {
+        console.error('캘린더 아이디가 존재하지 않습니다.');
+        setCalendarId(null); // 기본값을 설정하지 않고 null로 유지
       }
-    };
 
-    fetchCalendarData();
-  }, [calendarId]);
-
-  const handleAddPlan = (newPlan) => {
-    if (readOnly) return;
-    // 여러 날짜에 대해 일정을 추가
-    setPlans((prevPlans) => {
-      const updatedPlans = [...prevPlans];
-      selectedDates.forEach((date) => {
-        updatedPlans.push({ ...newPlan, date });
-      });
-      return updatedPlans;
-    });
+      if (
+        response.data &&
+        Array.isArray(response.data.individualScheduleList)
+      ) {
+        console.log(
+          '캘린더에서 가져온 일정들:',
+          response.data.individualScheduleList,
+        );
+        setPlans(response.data.individualScheduleList);
+      } else {
+        setPlans([]);
+      }
+    } catch (error) {
+      console.error('캘린더 데이터 가져오기 오류:', error);
+      setPlans([]);
+    }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handlePrevMonth = () => {
     if (month === 0) {
@@ -190,20 +178,35 @@ const Calendar = ({ calendarId, readOnly = false }) => {
     trackMouse: true,
   });
 
-  const weekHeader = (
-    <div className="calendar-week-header flex">
-      {daysOfWeek.map((day, index) => (
-        <div
-          key={index}
-          className="calendar-day-header flex-1 text-center py-2 font-semibold text-gray-700"
-        >
-          {day}
-        </div>
-      ))}
-    </div>
-  );
+  const getColorByColorId = (colorId) => {
+    switch (colorId) {
+      case 1:
+        return '#6BB6FF';
+      case 2:
+        return '#FF6B6B';
+      case 3:
+        return '#BEFF6B';
+      default:
+        return '#92C7FA'; // 기본 색상
+    }
+  };
 
-  // 이전 달의 빈 칸 채우기
+  const totalDays = firstDayOfMonth + daysInMonth;
+  const totalWeeks = Math.ceil(totalDays / 7);
+
+  let buttonPadding = '';
+  if (totalWeeks === 4) {
+    buttonPadding = 'pb-[26%]';
+  } else if (totalWeeks === 5) {
+    buttonPadding = 'pb-[19.5%]';
+  } else if (totalWeeks === 6) {
+    buttonPadding = 'pb-[15.2%]';
+  }
+
+  const weeks = [];
+  let days = [];
+
+  // 이전 달의 일수 채우기
   for (let i = 0; i < firstDayOfMonth; i++) {
     const day = prevMonthDays - firstDayOfMonth + i + 1;
     const prevMonth = month - 1;
@@ -223,54 +226,80 @@ const Calendar = ({ calendarId, readOnly = false }) => {
     );
   }
 
-  // 현재 달의 날짜 채우기
+  // 현재 달의 일수 채우기
   for (let day = 1; day <= daysInMonth; day++) {
     const todayClass = isToday(day)
       ? 'bg-[#90C8FF] text-white rounded-full w-6 h-6 flex items-center justify-center'
       : '';
 
     const dateKey = formatDateKey(new Date(year, month, day));
-    const isSelected = selectedDates.includes(dateKey);
 
-    const plansForDay = plans.filter((plan) => plan.date === dateKey);
+    const plansForDay = plans.filter((plan) => {
+      const currentDateString = dateKey;
+      const planStartDateString = plan.startDate
+        ? plan.startDate.slice(0, 10)
+        : null;
+      const planEndDateString = plan.endDate ? plan.endDate.slice(0, 10) : null;
 
-    // 각 일정의 margin-bottom을 동적으로 설정
-    const marginBottoms = ['mb-[80%]', 'mb-[42%]', 'mb-[4%]'];
+      if (!planStartDateString || !planEndDateString) {
+        return false;
+      }
+
+      const currentDate = new Date(`${currentDateString}T00:00:00`);
+      const planStartDate = new Date(`${planStartDateString}T00:00:00`);
+      const planEndDate = new Date(`${planEndDateString}T00:00:00`);
+
+      return currentDate >= planStartDate && currentDate <= planEndDate;
+    });
+
+    const isSelected =
+      Array.isArray(selectedDates) && selectedDates.includes(dateKey);
+    const marginBottoms = ['mb-[90%]', 'mb-[47.5%]', 'mb-[6%]'];
+
+    // 일정이 3개를 초과하면 3개만 표시
+    const displayedPlans = plansForDay.slice(0, 3);
+    const morePlansCount = plansForDay.length - displayedPlans.length;
 
     days.push(
       <button
         key={day}
-        className={`calendar-day ${buttonPadding} text-center relative flex flex-col items-center rounded-md ${
+        className={`calendar-day ${buttonPadding} text-center relative flex flex-col items-center ${
           (firstDayOfMonth + day - 1) % 7 === 0 ? 'text-red-500' : ''
         } ${(firstDayOfMonth + day - 1) % 7 === 6 ? 'text-blue-500' : ''} hover:bg-gray-100 ${
           isSelected ? 'bg-gray-200' : ''
-        }`}
+        } rounded-md`}
         onMouseDown={() => handleMouseDown(day, year, month)}
         onMouseEnter={() => handleMouseEnter(day, year, month)}
         onClick={() => handleDateClick(day, year, month)}
         style={{ flex: '0 0 14.28%', userSelect: 'none' }}
       >
         <span className={`mb-auto ${todayClass}`}>{day}</span>
-        {plansForDay.slice(0, 3).map((plan, index) => (
-          <div
-            key={index}
-            className={`absolute bottom-0 w-[90%] text-xs text-gray-600 flex justify-center ${marginBottoms[index]}`}
-            style={{
-              backgroundColor: plan.color || '#92C7FA',
-              borderRadius: '4px',
-              padding: '2px 4px',
-              color: '#fff',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '100%',
-            }}
-          >
-            {plan.title.length > 3
-              ? `${plan.title.slice(0, 3)}...`
-              : plan.title}
-          </div>
-        ))}
+
+        {/* 표시된 일정들 */}
+        {displayedPlans.length > 0 &&
+          displayedPlans.map((plan, index) => (
+            <div
+              key={index}
+              className={`absolute bottom-0 w-[90%] h-[20%] text-xs text-gray-600 flex justify-center items-start ${marginBottoms[index]}`} // items-start를 추가하여 글자를 위로 정렬
+              style={{
+                backgroundColor: getColorByColorId(plan.colorId),
+                borderRadius: '4px',
+                padding: '2px 4px',
+                color: '#fff',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '100%',
+                lineHeight: '1', // 글자 간격을 조정하려면 line-height를 사용
+              }}
+            >
+              {plan.name && plan.name.length > 3
+                ? `${plan.name.slice(0, 3)}...`
+                : plan.name}
+            </div>
+          ))}
+
+        {/* 일정이 3개를 초과할 경우 더보기 버튼 표시 */}
       </button>,
     );
 
@@ -289,10 +318,10 @@ const Calendar = ({ calendarId, readOnly = false }) => {
     }
   }
 
+  // 다음 달의 일수 채우기
   const nextMonth = month + 1;
   const nextYear = nextMonth > 11 ? year + 1 : year;
 
-  // 마지막 주의 빈 칸 채우기
   if (days.length > 0) {
     for (let i = 1; days.length < 7; i++) {
       days.push(
@@ -309,6 +338,19 @@ const Calendar = ({ calendarId, readOnly = false }) => {
       );
     }
   }
+
+  const weekHeader = (
+    <div className="calendar-week-header flex">
+      {daysOfWeek.map((day, index) => (
+        <div
+          key={index}
+          className="calendar-day-header flex-1 text-center py-2 font-semibold text-gray-700"
+        >
+          {day}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div>
@@ -334,17 +376,37 @@ const Calendar = ({ calendarId, readOnly = false }) => {
           </div>
         ))}
 
-        {/* CalendarPlan 모달 */}
-        {!readOnly && (
+        {Array.isArray(selectedDates) && selectedDates.length > 0 && (
           <CalendarPlan
             isOpen={isModalOpen}
             onClose={closeModal}
             selectedDates={selectedDates}
             plans={plans}
             setPlans={setPlans}
+            calendarId={calendarId}
           />
         )}
       </div>
+
+      {!readOnly &&
+        Array.isArray(selectedDates) &&
+        selectedDates.length > 0 && (
+          // Calendar 컴포넌트에서 setPlans 전달 제대로 관리하기
+          <CalendarBottomSheet
+            isOpen={isBottomSheetOpen}
+            onClose={() => {
+              setIsBottomSheetOpen(false);
+              setSelectedDates([]); // 모달이 닫힐 때 선택된 날짜 초기화
+            }}
+            selectedDates={selectedDates} // 선택된 날짜 전달
+            closeCalendarPlanModal={() => setIsModalOpen(false)} // CalendarPlan 모달 닫기
+            calendarId={calendarId}
+            setPlans={(updatedPlans) => {
+              console.log('Calendar에서 setPlans 호출됨:', updatedPlans);
+              setPlans(updatedPlans); // 업데이트된 일정 리스트 설정
+            }}
+          />
+        )}
     </div>
   );
 };
