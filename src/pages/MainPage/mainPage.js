@@ -10,7 +10,7 @@ const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const MainPage = () => {
   const [friendComments, setFriendComments] = useState([]); // 친구 댓글 데이터 상태
-  const [newNotificationCount, setNewNotificationCount] = useState(0); // 새로운 알림 개수 상태
+  const [newNotificationCount, setNewNotificationCount] = useState(-1); // 새로운 알림 개수 상태
 
   useEffect(() => {
     // 로컬 스토리지에서 토큰 가져오기
@@ -43,9 +43,13 @@ const MainPage = () => {
 
   return (
     <div className="relative">
-      <div className="relative">
+      {newNotificationCount === -1 ? (
+        <Header />
+      ) : (
         <Header newNotificationCount={newNotificationCount} />
-      </div>
+      )}
+      {/* 알림 개수 전달 */}
+
 
       <div className="relative mt-2">
         <MainMemo memoData={friendComments} />

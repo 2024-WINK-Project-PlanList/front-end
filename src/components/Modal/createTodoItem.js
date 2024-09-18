@@ -5,6 +5,8 @@ import { ReactComponent as Calendar } from '../../assets/footer/calendar.svg';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
+import { customAxios } from '../../api/customAxios';
+const token = localStorage.getItem('token');
 
 const CreateTodoItem = ({ hideModal, addTodo, date }) => {
   const [text, setText] = useState('');
@@ -12,9 +14,9 @@ const CreateTodoItem = ({ hideModal, addTodo, date }) => {
   const days = ['일', '월', '화', '수', '목', '금', '토'];
   const navigate = useNavigate();
 
-  const fixedDate = dayjs(
-    `20${date[0] + date[1]}-${date[2] + date[3]}-${date[4] + date[5]}`,
-  );
+  const YYYYMMDD = `20${date[0] + date[1]}-${date[2] + date[3]}-${date[4] + date[5]}`;
+
+  const fixedDate = dayjs(YYYYMMDD);
 
   const closeModal = () => {
     setIsClose(true);
@@ -26,10 +28,26 @@ const CreateTodoItem = ({ hideModal, addTodo, date }) => {
   const onChange = (e) => {
     setText(e.target.value);
   };
-
   const onClick = () => {
     if (text) {
-      addTodo(text);
+      addTodo();
+      navigate(`/todolist/${date}`);
+      customAxios
+        .post(
+          '/todolist/tasks',
+          {
+            content: text,
+            date: new Date(YYYYMMDD),
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        )
+        .catch((error) => {
+          console.error('투두리스트 생성 오류', error);
+        });
       closeModal();
     }
   };
@@ -61,9 +79,9 @@ const CreateTodoItem = ({ hideModal, addTodo, date }) => {
               'border-b-[1px] border-black mx-10 flex justify-between items-center'
             }
           >
-            <a className={'mx-4 tracking-widest text-sm'}>
+            <p className={'mx-4 tracking-widest text-sm'}>
               {fixedDate.format('YYYY/MM/DD')}({days[fixedDate.format('d')]})
-            </a>
+            </p>
             <div>
               <DatePicker
                 selected={new Date(fixedDate.format('YYYY-MM-DD'))}
@@ -96,7 +114,7 @@ const CreateTodoItem = ({ hideModal, addTodo, date }) => {
           className={`mx-auto mt-20 h-14 text-center rounded-xl w-4/6 content-center text-lg ${text ? 'bg-blue-400 text-white' : 'bg-gray-200 text-gray-500'}`}
           onClick={onClick}
         >
-          <a>할 일 추가</a>
+          <p>할 일 추가</p>
         </div>
       </div>
     </div>
