@@ -22,19 +22,16 @@ const FriendsList = () => {
       try {
         const data = await getFriendsList();
 
-        if (data && Array.isArray(data.user)) {
-          setFriends(data.user);
-          setFindUser(data.user);
+        if (data && Array.isArray(data)) {
+          setFriends(data);
         } else {
           setFriends([]);
-          setFindUser([]);
         }
 
         console.log('내친구 목록', data);
       } catch (error) {
         console.error('친구리스트 불러오기 실패', error);
         setFriends([]);
-        setFindUser([]);
       }
     };
 
@@ -43,14 +40,23 @@ const FriendsList = () => {
 
   useEffect(() => {
     if (userInput === '') {
-      setFindUser(friends); // 검색어가 없으면 전체 친구 목록을 표시
+      setFindUser([]);
     } else {
-      const filteredFriends = friends.filter((friend) =>
-        friend.email.toLowerCase().includes(userInput),
-      );
-      setFindUser(filteredFriends || []); // 필터링된 결과 표시
+      const fetchFriends = async () => {
+        try {
+          const data = await searchFriends(userInput, true);
+          const users = data.map((item) => item.user);
+          setFindUser(users || []);
+          console.log('친구 검색 목록', data);
+        } catch (error) {
+          console.error('친구 검색 오류!', error);
+          setFindUser([]); // 오류가 발생하면 빈 배열로 설정
+        }
+      };
+
+      fetchFriends();
     }
-  }, [userInput, friends]);
+  }, [userInput]);
 
   const showModal = () => {
     setShow(true);
@@ -83,29 +89,67 @@ const FriendsList = () => {
           <Glass className="absolute bottom-[12px] left-[40px] w-[20px] h-[20px] fill-[#3F3F3F]" />
         </div>
         <div className="w-full px-[19px]">
-          {isEmpty ? (
+          {/* 친구가 아예 없을 때 */}
+          {isEmpty && findUser.length === 0 && (
             <div className="flex justify-center font-preRegular text-xl pt-[73px]">
               새로운 친구를 추가해보세요!
             </div>
-          ) : findUser.length === 0 ? (
+          )}
+
+          {/* 검색 결과가 없을 때 */}
+          {!isEmpty && findUser.length === 0 && userInput && (
             <div className="flex justify-center font-preRegular text-xl pt-[73px]">
               검색 결과가 없습니다.
             </div>
-          ) : (
+          )}
+
+          {/* 친구 목록 */}
+          {!userInput && (
             <div>
-              {findUser.map((item) => (
-                <Friend
-                  key={item.id}
-                  {...item}
-                  profile={
-                    item.profileImagePath ? item.profileImagePath : <Profile />
-                  }
-                  name={item.nickname}
-                  email={item.email}
-                  song={item.songId}
-                  onDelete={() => handleDelete(item.id)}
-                />
-              ))}
+              {friends.map((item) => {
+                return (
+                  <Friend
+                    key={item.friendshipId}
+                    {...item}
+                    profile={
+                      item.friend.profileImagePath ? (
+                        item.friend.profileImagePath
+                      ) : (
+                        <Profile />
+                      )
+                    }
+                    name={item.friend.nickname}
+                    email={item.friend.email}
+                    song={item.friend.songId}
+                    onDelete={() => handleDelete(item.friendshipId)}
+                  />
+                );
+              })}
+            </div>
+          )}
+
+          {/* 검색 결과 */}
+          {userInput && findUser.length > 0 && (
+            <div>
+              {findUser.map((item) => {
+                return (
+                  <Friend
+                    key={item.friendshipId}
+                    {...item}
+                    profile={
+                      item.profileImagePath ? (
+                        item.profileImagePath
+                      ) : (
+                        <Profile />
+                      )
+                    }
+                    name={item.nickname}
+                    email={item.email}
+                    song={item.songId}
+                    onDelete={() => handleDelete(item.friendshipId)}
+                  />
+                );
+              })}
             </div>
           )}
         </div>
