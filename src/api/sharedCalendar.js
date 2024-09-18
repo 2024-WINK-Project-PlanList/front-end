@@ -109,11 +109,12 @@ export const deleteSharedCalendar = async (calendarId) => {
 // 공유캘린더 조회 API
 export const getSharedCalendar = async (calendarId) => {
   try {
-    await customAxios.get(`/shared-calendar/${calendarId}`, {
+    const response = await customAxios.get(`/shared-calendar/${calendarId}`, {
       headers: {
         Authorization: `Bearer ${getToken()}`,
       },
     });
+    return response.data;
   } catch (error) {
     console.error('공유 캘린더 조회 오류', error);
     throw error;

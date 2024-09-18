@@ -59,9 +59,9 @@ const PlayList = () => {
   };
 
   return (
-    <>
+    <div className="flex flex-col h-screen">
       <Header />
-      <div className="flex flex-col items-center font-preRegular pt-[26px]">
+      <div className="flex flex-col overflow-y-auto items-center font-preRegular pt-[26px] pb-[5.875rem]">
         <div className="relative w-full px-[24px]">
           <input
             placeholder="노래, 아티스트 검색"
@@ -107,7 +107,7 @@ const PlayList = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 export default PlayList;
