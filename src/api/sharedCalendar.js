@@ -23,24 +23,36 @@ export const getCalendarList = async () => {
 // 공유캘린더 생성 API
 export const createSharedCalendar = async (calendarData) => {
   try {
-    // FormData 인스턴스 여부 확인
-    const isFormData = calendarData instanceof FormData;
+    const calendarFormData = new FormData();
 
+    // 이미지가 있는 경우
+    if (calendarData.image && calendarData.image instanceof File) {
+      console.log('이미지 파일 객체:', calendarData.image);
+      calendarFormData.append('image', calendarData.image);
+    } else {
+      console.log('이미지가 안 담겨요');
+    }
+
+    const calendarInfo = {
+      name: calendarData.name,
+      description: calendarData.description,
+      membersToInvite: calendarData.membersToInvite || [],
+    };
+
+    // 캘린더 정보 추가
+    calendarFormData.append(
+      'calendar',
+      new Blob([JSON.stringify(calendarInfo)], { type: 'application/json' }),
+    );
+
+    // POST 요청
     const response = await customAxios.post(
       '/shared-calendar',
-      isFormData
-        ? calendarData
-        : JSON.stringify({
-            name: calendarData.name,
-            description: calendarData.description,
-            membersToInvite: calendarData.membersToInvite || [],
-          }),
+      calendarFormData,
       {
         headers: {
           Authorization: `Bearer ${getToken()}`,
-          'Content-Type': isFormData
-            ? 'multipart/form-data'
-            : 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       },
     );

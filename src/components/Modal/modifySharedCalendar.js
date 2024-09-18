@@ -78,6 +78,7 @@ const CalendarBottomSheet = ({
   };
 
   const handleMemberModalClose = () => {
+    console.log('닫혔당!');
     setIsMemberModalOpen(false);
   };
 
@@ -171,6 +172,12 @@ const CalendarBottomSheet = ({
   };
 
   if (!isMounted) return null;
+
+  function handleMemberSelect(selectedMembers) {
+    const selectedMemberIds = selectedMembers.map((member) => member.id);
+    setSelectedMemberIds(selectedMemberIds);
+    console.log('선택된 유저 아이디:', selectedMemberIds);
+  }
 
   return (
     <>
@@ -269,6 +276,8 @@ const CalendarBottomSheet = ({
         isOpen={isMemberModalOpen}
         onClose={handleMemberModalClose}
         members={['멤버 1', '멤버 2', '멤버 3']}
+        invite={false}
+        onMemberSelect={handleMemberSelect}
       />
 
       <DetailModal
