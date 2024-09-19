@@ -20,7 +20,10 @@ const Login = () => {
           <span className="text-lg">함께 시작할까요?</span>
         </div>
 
-        <button className="flex flex-row justify-between items-center w-[100%] h-[60px] pl-5 pr-5 rounded-[20px] font-preMedium text-black text-[18px] bg-[#FFE200]">
+        <button
+          className="flex flex-row justify-between items-center w-[100%] h-[60px] pl-5 pr-5 rounded-[20px] font-preMedium text-black text-[18px] bg-[#FFE200]"
+          onClick={handleLogin}
+        >
           <img src={Kakao} alt="kakao" />
           카카오로 시작하기
           <div className={'w-[22px] h-[100%]'}></div>
