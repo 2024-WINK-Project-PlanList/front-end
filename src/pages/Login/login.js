@@ -19,7 +19,7 @@ const Login = () => {
 
       <button
         type="button"
-        className="flex justify-center items-center bg-yellow-400 py-3 px-6 gap-2 text-xl mt-96 ml-6 rounded-lg font-semibold cursor-pointer"
+        className="flex justify-center items-center bg-yellow-400 py-3 px-6 gap-2 text-xl mt-96 ml-16 rounded-lg font-semibold cursor-pointer"
         onClick={handleLogin}
       >
         <img src={Kakao} alt="Kakao Logo" className="mt-1" />
