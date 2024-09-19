@@ -45,11 +45,13 @@ const Notification = () => {
   return (
     <>
       <Header />
-      <div className={'tracking-tight'}>
+      <div>
         <div>
-          <p className={'m-5 mb-2 font-bold text-[1.0625rem]'}>최근 알림</p>
+          <p className={'m-5 mb-2 font-preBold text-xl'}>최근 알림</p>
           {notificationList.some((item) => !item.read) || (
-            <p className={'text-center my-10 text-sm'}>최근 알림이 없습니다</p>
+            <p className={'text-center my-10 text-md font-preLight'}>
+              최근 알림이 없습니다
+            </p>
           )}
           <div>
             {notificationList
@@ -64,9 +66,11 @@ const Notification = () => {
           </div>
         </div>
         <div>
-          <p className={'m-5 mb-2 font-bold text-[1.0625rem]'}>지난 알림</p>
+          <p className={'m-5 mb-2 font-preBold text-xl'}>지난 알림</p>
           {notificationList.some((item) => item.read) || (
-            <p className={'text-center my-10 text-sm'}>지난 알림이 없습니다</p>
+            <p className={'text-center my-10 text-md font-preLight'}>
+              지난 알림이 없습니다
+            </p>
           )}
           {notificationList
             .filter((item) => item.read)

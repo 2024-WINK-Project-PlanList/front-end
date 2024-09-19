@@ -43,7 +43,7 @@ const Friend = ({ value, onRemove }) => {
         <div
           className={`rounded-full w-[0.375rem] h-[0.375rem] translate-y-[0.375rem] ${value.read ? '' : 'bg-blue-400'}`}
         />
-        <p className={'ml-2 text-sm font-semibold'}>{value.title}</p>
+        <p className={'ml-2 text-sm font-preSemiBold'}>{value.title}</p>
         <p className={'ml-3 mt-2 w-full text-[0.7rem] text-gray-900'}>
           {value.message}
         </p>
@@ -75,14 +75,15 @@ const Invitation = ({ value, onRemove }) => {
   const onAllow = (event) => {
     event.preventDefault();
     customAxios
-      .post('/shared-calendar/join', {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      .patch(
+        `/shared-calendar/join/${value.referenceId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-        body: {
-          inviteId: value.referenceId,
-        },
-      })
+      )
       .then((response) => {
         if (response.status === 200) {
           onRemove(value.id);
@@ -92,12 +93,9 @@ const Invitation = ({ value, onRemove }) => {
   };
   const onDeny = () => {
     customAxios
-      .delete('/shared-calendar/invite', {
+      .delete(`/shared-calendar/invite/${value.referenceId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
-        },
-        params: {
-          inviteId: value.referenceId,
         },
       })
       .then(() => {
@@ -112,7 +110,7 @@ const Invitation = ({ value, onRemove }) => {
         <div
           className={`rounded-full w-[0.375rem] h-[0.375rem] translate-y-[0.375rem] ${value.read ? '' : 'bg-blue-400'}`}
         />
-        <p className={'ml-2 text-sm font-semibold'}>{value.title}</p>
+        <p className={'ml-2 text-sm font-preSemiBold'}>{value.title}</p>
         <p className={'ml-3 mt-2 w-full text-[0.7rem] text-gray-900'}>
           {value.message}
         </p>
@@ -154,13 +152,21 @@ const Normal = ({ value }) => {
         <div
           className={`rounded-full w-[0.375rem] h-[0.375rem] translate-y-[0.375rem] ${value.read ? '' : 'bg-blue-400'}`}
         />
-        <p className={'ml-2 text-sm font-semibold'}>{value.title}</p>
-        <p className={'ml-3 mt-2 w-full text-[0.7rem] text-gray-900'}>
+        <p className={'ml-2 text-md font-preBold'}>{value.title}</p>
+        <p
+          className={
+            'ml-3 mt-2 w-full text-[0.8rem] text-gray-900 font-preMedium'
+          }
+        >
           {value.message}
         </p>
       </div>
       {value.imagePath && (
-        <div className={`border-2 w-12 h-12 rounded-lg mx-5 bg-[require()]`} />
+        <img
+          className={`border-2 w-14 h-14 rounded-xl mx-5`}
+          src={value.imagePath}
+          alt={'캘린더 사진'}
+        />
       )}
     </div>
   );
