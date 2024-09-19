@@ -12,19 +12,20 @@ const Login = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-start items-start pl-8 pt-36">
-      <span className="text-lg">하루를 시작하는 즐거움</span>
-      <img src={Planlist} alt="Planlist" className="w-44" />
-      <span className="text-lg">함께 시작할까요?</span>
+    <div className="h-screen flex flex-col justify-start items-start pl-8 pr-8 pt-36">
+      <div className={'w-[100%] flex flex-col gap-[40vh]'}>
+        <div>
+          <span className="text-lg">하루를 시작하는 즐거움</span>
+          <img src={Planlist} alt="Planlist" className="w-44" />
+          <span className="text-lg">함께 시작할까요?</span>
+        </div>
 
-      <button
-        type="button"
-        className="flex justify-center items-center bg-yellow-400 py-3 px-6 gap-2 text-xl mt-96 ml-16 rounded-lg font-semibold cursor-pointer"
-        onClick={handleLogin}
-      >
-        <img src={Kakao} alt="Kakao Logo" className="mt-1" />
-        <span>카카오로 시작하기</span>
-      </button>
+        <button className="flex flex-row justify-between items-center w-[100%] h-[60px] pl-5 pr-5 rounded-[20px] font-preMedium text-black text-[18px] bg-[#FFE200]">
+          <img src={Kakao} alt="kakao" />
+          카카오로 시작하기
+          <div className={'w-[22px] h-[100%]'}></div>
+        </button>
+      </div>
     </div>
   );
 };
