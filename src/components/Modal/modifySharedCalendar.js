@@ -123,20 +123,19 @@ const CalendarBottomSheet = ({
 
   const handleSave = async () => {
     try {
-      let formData = new FormData();
-      if (calendarImage && calendarImage instanceof File) {
-        formData.append('image', calendarImage);
-      }
-      formData.append('name', calendarName);
-      formData.append('description', calendarDescription);
-      formData.append('membersToInvite', JSON.stringify(selectedMemberIds)); // 멤버 선택 모달과 연동 필요
+      const calendarData = {
+        name: calendarName,
+        description: calendarDescription,
+        image: calendarImage, // 선택한 파일
+        membersToInvite: selectedMemberIds, // 멤버 ID 리스트
+      };
+
+      console.log('저장하려는 데이터:', calendarData);
 
       if (mode === 'edit') {
-        // 기존 캘린더 수정
-        await modifySharedCalendar(calendarId, formData);
+        await modifySharedCalendar(calendarId, calendarData);
       } else {
-        // 새 캘린더 생성
-        await createSharedCalendar(formData);
+        await createSharedCalendar(calendarData);
       }
 
       if (onSave) {
@@ -147,6 +146,7 @@ const CalendarBottomSheet = ({
           image: calendarImage,
         });
       }
+
       onClose();
     } catch (error) {
       console.error(
@@ -166,9 +166,10 @@ const CalendarBottomSheet = ({
   if (!isMounted) return null;
 
   function handleMemberSelect(selectedMembers) {
+    console.log('handleMemberSelect 호출됨', selectedMembers); // 이 로그가 실행되는지 확인
     const selectedMemberIds = selectedMembers.map((member) => member.id);
     setSelectedMemberIds(selectedMemberIds);
-    console.log('선택된 유저 아이디:', selectedMemberIds);
+    console.log('선택된 유저 아이디!!!!!!!:', selectedMemberIds);
   }
 
   return (
@@ -267,9 +268,13 @@ const CalendarBottomSheet = ({
       <MemberSelectModal
         isOpen={isMemberModalOpen}
         onClose={handleMemberModalClose}
-        members={['멤버 1', '멤버 2', '멤버 3']}
+        members={[]}
         invite={false}
         onMemberSelect={handleMemberSelect}
+        onAdd={(selectedMemberIds) => {
+          setSelectedMemberIds(selectedMemberIds);
+          console.log('선택된 멤버의 ID:', selectedMemberIds);
+        }}
       />
 
       <DetailModal
