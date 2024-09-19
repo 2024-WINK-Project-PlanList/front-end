@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import setting from '../../assets/sharedCalendar/setting.svg';
-import Calendar from '../../components/Calendar/Calendar';
+import Calendar from '../../components/Calendar/sharedCalendar';
 import BottomSheet from '../../components/Modal/modifySharedCalendar';
 import { getSharedCalendar } from '../../api/sharedCalendar';
 import Header from '../../components/Layout/Header';
@@ -22,6 +22,7 @@ const CalendarDetail = () => {
         try {
           const res = await getSharedCalendar(calendarId);
           setCalendar(res);
+          console.log('조회내용', res);
         } catch (error) {
           console.error('공유캘린더 조회 실패:', error);
         }
@@ -82,7 +83,7 @@ const CalendarDetail = () => {
           </div>
         </div>
         <div className="w-full">
-          <Calendar />
+          <Calendar id={calendarId} />
         </div>
         <BottomSheet
           isOpen={isModalOpen}
