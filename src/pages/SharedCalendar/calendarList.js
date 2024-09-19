@@ -6,33 +6,43 @@ import Footer from '../../components/Layout/Footer';
 import { getCalendarList } from '../../api/sharedCalendar';
 import { ReactComponent as BasicPic } from '../../assets/sharedCalendar/shareCalendarNone.svg';
 
-const CalendarItem = ({ calendar, onClick }) => (
-  <div
-    className="flex items-center p-4 hover:bg-gray-100 cursor-pointer"
-    onClick={() => onClick(calendar.id)}
-  >
-    {calendar.image ? (
-      <img
-        src={calendar.image}
-        alt="calendar-logo"
-        className="w-16 h-16 border border-[#E6E6E6] rounded-[10px] drop-shadow-md"
-      />
-    ) : (
-      <BasicPic className="drop-shadow-md" />
-    )}
-    <div className="ml-4">
-      <div className="flex items-center">
-        <div className="text-[20px] font-preRegular">{calendar.name}</div>
-        <div className="ml-2 text-[14px] text-[#676767] font-preMedium">
-          {calendar.members}
+const CalendarItem = ({ calendar, onClick }) => {
+  // 이미지가 파일 객체인지 확인하고, 미리보기 URL 생성
+  const getImageSrc = () => {
+    if (calendar.image && calendar.image instanceof File) {
+      return URL.createObjectURL(calendar.image);
+    }
+    return calendar.calendarImagePath || calendar.image; // 파일이 아닌 경우 원래 이미지 경로를 반환
+  };
+
+  return (
+    <div
+      className="flex items-center p-4 hover:bg-gray-100 cursor-pointer"
+      onClick={() => onClick(calendar.id)}
+    >
+      {calendar.image || calendar.calendarImagePath ? (
+        <img
+          src={getImageSrc()}
+          alt="calendar-logo"
+          className="w-16 h-16 border border-[#E6E6E6] rounded-[10px] drop-shadow-md"
+        />
+      ) : (
+        <BasicPic className="drop-shadow-md" />
+      )}
+      <div className="ml-4">
+        <div className="flex items-center">
+          <div className="text-[20px] font-preRegular">{calendar.name}</div>
+          <div className="ml-2 text-[14px] text-[#676767] font-preMedium">
+            {calendar.members}
+          </div>
+        </div>
+        <div className="text-[12px] text-[#676767] font-preRegular">
+          {calendar.description}
         </div>
       </div>
-      <div className="text-[12px] text-[#676767] font-preRegular">
-        {calendar.description}
-      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const CalendarList = () => {
   const [calendars, setCalendars] = useState([]);
@@ -51,7 +61,7 @@ const CalendarList = () => {
   useEffect(() => {
     const fetchCalendarList = async () => {
       try {
-        const res = await await getCalendarList();
+        const res = await getCalendarList();
         console.log(res);
         setCalendars(res || []);
       } catch (error) {

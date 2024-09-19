@@ -20,17 +20,14 @@ export const getCalendarList = async () => {
   }
 };
 
-// 공유캘린더 생성 API
 export const createSharedCalendar = async (calendarData) => {
   try {
     const calendarFormData = new FormData();
 
-    // 이미지가 있는 경우
     if (calendarData.image && calendarData.image instanceof File) {
-      console.log('이미지 파일 객체:', calendarData.image);
       calendarFormData.append('image', calendarData.image);
     } else {
-      console.log('이미지가 안 담겨요');
+      console.log('사진이 안담겨요');
     }
 
     const calendarInfo = {
@@ -39,15 +36,13 @@ export const createSharedCalendar = async (calendarData) => {
       membersToInvite: calendarData.membersToInvite || [],
     };
 
-    // 캘린더 정보 추가
     calendarFormData.append(
       'calendar',
       new Blob([JSON.stringify(calendarInfo)], { type: 'application/json' }),
     );
 
-    // POST 요청
     const response = await customAxios.post(
-      '/shared-calendar',
+      `/shared-calendar`,
       calendarFormData,
       {
         headers: {
@@ -58,7 +53,7 @@ export const createSharedCalendar = async (calendarData) => {
     );
     return response.data;
   } catch (error) {
-    console.error('공유 캘린더 생성 오류', error);
+    console.error('유저 정보 수정 오류!', error);
     throw error;
   }
 };
