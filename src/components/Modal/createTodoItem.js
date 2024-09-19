@@ -59,7 +59,7 @@ const CreateTodoItem = ({ hideModal, addTodo, date }) => {
         onClick={closeModal}
       ></div>
       <div
-        className={`absolute bottom-0 left-0 w-p h-[500px] bg-white rounded-t-3xl z-20 ${isClose ? 'animate-[bottom-sheet-down_200ms_ease-in-out]' : 'animate-[bottom-sheet-up_200ms_ease-in-out]'}`}
+        className={`absolute bottom-0 left-0 w-full h-[500px] bg-white rounded-t-3xl z-20 ${isClose ? 'animate-[bottom-sheet-down_200ms_ease-in-out]' : 'animate-[bottom-sheet-up_200ms_ease-in-out]'}`}
       >
         <div>
           <div className={'p-8 font-bold text-lg'}>어떤 할 일이 있나요?</div>

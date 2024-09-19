@@ -24,11 +24,11 @@ const TodoList = () => {
   };
 
   const addTodo = () => {
-    setTodoItems([...todoItems, 1]);
+    setTodoItems([...todoItems, { id: 1 }]);
   };
 
   const removeTodo = (id) => {
-    setTodoItems([...todoItems, 1]);
+    setTodoItems([...todoItems, { id: 1 }]);
     customAxios
       .delete(`/todolist/tasks/${id}`, {
         headers: {
