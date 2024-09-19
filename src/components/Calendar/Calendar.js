@@ -91,11 +91,38 @@ const Calendar = ({ readOnly = false }) => {
 
   useEffect(() => {
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchend', handleMouseUp); // 모바일용 이벤트
     return () => {
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchend', handleMouseUp); // 모바일용 이벤트 제거
       clearTimeout(dragTimer.current);
     };
   }, [isDragging, selectedDates]);
+
+  // 모바일 터치 이벤트 추가
+  const handleTouchStart = (day, selectedYear, selectedMonth) => {
+    if (readOnly) return;
+    dragTimer.current = setTimeout(() => {
+      setIsDragging(true);
+      setDisableSwipe(true); // 드래그 중에는 스와이프 비활성화
+      const startDate = new Date(selectedYear, selectedMonth, day);
+      setDragStart(startDate);
+      setDragEnd(startDate);
+      const newSelectedDates = [formatDateKey(startDate)];
+      setSelectedDates(newSelectedDates);
+    }, holdThreshold);
+  };
+
+  const handleTouchMove = (day, selectedYear, selectedMonth) => {
+    if (!isDragging) return;
+    const endDate = new Date(selectedYear, selectedMonth, day);
+    setDragEnd(endDate);
+
+    if (dragStart) {
+      const dates = getDatesInRange(dragStart, endDate);
+      setSelectedDates(dates);
+    }
+  };
 
   const handleDateClick = (day, selectedYear, selectedMonth) => {
     if (readOnly) return;
@@ -273,6 +300,8 @@ const Calendar = ({ readOnly = false }) => {
         } rounded-md`}
         onMouseDown={() => handleMouseDown(day, year, month)}
         onMouseEnter={() => handleMouseEnter(day, year, month)}
+        onTouchStart={() => handleTouchStart(day, year, month)} // 모바일용 터치 이벤트
+        onTouchMove={() => handleTouchMove(day, year, month)} // 모바일용 터치 이벤트
         onClick={() => handleDateClick(day, year, month)}
         style={{ flex: '0 0 14.28%', userSelect: 'none' }}
       >
