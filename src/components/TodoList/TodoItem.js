@@ -58,7 +58,7 @@ const TodoItem = ({ id, content, checked, removeTodo }) => {
       onTouchEnd={handleTouchEnd}
     >
       <div
-        className={`transition-transform rounded-xl w-[26rem] h-[4.5rem] my-2 mx-auto content-center border 
+        className={`transition-transform rounded-xl w-[90%] h-[4.5rem] my-2 mx-auto content-center border 
         ${isChecked ? 'border-blue-100 bg-blue-100' : ''} 
         ${isSwiped ? '-translate-x-24' : ''}`}
       >
