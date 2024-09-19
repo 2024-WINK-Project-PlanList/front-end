@@ -58,49 +58,6 @@ export const createSharedCalendar = async (calendarData) => {
   }
 };
 
-// 공유캘린더 생성 API
-// export const createSharedCalendar = async (calendarData) => {
-//   try {
-//     const calendarFormData = new FormData();
-//
-//     // 이미지가 있는 경우
-//     if (calendarData.image && calendarData.image instanceof File) {
-//       console.log('이미지 파일 객체:', calendarData.image);
-//       calendarFormData.append('image', calendarData.image);
-//     } else {
-//       console.log('이미지가 안 담겨요');
-//     }
-//
-//     const calendarInfo = {
-//       name: calendarData.name,
-//       description: calendarData.description,
-//       membersToInvite: calendarData.membersToInvite || [],
-//     };
-//
-//     // 캘린더 정보 추가
-//     calendarFormData.append(
-//       'calendar',
-//       new Blob([JSON.stringify(calendarInfo)], { type: 'application/json' }),
-//     );
-//
-//     // POST 요청
-//     const response = await customAxios.post(
-//       '/shared-calendar',
-//       calendarFormData,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${getToken()}`,
-//           'Content-Type': 'multipart/form-data',
-//         },
-//       },
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error('공유 캘린더 생성 오류', error);
-//     throw error;
-//   }
-// };
-
 // 공유캘린더 수정 API
 export const modifySharedCalendar = async (calendarId, calendarData) => {
   try {
